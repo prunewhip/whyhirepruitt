@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Why Hire Pruitt | Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <style>
+    :root {
+      --bg-1: #0d0d0e;
+      --bg-2: #11131a;
+      --accent: #00aaff;
+      --text: #f1f5ff;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.2);
+      --radius: 1rem;
+      --shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+      --transition: all 0.3s ease;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,var(--bg-1)0%,var(--bg-2)100%);color:var(--text);overflow-x:hidden}
+    /* NAV */
+    nav{position:fixed;width:100%;top:0;left:0;padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.06);transition:var(--transition);z-index:1000}
+    nav.scrolled{padding:.6rem 3rem;background:rgba(0,0,0,.55)}
+    .brand{font-family:"Orbitron",sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:.03em}
+    .nav-links{list-style:none;display:flex;gap:2rem}
+    .nav-links a{text-decoration:none;color:var(--text);font-weight:600;position:relative}
+    .nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--accent);transition:var(--transition)}
+    .nav-links a:hover::after{width:100%}
+    /* HERO */
+    #hero{position:relative;width:100%;height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+    #tsparticles{position:absolute;inset:0;z-index:-1}
+    .hero-content{max-width:800px;padding:0 2rem}
+    .hero-content h1{font-family:"Orbitron",sans-serif;font-size:clamp(2.8rem,6vw,4.5rem);font-weight:800;letter-spacing:.04em;text-shadow:0 0 15px rgba(0,170,255,.7)}
+    .hero-content p{margin-top:1rem;font-size:clamp(1.1rem,2.2vw,1.35rem);opacity:.9}
+    .btn{display:inline-block;margin-top:2rem;padding:1rem 3rem;font-size:1.05rem;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;box-shadow:0 0 10px rgba(0,170,255,.7);transition:var(--transition)}
+    .btn:hover{transform:translateY(-3px)scale(1.03);box-shadow:0 0 20px rgba(0,170,255,.9)}
+    /* WRAPPER */
+    .wrapper{width:90%;max-width:1100px;margin:0 auto}
+    section.card{margin:2.5rem 0;padding:3rem 2rem;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(14px);position:relative;overflow:hidden}
+    section.card h2{font-family:"Orbitron",sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:1rem;color:var(--accent);text-shadow:0 0 10px rgba(0,170,255,.6)}
+    section.card p{font-size:1.05rem;max-width:70ch;line-height:1.8}
+    .cta-secondary{display:inline-block;margin-top:1.8rem;padding:.9rem 2.5rem;font-size:1rem;font-weight:600;color:var(--text);border:2px solid var(--accent);border-radius:var(--radius);transition:var(--transition);position:relative;overflow:hidden}
+    .cta-secondary::before{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s ease;z-index:-1}
+    .cta-secondary:hover::before{transform:scaleX(1)}
+    .cta-secondary:hover{color:#fff}
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    /* FOOTER */
+    footer{text-align:center;padding:3rem 1rem;font-size:.9rem;opacity:.6}
+    /* MOBILE NAV */
+    .menu-toggle{display:none;background:none;border:none;font-size:1.8rem;color:var(--text);cursor:pointer}
+    @media(max-width:720px){
+      .menu-toggle{display:block}
+      .nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(0,0,0,.9);padding:1.5rem 3rem;gap:1.2rem;transform:translateY(-120%);opacity:0;pointer-events:none;transition:var(--transition)}
+      .nav-links.open{transform:translateY(0);opacity:1;pointer-events:auto}
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="brand">Pruitt Colon</div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+  <!-- HERO -->
+  <section id="hero">
+    <div id="tsparticles"></div>
+    <div class="hero-content">
+      <h1>Why Hire Pruitt?</h1>
+      <p>AI Engineer · Full-Stack Developer · IoT Systems Architect</p>
+      <a href="about.html" class="btn">Learn More</a>
+    </div>
+  </section>
+  <!-- MAIN CONTENT -->
+  <div class="wrapper">
+    <section class="card reveal" id="welcome">
+      <h2>Welcome</h2>
+      <p>I build enterprise AI systems that scale. My background combines software engineering, GPU-accelerated machine learning, IoT orchestration, and full-stack development. I architect intelligent systems using PyTorch, FastAPI, and modern DevOps practices - from AR glasses to smart home automation.</p>
+    </section>
+    <section class="card reveal">
+      <h2>Why I Built This Site</h2>
+      <p>Breaking into AI engineering requires proof of capability. This portfolio showcases my flagship project - <strong>NeMo AI Ecosystem</strong>, a complete voice-controlled life automation system with 12,000+ lines of enterprise Python code. It integrates AR glasses, IoT hubs, smart home devices, and enterprise-grade AI (NeMo ASR, Gemma LLM, RAG) into a unified platform. Every line demonstrates scalable engineering, GPU optimization, and full-stack product development.</p>
+      <a href="nemo-server.html" class="btn" style="margin-top:1rem; display:inline-block;">Explore NeMo Ecosystem →</a>
+    </section>
+    <section class="card reveal" style="text-align:center">
+      <h2>Ready to Optimize Your Workflow?</h2>
+      <p>Let me bring the same precision and innovation to your projects. From network engineering to full‑stack automation, I turn complex challenges into streamlined solutions.</p>
+      <a href="contact.html" class="cta-secondary">Contact Me</a>
+    </section>
+  </div>
+  <!-- FOOTER -->
+  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+  <script>
+    /* NAV SHRINK */
+    const nav=document.getElementById("navbar");
+    window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",window.scrollY>60));
+    /* MOBILE MENU */
+    const toggle=document.getElementById("menu-toggle");
+    const links=document.getElementById("nav-links");
+    toggle.addEventListener("click",()=>links.classList.toggle("open"));
+    /* TSParticles */
+    tsParticles.load("tsparticles",{
+      background:{color:{value:"transparent"}},fpsLimit:60,particles:{number:{value:70,density:{enable:true,area:800}},color:{value:"#00aaff"},shape:{type:"circle"},opacity:{value:.5,random:true},size:{value:{min:1,max:4}},links:{enable:true,distance:130,color:"#00aaff",opacity:.4,width:1},move:{enable:true,speed:1.2,outModes:{default:"bounce"}}},detectRetina:true});
+    /* REVEAL */
+    const observer=new IntersectionObserver((entries)=>{entries.forEach((entry)=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target);}})},{threshold:.15});
+    document.querySelectorAll(".reveal").forEach((el)=>observer.observe(el));
+  </script>
+</body>
+</html>

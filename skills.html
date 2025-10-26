@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skills • Why Hire Pruitt</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <!-- tsParticles -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+ <style>
+  :root {
+    --bg-1: #0c0e11;
+    --bg-2: #0f1219;
+    --accent: #00aaff;
+    --text: #f0f6ff;
+    --card-bg: rgba(255,255,255,0.07);
+    --card-border: rgba(255,255,255,0.18);
+    --radius: 1rem;
+    --shadow: 0 0 20px rgba(0,170,255,0.28);
+    --transition: all .3s ease;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(130deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease-in-out infinite;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  @keyframes gradientMove {
+    0%   { background-position: 0 50% }
+    50%  { background-position: 100% 50% }
+    100% { background-position: 0 50% }
+  }
+
+  /* CTA BUTTON */
+  .cta-container {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .continue-button {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: var(--radius);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    box-shadow: 0 0 15px rgba(0,170,255,0.2);
+    transition: var(--transition);
+  }
+  .continue-button:hover {
+    background: var(--accent);
+    color: var(--bg-2);
+    box-shadow: 0 0 25px rgba(0,170,255,0.4);
+  }
+
+  /* particles canvas */
+  #tsparticles {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(12px);
+    background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: var(--transition);
+    z-index: 1000;
+  }
+  nav.scrolled {
+    padding: .6rem 3rem;
+    background: rgba(0,0,0,0.55);
+  }
+  .brand {
+    font-family: "Orbitron", sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: .03em;
+  }
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: var(--transition);
+  }
+  .nav-links a:hover::after {
+    width: 100%;
+  }
+
+  /* MOBILE NAV */
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  @media (max-width: 720px) {
+    .menu-toggle {
+      display: block;
+    }
+    .nav-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      background: rgba(0,0,0,0.92);
+      padding: 1.5rem 3rem;
+      gap: 1.2rem;
+      transform: translateY(-120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+    .nav-links.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  /* WRAPPER */
+  .wrapper {
+    width: 90%;
+    max-width: 1100px;
+    margin: 7rem auto 0 auto;
+    animation: fadeIn .5s both;
+  }
+  header.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  header.page-header h1 {
+    font-family: "Orbitron", sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    color: var(--accent);
+    margin-bottom: .5rem;
+    text-shadow: 0 0 10px rgba(0,170,255,0.5);
+  }
+  header.page-header p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: .85;
+  }
+
+  /* SKILLS GRID */
+  .skills {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-bottom: 3rem;
+  }
+  .skill-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.8rem 1.5rem;
+    transition: var(--transition);
+    opacity: 0;
+    transform: translateY(40px);
+    display: flex;
+    flex-direction: column;
+  }
+  .skill-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .skill-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,170,255,0.24);
+  }
+  .skill-card h3 {
+    margin-bottom: 1rem;
+    color: var(--accent);
+    font-size: 1.32rem;
+    font-family: "Orbitron", sans-serif;
+  }
+  .skill-card ul {
+    list-style: disc;
+    margin-left: 1.4rem;
+  }
+  .skill-card li {
+    margin-bottom: .6rem;
+    font-size: 1rem;
+  }
+  .toggle {
+    margin-top: auto;
+    margin-bottom: .3rem;
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: .35rem .8rem;
+    border-radius: .4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .toggle:hover {
+    background: var(--accent);
+    color: #000;
+  }
+  .anecdote {
+    font-size: .95rem;
+    margin-top: .8rem;
+    line-height: 1.45;
+    display: none;
+    animation: fadeIn .3s both;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    color: #aaa;
+    font-size: .9rem;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0 }
+    to   { opacity: 1 }
+  }
+</style>
+
+</head>
+<body>
+  <div id="tsparticles"></div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="brand">Pruitt Colon</div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="resume.html" target="_blank">Resume</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="wrapper">
+    <header class="page-header">
+      <h1>Skills</h1>
+      <p>AI/ML Engineering • Full-Stack Development • IoT Systems</p>
+    </header>
+
+    <section class="skills" id="skills-grid">
+      <!-- 1. AI/ML Engineering -->
+      <div class="skill-card">
+        <h3>AI & Machine Learning</h3>
+        <ul>
+          <li>PyTorch 2.3 for deep learning pipelines</li>
+          <li>NVIDIA NeMo (ASR, speaker diarization)</li>
+          <li>Transformers (Hugging Face, DistilRoBERTa)</li>
+          <li>RAG systems (FAISS, semantic embeddings)</li>
+          <li>LLM inference (llama-cpp-python, GGUF quantization)</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Built NeMo AI Ecosystem with Parakeet ASR, TitaNet speaker embeddings, and Gemma LLM - 12K lines integrating AR glasses, IoT hub, and smart home devices.</p>
+      </div>
+
+      <!-- 2. Backend Development -->
+      <div class="skill-card">
+        <h3>Backend & APIs</h3>
+        <ul>
+          <li>FastAPI (async REST + WebSocket endpoints)</li>
+          <li>Python 3.10+ (type hints, async/await)</li>
+          <li>SQLite + AES-256 encryption</li>
+          <li>JWT authentication + RBAC</li>
+          <li>Middleware (rate limiting, security headers)</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Architected 30+ FastAPI endpoints with role-based auth, audit logging, and 100% speaker-based data isolation for multi-tenant security.</p>
+      </div>
+
+      <!-- 3. Master's Degree -->
+      <div class="skill-card">
+        <h3>M.S. Software Engineering (AI) • WGU</h3>
+        <ul>
+          <li>AI Specialization Track</li>
+          <li>Machine Learning Systems Design</li>
+          <li>Enterprise Architecture Patterns</li>
+          <li>Production ML Deployment</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Completed graduate coursework in AI systems, neural networks, and production ML deployment strategies. Applied learning to build enterprise-grade voice AI platform.</p>
+      </div>
+
+      <!-- 4. DevOps & Infrastructure -->
+      <div class="skill-card">
+        <h3>DevOps & Infrastructure</h3>
+        <ul>
+          <li>Docker (multi-stage builds, GPU passthrough)</li>
+          <li>CUDA 12.1 and GPU optimization</li>
+          <li>Linux system administration</li>
+          <li>CI/CD pipelines (GitHub Actions)</li>
+          <li>Health checks and monitoring</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Built 3-stage production Dockerfile with CUDA wheel compilation, GPU passthrough, and automated health checks for deterministic deployment.</p>
+      </div>
+
+      <!-- 5. IoT & Integration -->
+      <div class="skill-card">
+        <h3>IoT & System Integration</h3>
+        <ul>
+          <li>AR wearables (Even Reality glasses SDK)</li>
+          <li>Smart home orchestration (VoiceMonkey, Alexa)</li>
+          <li>Multi-platform connectivity (Android, Web)</li>
+          <li>REST API integration and WebSocket streaming</li>
+          <li>Real-time telemetry and device control</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Integrated AR glasses, Flutter mobile app, IoT hub, and smart home devices into unified voice-controlled ecosystem with sub-second latency.</p>
+      </div>
+
+      <!-- 6. Frontend & Mobile -->
+      <div class="skill-card">
+        <h3>Frontend & Mobile Development</h3>
+        <ul>
+          <li>Flutter (Android app development)</li>
+          <li>Next.js dashboard (analytics)</li>
+          <li>Responsive design (HTML5, CSS3, JavaScript)</li>
+          <li>Mermaid.js diagrams and visualizations</li>
+          <li>UI/UX best practices</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Built Flutter Android app with full NeMo system integration, real-time audio streaming, and AR glasses control interface.</p>
+      </div>
+
+      <!-- 7. Security & Architecture -->
+      <div class="skill-card">
+        <h3>Security & Architecture</h3>
+        <ul>
+          <li>Role-based access control (RBAC)</li>
+          <li>AES-256 encryption and bcrypt hashing</li>
+          <li>JWT authentication and session management</li>
+          <li>Audit logging and compliance</li>
+          <li>Microservice architecture patterns</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Implemented enterprise-grade security with 100% speaker-based data isolation, encrypted storage, and comprehensive audit trails for multi-tenant system.</p>
+      </div>
+
+      <!-- 8. Foundation (Telecom Background) -->
+      <div class="skill-card">
+        <h3>Telecom & Network Foundation</h3>
+        <ul>
+          <li>5G/LTE protocol analysis and troubleshooting</li>
+          <li>Samsung flagship device validation</li>
+          <li>Fiber optics (OTDR, splicing, termination)</li>
+          <li>Lean Six Sigma Green Belt (process optimization)</li>
+        </ul>
+        <button class="toggle">Show example</button>
+        <p class="anecdote">Telecom background provided systems thinking and precision engineering mindset that transitioned into software development and AI architecture.</p>
+      </div>
+
+      <!-- 9. Flagship Project -->
+    <div class="skill-card" id="passion-projects" style="background: linear-gradient(135deg, rgba(0,170,255,0.15), rgba(0,170,255,0.05)); border: 2px solid rgba(0,170,255,0.4);">
+      <h3>Flagship Project: NeMo AI Ecosystem</h3>
+      <ul>
+        <li>12,000+ lines of production Python code</li>
+        <li>Real-time ASR with NeMo Parakeet + speaker ID</li>
+        <li>Gemma 3 4B LLM with RAG context</li>
+        <li>AR glasses + IoT hub + smart home integration</li>
+        <li>Docker deployment with GPU optimization</li>
+        <li>Enterprise security and multi-tenant architecture</li>
+        </ul>
+        <button class="toggle">Show example</button>
+      <p class="anecdote">
+        Complete voice-controlled life automation system integrating enterprise AI, AR wearables, and IoT devices. Showcases scalable engineering, GPU optimization, and full-stack product development.
+      </p>
+    </div>
+
+<div class="cta-container">
+  <a href="nemo-server.html" class="continue-button">
+    Explore NeMo AI Ecosystem →
+  </a>
+
+</section>
+    
+ </div>
+  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+ </div>
+  <script>
+    /* NAV SHRINK */
+    const nav=document.getElementById("navbar");
+    window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",window.scrollY>60));
+
+    /* MOBILE MENU */
+    const toggleBtn=document.getElementById("menu-toggle");
+    const links=document.getElementById("nav-links");
+    toggleBtn.addEventListener("click",()=>links.classList.toggle("open"));
+
+    /* PARTICLES */
+    tsParticles.load("tsparticles",{
+      background:{color:{value:"transparent"}},
+      fpsLimit:60,
+      particles:{
+        number:{value:70,density:{enable:true,area:900}},
+        color:{value:"#00aaff"},
+        shape:{type:"circle"},
+        opacity:{value:0.5,random:true},
+        size:{value:{min:1,max:4}},
+        links:{enable:true,distance:130,color:"#00aaff",opacity:0.35,width:1},
+        move:{enable:true,speed:1.2,outModes:{default:"bounce"}}
+      },
+      detectRetina:true
+    });
+
+    /* REVEAL ON SCROLL */
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      })
+    },{threshold:0.15});
+    document.querySelectorAll(".skill-card").forEach(el=>observer.observe(el));
+
+    /* TOGGLE ANECDOTES */
+    document.querySelectorAll(".toggle").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const a=btn.nextElementSibling;
+        a.style.display=a.style.display==="block"?"none":"block";
+        btn.textContent=a.style.display==="block"?"Hide example":"Show example";
+      })
+    });
+  </script>
+</body>
+</html>

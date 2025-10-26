@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects • Why Hire Pruitt</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+
+  <!-- tsParticles -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+  <style>
+    :root{
+      --bg-1:#0c0e11;
+      --bg-2:#0f1219;
+      --accent:#00aaff;
+      --text:#f0f6ff;
+      --card-bg:rgba(255,255,255,0.07);
+      --card-border:rgba(255,255,255,0.18);
+      --radius:1rem;
+      --shadow:0 0 20px rgba(0,170,255,0.28);
+      --transition:all .3s ease;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:"Inter",sans-serif;
+      background:linear-gradient(130deg,var(--bg-1) 0%,var(--bg-2) 100%);
+      background-size:200% 200%;
+      animation:gradientBG 12s ease infinite;
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    @keyframes gradientBG{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    #tsparticles{position:fixed;inset:0;z-index:-1}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;width:100%;padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.06);transition:var(--transition);z-index:1000}
+    nav.scrolled{padding:.6rem 3rem;background:rgba(0,0,0,.55)}
+    .brand{font-family:"Orbitron",sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:.03em}
+    .nav-links{list-style:none;display:flex;gap:2rem}
+    .nav-links a{color:var(--text);font-weight:600;text-decoration:none;position:relative}
+    .nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--accent);transition:var(--transition)}
+    .nav-links a:hover::after{width:100%}
+    .menu-toggle{display:none;background:none;border:none;font-size:1.8rem;color:var(--text);cursor:pointer}
+    @media(max-width:720px){.menu-toggle{display:block}.nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(0,0,0,.92);padding:1.4rem 3rem;gap:1.2rem;transform:translateY(-120%);opacity:0;pointer-events:none;transition:var(--transition)}.nav-links.open{transform:translateY(0);opacity:1;pointer-events:auto}}
+
+    /* WRAPPER */
+    .wrapper{width:90%;max-width:1100px;margin:7rem auto 0 auto;animation:fadeIn .5s both}
+    header.page-header{text-align:center;margin-bottom:2rem}
+    header.page-header h1{font-family:"Orbitron",sans-serif;font-size:clamp(2.2rem,5vw,3.2rem);color:var(--accent);margin-bottom:.5rem;text-shadow:0 0 10px rgba(0,170,255,.5)}
+    header.page-header p{font-size:1.1rem;font-weight:500;opacity:.85}
+
+    /* PROJECTS GRID */
+    .projects{display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:3rem}
+    .project-card{background:var(--card-bg);backdrop-filter:blur(8px);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem;transition:var(--transition);opacity:0;transform:translateY(40px)}
+    .project-card.visible{opacity:1;transform:translateY(0)}
+    .project-card:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(0,170,255,.24)}
+    .project-card h3{color:var(--accent);font-size:1.3rem;margin-bottom:.6rem;font-family:"Orbitron",sans-serif}
+    .project-card p{font-size:1rem;line-height:1.45}
+
+    footer{text-align:center;margin-top:3rem;padding:1.5rem 0;color:#aaa;font-size:.9rem}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div id="tsparticles"></div>
+
+  <nav id="navbar">
+    <div class="brand">Pruitt Colon</div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrapper">
+    <header class="page-header">
+      <h1>Projects</h1>
+      <p>AI Systems & Software Engineering</p>
+    </header>
+    
+    <!-- FLAGSHIP PROJECT -->
+    <div class="project-card" style="background: linear-gradient(135deg, rgba(0,170,255,0.15), rgba(0,170,255,0.05)); border: 2px solid rgba(0,170,255,0.6); padding: 2.5rem; margin-bottom: 3rem;">
+      <h3 style="font-size: 2rem; margin-bottom: 1rem;">⭐ NeMo AI Ecosystem (Flagship)</h3>
+      <p style="font-size: 1.15rem; margin-bottom: 1.5rem; line-height: 1.7;"><strong>Complete Voice-Controlled Life Automation System</strong> - 12,000+ lines of production Python code integrating enterprise AI, AR wearables, IoT hub, and smart home devices into a unified platform.</p>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+        <div><strong>🤖 AI Stack:</strong> NeMo ASR, Gemma LLM, RAG, Emotion Analysis</div>
+        <div><strong>🛠️ Backend:</strong> FastAPI, 30+ endpoints, RBAC, AES-256</div>
+        <div><strong>🥽 Hardware:</strong> AR Glasses, Flutter App, IoT Hub</div>
+        <div><strong>🐳 DevOps:</strong> Docker, CUDA 12.1, GPU Optimization</div>
+      </div>
+      
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="nemo-server.html" style="padding: 0.8rem 1.5rem; background: var(--accent); color: #000; font-weight: 700; border-radius: 0.5rem; text-decoration: none;">Full Showcase →</a>
+        <a href="https://github.com/pruittcolon/NeMo_Server" target="_blank" style="padding: 0.8rem 1.5rem; border: 2px solid var(--accent); color: var(--accent); font-weight: 700; border-radius: 0.5rem; text-decoration: none;">GitHub Repo →</a>
+      </div>
+    </div>
+    
+    <div class="project-card" style="margin-bottom: 3rem;">
+      <h3>Vision & Mission</h3>
+      <p>I build AI systems that integrate voice intelligence, AR wearables, and IoT orchestration into unified platforms. My work demonstrates scalable engineering with enterprise architecture, GPU optimization, and security-first design. Every project pushes toward seamless human-AI interaction through voice, vision, and automation.</p>
+    </div>
+
+    <section class="projects" id="projects-grid">
+      <div class="project-card">
+      <h3>Realtime Data Analyzer App</h3>
+      <p>Android application that performs real-time audio transcription and analysis using live microphone input, with API-driven speech-to-text conversion and data insights.</p>
+      </div>
+      <div class="project-card">
+     <h3>Real-Time Audio Intelligence Suite</h3>
+     <p>Desktop app that captures and processes live audio, stores metadata, and runs automated analysis. Includes a chat feature that predicts responses based on recent conversation context.</p>
+      </div>
+      <div class="project-card">
+        <h3>Network KPI Analyzer</h3>
+        <p>Python ETL pipeline that parses drive-test logs, calculates KPIs with Pandas, and outputs interactive PowerBI datasets for rapid insights.</p>
+      </div>
+      <div class="project-card">
+        <h3>Secure ChatGPT Frontend</h3>
+        <p>Vanilla JS UI served by a minimal Node.js proxy. Protects API key in memory, streams responses, and parses markdown to HTML.</p>
+      </div>
+      <div class="project-card">
+        <h3>Portfolio Website</h3>
+        <p>This responsive portfolio built with vanilla HTML/CSS/JS, featuring tsParticles animations, mobile-first design, and Mermaid architecture diagrams. Deployed as a static site with optimized performance.</p>
+      </div>
+      <div class="project-card">
+        <h3>Next.js Dashboard</h3>
+        <p>Analytics dashboard for monitoring NeMo AI system metrics, user activity, and API performance. Built with Next.js, React, and Chart.js for real-time data visualization.</p>
+      </div>
+    </section>
+  </div>
+
+  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+
+  <script>
+    /* NAV SHRINK */
+    const nav=document.getElementById('navbar');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+    /* MOBILE MENU */
+    document.getElementById('menu-toggle').addEventListener('click',()=>document.getElementById('nav-links').classList.toggle('open'));
+    /* tsParticles Configuration */
+    tsParticles.load('tsparticles', {
+      fullScreen:{ enable:true, zIndex:-1 },
+      fpsLimit:60,
+      detectRetina:true,
+      particles:{
+        number:{ value:60, density:{ enable:true, area:800 } },
+        color:{ value:'#00aaff' },
+        shape:{ type:'circle' },
+        opacity:{ value:0.5, random:false },
+        size:{ value:{ min:1, max:4 } },
+        links:{ enable:true, distance:150, color:'#00aaff', opacity:0.4, width:1 },
+        move:{ enable:true, speed:1.5, direction:'none', outModes:{ default:'out' } }
+      }
+    });
+    /* REVEAL ON SCROLL */
+    const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.15});
+    document.querySelectorAll('.project-card').forEach(c=>observer.observe(c));
+  </script>
+</body>
+</html>

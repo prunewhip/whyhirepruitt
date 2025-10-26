@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeMo AI Ecosystem • Pruitt Colon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#00aaff',
+        primaryTextColor: '#f0f6ff',
+        primaryBorderColor: '#00aaff',
+        lineColor: '#00aaff',
+        secondaryColor: '#0f1219',
+        tertiaryColor: '#1a1f2e'
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg-1: #0c0e11;
+      --bg-2: #0f1219;
+      --accent: #00aaff;
+      --accent-glow: rgba(0, 170, 255, 0.4);
+      --text: #f0f6ff;
+      --card-bg: rgba(255,255,255,0.07);
+      --card-border: rgba(255,255,255,0.18);
+      --radius: 1rem;
+      --shadow: 0 0 20px rgba(0,170,255,0.28);
+      --transition: all .3s ease;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(130deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      background-size: 200% 200%;
+      animation: gradientBG 12s ease infinite;
+      color: var(--text);
+      overflow-x: hidden;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+    @keyframes gradientBG {
+      0%   { background-position: 0 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+    #tsparticles { position: fixed; inset: 0; z-index: -1; }
+    
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+    nav.scrolled { padding: .6rem 3rem; background: rgba(0,0,0,0.55); }
+    .brand { font-family: "Orbitron", sans-serif; font-weight: 800; font-size: 1.2rem; letter-spacing: .03em; }
+    .nav-links { list-style: none; display: flex; gap: 2rem; }
+    .nav-links a { color: var(--text); font-weight: 600; text-decoration: none; position: relative; }
+    .nav-links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: var(--accent); transition: var(--transition); }
+    .nav-links a:hover::after { width: 100%; }
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; color: var(--text); cursor: pointer; }
+    
+    @media (max-width: 720px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(0,0,0,0.92);
+        padding: 1.4rem 3rem;
+        gap: 1.2rem;
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--transition);
+      }
+      .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    }
+    
+    /* WRAPPER */
+    .wrapper { width: 90%; max-width: 1200px; margin: 7rem auto 0 auto; animation: fadeIn .5s both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* HERO */
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(0,170,255,0.1), rgba(0,170,255,0.05));
+      border-radius: var(--radius);
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow);
+    }
+    .hero h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px var(--accent-glow);
+    }
+    .hero .subtitle {
+      font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+      margin-bottom: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+    .hero .value-prop {
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      font-style: italic;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0,170,255,0.15);
+      border: 1px solid var(--accent);
+      border-radius: 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: #0088dd;
+      box-shadow: 0 0 25px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 700;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .btn-secondary:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      transition: var(--transition);
+    }
+    .card:hover {
+      box-shadow: 0 12px 40px rgba(0,170,255,0.3);
+      transform: translateY(-3px);
+    }
+    .card h2 {
+      font-family: "Orbitron", sans-serif;
+      color: var(--accent);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+    .card h3 {
+      color: var(--accent);
+      font-size: 1.3rem;
+      margin: 1.5rem 0 0.8rem 0;
+      font-family: "Orbitron", sans-serif;
+    }
+    .card p, .card li {
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+      font-size: 1.1rem;
+    }
+    .card ul {
+      list-style: disc;
+      margin-left: 1.5rem;
+    }
+    
+    /* TECH STACK GRID */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .tech-item {
+      background: rgba(0,170,255,0.08);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(0,170,255,0.3);
+    }
+    .tech-item h4 {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 0.7rem;
+      font-weight: 600;
+    }
+    .tech-item p {
+      font-size: 1.05rem;
+      margin-bottom: 0;
+      line-height: 1.6;
+    }
+    
+    /* FEATURE CARDS */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-3px);
+    }
+    .feature-card h3 {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+    .feature-card p {
+      font-size: 1.05rem;
+    }
+    .feature-card .detail {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 1.1rem;
+      line-height: 1.75;
+    }
+    .feature-card.expanded .detail {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    /* CODE BLOCK */
+    pre {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(0,170,255,0.3);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+    code {
+      color: #7cff9c;
+      font-family: "Courier New", monospace;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    .comment { color: #999; }
+    
+    /* MERMAID DIAGRAMS */
+    .mermaid {
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+    @media (max-width: 768px) {
+      .mermaid {
+        padding: 1rem;
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* ECOSYSTEM FLOW */
+    .ecosystem-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.2rem;
+      background: rgba(0,170,255,0.1);
+      border-left: 4px solid var(--accent);
+      border-radius: 0.5rem;
+    }
+    .flow-step .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      min-width: 50px;
+    }
+    .flow-step strong {
+      font-size: 1.15rem;
+    }
+    .flow-step div {
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    
+    /* MOBILE OPTIMIZATIONS */
+    @media (max-width: 768px) {
+      body { font-size: 16px; }
+      .wrapper { width: 95%; }
+      .hero { padding: 1.5rem 1rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero .subtitle { font-size: 1.1rem; }
+      .hero .value-prop { font-size: 1rem; }
+      .badge-row { gap: 0.5rem; }
+      .badge { padding: 0.5rem 1rem; font-size: 0.95rem; }
+      .cta-row { flex-direction: column; gap: 1rem; }
+      .btn-primary, .btn-secondary { 
+        width: 100%; 
+        text-align: center;
+        padding: 1rem 2rem;
+        font-size: 1.05rem;
+      }
+      .card { padding: 1.5rem; }
+      .card h2 { font-size: 1.6rem; }
+      .card h3 { font-size: 1.25rem; }
+      .card p, .card li { font-size: 1.05rem; }
+      .tech-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .features { grid-template-columns: 1fr; }
+      .flow-step { flex-direction: column; text-align: left; align-items: flex-start; }
+      .flow-step .num { font-size: 1.5rem; }
+      .flow-step div { font-size: 1.05rem; }
+      pre { padding: 1rem; overflow-x: auto; }
+      code { font-size: 0.9rem; }
+      nav { padding: 1rem 1.5rem; }
+      .brand { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="tsparticles"></div>
+  
+  <nav id="navbar">
+    <div class="brand">Pruitt Colon</div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="wrapper">
+    <!-- HERO -->
+    <section class="hero">
+      <h1>NeMo AI Ecosystem</h1>
+      <p class="subtitle">Complete Voice-Controlled Life Automation System<br/>
+      Enterprise AI + AR Glasses + IoT Hub + Smart Home Integration</p>
+      <p class="value-prop">"From voice command to smart home action in milliseconds"</p>
+      
+      <div class="badge-row">
+        <span class="badge">308 Files</span>
+        <span class="badge">12K Lines Python</span>
+        <span class="badge">8+ Integrations</span>
+        <span class="badge">Enterprise-Grade</span>
+      </div>
+      
+      <div class="cta-row">
+        <a href="https://github.com/pruittcolon/NeMo_Server" target="_blank" class="btn-primary">View on GitHub →</a>
+        <a href="#architecture" class="btn-secondary">See Architecture</a>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE SUMMARY -->
+    <div class="card">
+      <h2>Executive Summary</h2>
+      <p><strong>This is not just a Python server - this is a complete AI-powered life automation product.</strong></p>
+      <p>The NeMo AI Ecosystem integrates enterprise-grade voice intelligence, AR wearables, IoT orchestration, and multi-platform connectivity into a unified system. Built for real-world use with scalable architecture, security, and enterprise patterns.</p>
+      
+      <h3>Technical Value Proposition</h3>
+      <ul>
+        <li><strong>Hands-Free Control:</strong> Voice commands via AR glasses control your entire digital and physical environment</li>
+        <li><strong>Multi-Platform Integration:</strong> Android app, Python backend, IoT hub, smart home devices - all orchestrated seamlessly</li>
+        <li><strong>Enterprise AI:</strong> Real-time speech recognition, speaker diarization, emotion analysis, and RAG-powered contextual memory</li>
+        <li><strong>Scalable Architecture:</strong> Microservice design with GPU optimization, role-based security, and Docker deployment</li>
+        <li><strong>Enterprise-Grade:</strong> 12,000+ lines of tested Python code, comprehensive API documentation, automated testing</li>
+      </ul>
+    </div>
+
+    <!-- COMPLETE ECOSYSTEM ARCHITECTURE -->
+    <div class="card" id="architecture">
+      <h2>Complete Ecosystem Architecture</h2>
+      <p>This system connects 8+ platforms to create a unified AI-powered automation ecosystem:</p>
+      
+      <div class="mermaid">
+graph TB
+    User[👤 User Voice Command]
+    
+    subgraph Wearables
+        Glasses[Even Reality AR Glasses]
+    end
+    
+    subgraph Mobile
+        Flutter[Flutter Android App]
+    end
+    
+    subgraph Core["🚀 NeMo Server (12K Lines Python)"]
+        API[FastAPI Backend<br/>30+ REST/WebSocket Endpoints]
+        
+        subgraph AI
+            ASR[NeMo Parakeet ASR]
+            Speaker[TitaNet Speaker ID]
+            Emotion[DistilRoBERTa Emotion]
+            Gemma[Gemma 3 4B LLM]
+            RAG[FAISS + RAG]
+        end
+        
+        DB[(SQLite + AES-256)]
+    end
+    
+    subgraph Cloud["☁️ Cloud APIs"]
+        Deepgram[Deepgram]
+        OpenAI[OpenAI]
+    end
+    
+    subgraph IoT["🏠 Smart Home"]
+        Hub[IoT Hub]
+        VM[VoiceMonkey]
+        Devices[Smart Devices]
+    end
+    
+    User --> Glasses
+    User --> Flutter
+    
+    Glasses --> Flutter
+    Flutter --> API
+    
+    API --> ASR
+    API --> Speaker
+    API --> Emotion
+    API --> Gemma
+    API --> RAG
+    API --> Deepgram
+    API --> OpenAI
+    
+    ASR --> DB
+    Speaker --> DB
+    Gemma --> RAG
+    RAG --> DB
+    
+    API --> Hub
+    Hub --> VM
+    VM --> Devices
+    
+    style Core fill:#0f1219,stroke:#00aaff,stroke-width:3px
+    style IoT fill:#0f1219,stroke:#00aaff,stroke-width:2px
+    style Wearables fill:#1a1f2e,stroke:#00aaff
+    style Mobile fill:#1a1f2e,stroke:#00aaff
+    style Cloud fill:#1a1f2e,stroke:#00aaff
+      </div>
+      
+      <h3>Integration Flow: Voice to Action</h3>
+      <div class="ecosystem-flow">
+        <div class="flow-step">
+          <span class="num">1</span>
+          <div>
+            <strong>Voice Input</strong> - Speak command to Even Reality AR glasses or Flutter mobile app
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">2</span>
+          <div>
+            <strong>Audio Processing</strong> - NeMo Parakeet ASR transcribes speech, TitaNet identifies speaker
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">3</span>
+          <div>
+            <strong>Context Analysis</strong> - RAG system retrieves relevant memory, emotion analyzer detects sentiment
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">4</span>
+          <div>
+            <strong>LLM Processing</strong> - Gemma 3 4B generates contextually-aware response with full conversation history
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">5</span>
+          <div>
+            <strong>Action Orchestration</strong> - IoT Hub routes commands to smart home devices via VoiceMonkey/Alexa
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">6</span>
+          <div>
+            <strong>Device Control</strong> - Smart home devices execute commands for lights, TV, locks, thermostats, etc.
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="num">7</span>
+          <div>
+            <strong>Feedback Loop</strong> - AR glasses display confirmation, system logs interaction for future context
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECHNOLOGY STACK -->
+    <div class="card">
+      <h2>Technology Stack</h2>
+      <div class="tech-grid">
+        <div class="tech-item">
+          <h4>Backend Framework</h4>
+          <p>FastAPI 0.110, Python 3.10, Uvicorn ASGI, WebSocket support</p>
+        </div>
+        <div class="tech-item">
+          <h4>AI/ML Core</h4>
+          <p>PyTorch 2.3, NVIDIA NeMo 2.5, Transformers 4.53, llama-cpp-python 0.2.90</p>
+        </div>
+        <div class="tech-item">
+          <h4>Models</h4>
+          <p>Parakeet-TDT 0.6B (ASR), TitaNet (Speaker ID), Gemma 3 4B (LLM), MiniLM-L6-v2 (Embeddings), DistilRoBERTa (Emotion)</p>
+        </div>
+        <div class="tech-item">
+          <h4>Infrastructure</h4>
+          <p>Docker multi-stage builds, CUDA 12.1, GPU passthrough, Linux optimization</p>
+        </div>
+        <div class="tech-item">
+          <h4>Security</h4>
+          <p>Bcrypt password hashing, AES-256 encryption, RBAC, JWT sessions, audit logging</p>
+        </div>
+        <div class="tech-item">
+          <h4>Vector DB</h4>
+          <p>FAISS CPU 1.8, sentence embeddings, semantic search, RAG context retrieval</p>
+        </div>
+        <div class="tech-item">
+          <h4>Cloud APIs</h4>
+          <p>Deepgram (ASR backup), OpenAI GPT (advanced NLP), VoiceMonkey (Alexa)</p>
+        </div>
+        <div class="tech-item">
+          <h4>Mobile/IoT</h4>
+          <p>Flutter (Android), Even Reality SDK (AR glasses), IoT Hub orchestration, REST APIs</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEY FEATURES -->
+    <div class="card">
+      <h2>Key Features</h2>
+      <div class="features">
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🎯 GPU Architecture</h3>
+          <p>Optimized for 6GB VRAM (GTX 1660 Ti)</p>
+          <div class="detail">
+            Gemma LLM gets exclusive GPU access with all layers offloaded (-1 n_gpu_layers). All other services (ASR, speaker diarization, embeddings, emotion) run on CPU to prevent resource contention. Deterministic startup time of 3 minutes with health checks.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>👥 Speaker Isolation</h3>
+          <p>100% data separation by speaker ID</p>
+          <div class="detail">
+            TitaNet speaker embeddings with voice enrollment system. K-means clustering for diarization. Each user sees only their own transcripts, memories, and conversations. Enterprise-grade multi-tenant architecture.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🧠 RAG System</h3>
+          <p>Contextual memory with semantic search</p>
+          <div class="detail">
+            FAISS vector database with MiniLM-L6-v2 embeddings. Semantic similarity search retrieves relevant conversation history for LLM context. Automatic memory consolidation and deduplication.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🔒 Enterprise Security</h3>
+          <p>Enterprise-grade authentication & encryption</p>
+          <div class="detail">
+            Role-based access control (Admin/User), bcrypt password hashing with cost factor 12, AES-256 database encryption, JWT session tokens, httpOnly cookies, audit logging with IP tracking, rate limiting middleware.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🏠 IoT Orchestration</h3>
+          <p>Unified smart home control hub</p>
+          <div class="detail">
+            VoiceMonkey integration for Alexa device control, IoT hub for device routing and orchestration, real-time status monitoring, error handling and retry logic, REST API control for smart devices.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🥽 AR Glasses Integration</h3>
+          <p>Even Reality G1 wearable interface</p>
+          <div class="detail">
+            Real-time voice input from AR glasses, visual feedback display on wearable screen, low-latency serial communication, JNI bindings for native performance, telemetry overlay for system status.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>📱 Multi-Platform</h3>
+          <p>Android, Web, Desktop, AR Wearables</p>
+          <div class="detail">
+            Flutter mobile app with full system access, Next.js dashboard for analytics, Even Reality AR glasses integration, REST API for 3rd-party integration, WebSocket support for real-time updates, cross-platform audio streaming.
+          </div>
+        </div>
+        
+        <div class="feature-card" onclick="this.classList.toggle('expanded')">
+          <h3>🐳 DevOps Ready</h3>
+          <p>Docker deployment with GPU support</p>
+          <div class="detail">
+            3-stage production Dockerfile with CUDA wheel compilation, GPU passthrough configuration, health checks and automatic restart, volume mounts for data persistence, docker-compose orchestration, CI/CD ready.
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:1.5rem; font-style:italic; text-align:center;">Click any feature card to expand details</p>
+    </div>
+
+    <!-- API ENDPOINTS -->
+    <div class="card">
+      <h2>API Endpoints (30+ Total)</h2>
+      <p>Full REST and WebSocket APIs with comprehensive documentation:</p>
+      
+      <h3>Core Services</h3>
+      <ul>
+        <li><code>POST /transcribe</code> - Real-time audio transcription with NeMo Parakeet</li>
+        <li><code>POST /speaker/enroll</code> - Speaker voice enrollment for identification</li>
+        <li><code>POST /speaker/identify</code> - Identify speaker from audio sample</li>
+        <li><code>POST /emotion/analyze</code> - Emotion detection from text or transcript</li>
+        <li><code>POST /gemma/chat</code> - LLM inference with RAG context injection</li>
+        <li><code>WS /gemma/stream</code> - WebSocket streaming for real-time chat</li>
+      </ul>
+      
+      <h3>Memory & RAG</h3>
+      <ul>
+        <li><code>POST /rag/search</code> - Semantic search across conversation history</li>
+        <li><code>GET /memories</code> - Retrieve user memories with filtering</li>
+        <li><code>POST /memories</code> - Store new contextual memory</li>
+        <li><code>GET /transcripts</code> - Access historical transcriptions</li>
+      </ul>
+      
+      <h3>IoT Control</h3>
+      <ul>
+        <li><code>POST /iot/command</code> - Execute smart home device commands</li>
+        <li><code>GET /iot/status</code> - Query device states</li>
+        <li><code>POST /voicemonkey/trigger</code> - Trigger Alexa routines</li>
+      </ul>
+      
+      <h3>Authentication & Admin</h3>
+      <ul>
+        <li><code>POST /auth/login</code> - User authentication with session creation</li>
+        <li><code>POST /auth/logout</code> - Session invalidation</li>
+        <li><code>GET /admin/users</code> - User management (admin only)</li>
+        <li><code>GET /health</code> - System health check with GPU status</li>
+      </ul>
+    </div>
+
+    <!-- DESIGN DECISIONS -->
+    <div class="card">
+      <h2>Architecture Design Decisions</h2>
+      
+      <h3>Why CPU for ASR/Diarization?</h3>
+      <p>Deterministic GPU allocation prevents resource contention. By reserving the GPU exclusively for Gemma LLM, we guarantee consistent inference performance. NeMo Parakeet and TitaNet run efficiently on CPU with acceptable latency for non-real-time transcription.</p>
+      
+      <h3>Why GGUF Quantization?</h3>
+      <p>4-bit quantization (Q4_K_M) enables running Gemma 3 4B on 6GB VRAM with minimal quality loss (&lt;3% perplexity increase). Reduces memory footprint from 8GB to ~3.5GB while maintaining coherent responses. Essential for consumer-grade hardware deployment.</p>
+      
+      <h3>Why Microservice Architecture?</h3>
+      <p>Separate services for ASR, speaker ID, emotion, LLM, and RAG enable independent scaling and testing. Each service has clear interfaces and responsibilities. Failure in one service doesn't cascade to others. Easy to swap models or providers without refactoring.</p>
+      
+      <h3>Why Local-First AI?</h3>
+      <p>Privacy-focused design runs ASR, speaker ID, and LLM locally. Only falls back to Deepgram/OpenAI APIs when local resources are unavailable. User data stays on-premises by default. Reduces cloud costs and API dependencies.</p>
+      
+      <h3>Why IoT Hub Pattern?</h3>
+      <p>Centralized orchestration layer abstracts device-specific protocols. Unified interface for VoiceMonkey, curl commands, and direct HTTP APIs. Enables complex automation routines that span multiple devices. Simplifies error handling and retry logic.</p>
+    </div>
+
+    <!-- CODE SAMPLE -->
+    <div class="card">
+      <h2>Code Sample: GPU Exclusive Enforcement</h2>
+      <p>This pattern ensures Gemma LLM gets deterministic GPU access while preventing other services from competing for VRAM:</p>
+      
+      <pre><code><span class="comment"># GPU-exclusive enforcement for Gemma LLM</span>
+from src.utils.gpu_utils import enforce_gpu_only, clear_gpu_cache
+
+<span class="comment"># Clear any residual VRAM before loading</span>
+clear_gpu_cache(force=True)
+
+<span class="comment"># Enforce GPU-only context (sets CUDA_VISIBLE_DEVICES)</span>
+with enforce_gpu_only(device_id=0):
+    model = Llama(
+        model_path=GEMMA_MODEL_PATH,
+        n_gpu_layers=-1,  <span class="comment"># All 28 layers on GPU</span>
+        n_ctx=8192,       <span class="comment"># 8K context window</span>
+        n_batch=512,
+        verbose=False
+    )
+    
+    <span class="comment"># Verify GPU offload succeeded</span>
+    assert model.llama_supports_gpu_offload(), "GPU offload failed!"
+    
+    print(f"[GEMMA] Loaded with {model.n_layers} layers on GPU")
+    print(f"[GEMMA] VRAM allocated: {get_vram_usage()['allocated_gb']:.2f} GB")
+
+<span class="comment"># Other services run with CUDA_VISIBLE_DEVICES=""</span>
+<span class="comment"># ensuring they never see the GPU</span></code></pre>
+    </div>
+
+    <!-- COMMERCIAL READINESS -->
+    <div class="card">
+      <h2>System Architecture & Practices</h2>
+      <p><strong>This system is built for real-world deployment with enterprise-grade practices:</strong></p>
+      
+      <div class="tech-grid">
+        <div class="tech-item">
+          <h4>✅ Tested Codebase</h4>
+          <p>12,000+ lines of tested Python, comprehensive error handling, logging, and monitoring</p>
+        </div>
+        <div class="tech-item">
+          <h4>✅ Security Hardened</h4>
+          <p>OWASP compliance, encryption at rest, secure session management, audit trails</p>
+        </div>
+        <div class="tech-item">
+          <h4>✅ Scalable Architecture</h4>
+          <p>Microservices, async I/O, connection pooling, rate limiting, load-ready</p>
+        </div>
+        <div class="tech-item">
+          <h4>✅ Deployment Ready</h4>
+          <p>Docker containerization, GPU passthrough, health checks, automated testing, CI/CD pipelines</p>
+        </div>
+        <div class="tech-item">
+          <h4>✅ Multi-Platform</h4>
+          <p>Android app, AR glasses, web dashboard, REST API for integration</p>
+        </div>
+        <div class="tech-item">
+          <h4>✅ Documentation</h4>
+          <p>API docs, architecture diagrams, deployment guides, troubleshooting wikis</p>
+        </div>
+      </div>
+      
+      <h3>Real-World Use Case</h3>
+      <p>This system demonstrates full-stack integration capabilities:</p>
+      <ul>
+        <li>Voice commands from AR glasses control smart home devices</li>
+        <li>Contextual AI assistant remembers conversations and preferences</li>
+        <li>Multi-user support with isolated data and personalized experiences</li>
+        <li>Reliable performance on consumer hardware (GTX 1660 Ti)</li>
+        <li>Secure remote access via authenticated mobile apps</li>
+      </ul>
+    </div>
+
+    <!-- CTA -->
+    <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(0,170,255,0.15), rgba(0,170,255,0.05));">
+      <h2>Interested in This Technology?</h2>
+      <p style="font-size:1.1rem; margin-bottom:2rem;">This ecosystem demonstrates enterprise-grade AI engineering, IoT orchestration, and product development capabilities. The architecture, code quality, and integration depth showcase scalable software engineering practices.</p>
+      
+      <div class="cta-row">
+        <a href="https://github.com/pruittcolon/NeMo_Server" target="_blank" class="btn-primary">Explore Source Code →</a>
+        <a href="contact.html" class="btn-secondary">Discuss Opportunities</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+
+  <script>
+    /* NAV SHRINK */
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+    
+    /* MOBILE MENU */
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('nav-links').classList.toggle('open');
+    });
+
+    /* PARTICLES */
+    tsParticles.load('tsparticles', {
+      fullScreen: { enable: true, zIndex: -1 },
+      fpsLimit: 60,
+      detectRetina: true,
+      particles: {
+        number: { value: 80, density: { enable: true, area: 800 } },
+        color: { value: '#00aaff' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true },
+        size: { value: { min: 1, max: 4 } },
+        links: { enable: true, distance: 150, color: '#00aaff', opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 1.5, outModes: { default: 'bounce' } }
+      }
+    });
+  </script>
+</body>
+</html>
+

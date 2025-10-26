@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About • Why Hire Pruitt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <style>
+    :root {
+      --bg-1: #0d0d0e;
+      --bg-2: #11131a;
+      --accent: #00aaff;
+      --text: #f1f5ff;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.2);
+      --radius: 1rem;
+      --shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+      --transition: all 0.3s ease;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+      background-size: 200% 200%;
+      animation: gradientBG 12s ease infinite;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #tsparticles { position: fixed; inset: 0; z-index: -1; }
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+    nav.scrolled {
+      padding: 0.6rem 3rem;
+      background: rgba(0, 0, 0, 0.55);
+    }
+    .brand {
+      font-family: "Orbitron", sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 0.03em;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: var(--transition);
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+    @media (max-width: 720px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.9);
+        padding: 1.5rem 3rem;
+        gap: 1.2rem;
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--transition);
+      }
+      .nav-links.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    .wrapper {
+      width: 90%;
+      max-width: 1100px;
+      margin: 7rem auto 0 auto;
+      animation: fadeIn 0.5s ease both;
+    }
+    header.page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header.page-header h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+    }
+    header.page-header p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+   .photo {
+  width: 260px;
+  height: 260px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  object-position: top; 
+  box-shadow: var(--shadow);
+  border: 2px solid var(--accent);
+  margin: 2rem auto;
+  display: block;
+  transition: var(--transition);
+}
+    .photo:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 60px rgba(0, 170, 255, 0.5);
+    }
+    section.bio {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+    }
+    section.bio h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-family: "Orbitron", sans-serif;
+    }
+    section.bio p {
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+    .cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .cta-btn {
+      background: var(--accent);
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .cta-btn:hover {
+      background: #0088dd;
+      box-shadow: 0 0 10px rgba(0, 170, 255, 0.4);
+    }
+    section.values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 3rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 170, 255, 0.2);
+    }
+    .card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: var(--accent);
+      font-family: "Orbitron", sans-serif;
+    }
+    .card p { font-size: 1rem; }
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1.5rem 0;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="tsparticles"></div>
+  <nav id="navbar">
+    <div class="brand">Pruitt Colon</div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="skills.html">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="wrapper">
+    <header class="page-header">
+      <h1>About Me</h1>
+      <p>AI Engineer • Full-Stack Developer • IoT Systems Architect</p>
+    </header>
+<img src="assets/profile.jpeg" alt="Pruitt Colon, IT professional specializing in network engineering and automation, smiling at a workbench" class="photo" />
+    <section class="bio">
+      <h2 style="font-size: 1.8rem;">My Journey: Telecom to Software Engineering to AI</h2>
+      <p>I began in fiber optics and telecom, where I earned my Lean Six Sigma Green Belt and learned to think in systems. Lean methodology taught me to identify bottlenecks, eliminate waste, and optimize complex workflows - skills that became the foundation of how I approach software architecture. Watching senior engineers solve impossible network issues sparked my transition into software engineering - I wanted to build the tools that solve those problems at scale.</p>
+      
+      <p>That spark led me to earn a <strong>Master's in Software Engineering (AI Specialization) from Western Governors University</strong> and a <strong>Bachelor's in Computer Science</strong>. I apply lean systems thinking to software development - breaking down complex AI systems into efficient, scalable components with minimal coupling and maximum value delivery.</p>
+      
+      <p>Today, I architect AI platforms - most notably <strong>NeMo AI Ecosystem</strong>, a complete voice-controlled life automation system with 12,000+ lines of Python code. It integrates AR wearables (Even Reality glasses), IoT hubs, smart home devices, and enterprise AI (NeMo ASR, Gemma LLM, RAG) into a unified platform. I specialize in PyTorch, FastAPI, Docker, IoT orchestration, and CUDA optimization for real-world deployment.</p>
+      
+      <div class="cta-row">
+        <a href="nemo-server.html" class="cta-btn">View NeMo Ecosystem</a>
+        <a href="resume.html" class="cta-btn">View Resume</a>
+      </div>
+    </section>
+    <section class="values">
+      <div class="card"><h3>Architecture</h3><p>I design scalable systems with microservice patterns, GPU optimization, and security-first principles.</p></div>
+      <div class="card"><h3>AI/ML Engineering</h3><p>I build production ML pipelines with PyTorch, Transformers, NeMo, and CUDA acceleration.</p></div>
+      <div class="card"><h3>IoT & Integration</h3><p>I orchestrate complex systems - AR glasses, smart homes, mobile apps, and cloud APIs working as one.</p></div>
+      <div class="card"><h3>Product Development</h3><p>I ship enterprise-grade software with testing, security, documentation, and deployment automation.</p></div>
+    </section>
+  </div>
+  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+  <script>
+    const nav = document.getElementById("navbar");
+    window.addEventListener("scroll", () => nav.classList.toggle("scrolled", window.scrollY > 60));
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      document.getElementById("nav-links").classList.toggle("open");
+    });
+    tsParticles.load("tsparticles", {
+      fullScreen: { enable:true, zIndex:-1 },
+      fpsLimit:60,
+      detectRetina:true,
+      particles:{
+        number:{value:70,density:{enable:true,area:900}},
+        color:{value:"#00aaff"},
+        shape:{type:"circle"},
+        opacity:{value:0.5,random:true},
+        size:{value:{min:1,max:4}},
+        links:{enable:true,distance:130,color:"#00aaff",opacity:0.4,width:1},
+        move:{enable:true,speed:1.2,outModes:{default:"bounce"}}
+      }
+    });
+  </script>
+</body>
+</html>
