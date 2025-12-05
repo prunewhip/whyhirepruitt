@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture - Pruitt Colon</title>
+  <meta name="description" content="Technical deep-dive into the NeMo AI Platform architecture.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/design-system.css">
+  <style>
+    /* Architecture Hero */
+    .arch-hero {
+      padding: var(--space-40) 0 var(--space-16);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .arch-intro {
+      max-width: 640px;
+    }
+
+    .arch-intro h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      margin-bottom: var(--space-4);
+    }
+
+    .arch-intro p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Visual Architecture Diagram - Custom CSS Grid Based */
+    .arch-visual-section {
+      padding: var(--space-16) 0 var(--space-24);
+    }
+
+    .section-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-4);
+    }
+
+    .section-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin-bottom: var(--space-10);
+    }
+
+    /* Custom Architecture Diagram */
+    .arch-diagram {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    .diagram-layers {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      min-width: 800px;
+    }
+
+    .diagram-layer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .layer-label {
+      width: 100px;
+      flex-shrink: 0;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+
+    .layer-content {
+      display: flex;
+      gap: var(--space-3);
+      flex: 1;
+    }
+
+    .diagram-node {
+      flex: 1;
+      padding: var(--space-4) var(--space-5);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .diagram-node:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .diagram-node.gateway {
+      border-color: rgba(22, 163, 74, 0.3);
+      background: rgba(22, 163, 74, 0.05);
+    }
+
+    .node-name {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      margin-bottom: var(--space-1);
+    }
+
+    .node-desc {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    .node-port {
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-tertiary);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Connector Lines */
+    .layer-connector {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-2) 0;
+      padding-left: 116px;
+    }
+
+    .connector-line {
+      width: 2px;
+      height: 24px;
+      background: linear-gradient(to bottom, var(--border-hover), var(--border));
+      position: relative;
+    }
+
+    .connector-line::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--border);
+    }
+
+    /* Services Grid */
+    .services-section {
+      padding: var(--space-16) 0;
+      background: var(--bg-secondary);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+
+    @media (max-width: 768px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .service-card {
+      padding: var(--space-6);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .service-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .service-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .service-name {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+    }
+
+    .service-port {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      padding: var(--space-1) var(--space-2);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+    }
+
+    .service-desc {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* ML Engines Section */
+    .engines-section {
+      padding: var(--space-16) 0;
+    }
+
+    .engine-category {
+      margin-bottom: var(--space-10);
+    }
+
+    .engine-category:last-child {
+      margin-bottom: 0;
+    }
+
+    .category-title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .engines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .engine-item {
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .engine-item:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-secondary);
+    }
+
+    /* K8s Section */
+    .k8s-section {
+      padding: var(--space-16) 0;
+      background: var(--bg-secondary);
+    }
+
+    .k8s-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+
+    @media (max-width: 900px) {
+      .k8s-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .k8s-card {
+      padding: var(--space-6);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+    }
+
+    .k8s-card h4 {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      margin-bottom: var(--space-4);
+    }
+
+    .k8s-list {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .k8s-list li {
+      padding: var(--space-2) 0;
+      padding-left: var(--space-4);
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .k8s-list li:last-child {
+      border-bottom: none;
+    }
+
+    .k8s-list li::before {
+      content: ">";
+      position: absolute;
+      left: 0;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+    }
+
+    /* Tech Stack */
+    .tech-section {
+      padding: var(--space-16) 0;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-8);
+    }
+
+    @media (max-width: 768px) {
+      .tech-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tech-category h4 {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-4);
+    }
+
+    .tech-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .tech-item {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tech-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Decorative */
+    .decorative-line {
+      width: 60px;
+      height: 1px;
+      background: var(--border-hover);
+      margin-bottom: var(--space-6);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Pruitt Colon</a>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="architecture.html" class="nav-link active">Architecture</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="arch-hero">
+      <div class="container">
+        <div class="arch-intro reveal">
+          <h1>Architecture</h1>
+          <p>A technical deep-dive into the NeMo AI Platform: 10 services, 29 ML engines, full Kubernetes deployment,
+            all orchestrated on a single consumer GPU.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="arch-visual-section">
+      <div class="container">
+        <div class="decorative-line"></div>
+        <span class="section-label">System Overview</span>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-desc">A layered architecture designed for GPU efficiency and real-time processing</p>
+
+        <div class="arch-diagram reveal">
+          <div class="diagram-layers">
+            <!-- Client Layer -->
+            <div class="diagram-layer">
+              <span class="layer-label">Clients</span>
+              <div class="layer-content">
+                <div class="diagram-node">
+                  <div class="node-name">Web Frontend</div>
+                  <div class="node-desc">20+ pages</div>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">Flutter Mobile</div>
+                  <div class="node-desc">Cross-platform</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer-connector">
+              <div class="connector-line"></div>
+            </div>
+
+            <!-- Gateway Layer -->
+            <div class="diagram-layer">
+              <span class="layer-label">Gateway</span>
+              <div class="layer-content">
+                <div class="diagram-node gateway">
+                  <div class="node-name">API Gateway</div>
+                  <div class="node-desc">JWT Auth + Rate Limiting + WebSocket</div>
+                  <span class="node-port">:8000</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer-connector">
+              <div class="connector-line"></div>
+            </div>
+
+            <!-- Services Layer -->
+            <div class="diagram-layer">
+              <span class="layer-label">Services</span>
+              <div class="layer-content">
+                <div class="diagram-node">
+                  <div class="node-name">Gemma</div>
+                  <div class="node-desc">LLM</div>
+                  <span class="node-port">:8001</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">Transcription</div>
+                  <div class="node-desc">ASR</div>
+                  <span class="node-port">:8003</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">RAG</div>
+                  <div class="node-desc">Context</div>
+                  <span class="node-port">:8004</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">Emotion</div>
+                  <div class="node-desc">Analysis</div>
+                  <span class="node-port">:8005</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">ML Service</div>
+                  <div class="node-desc">29 Engines</div>
+                  <span class="node-port">:8006</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer-connector">
+              <div class="connector-line"></div>
+            </div>
+
+            <!-- GPU Layer -->
+            <div class="diagram-layer">
+              <span class="layer-label">GPU</span>
+              <div class="layer-content">
+                <div class="diagram-node">
+                  <div class="node-name">GPU Coordinator</div>
+                  <div class="node-desc">Semaphore Locks + Preemptive Scheduling</div>
+                  <span class="node-port">:8002</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="layer-connector">
+              <div class="connector-line"></div>
+            </div>
+
+            <!-- Infrastructure Layer -->
+            <div class="diagram-layer">
+              <span class="layer-label">Infra</span>
+              <div class="layer-content">
+                <div class="diagram-node">
+                  <div class="node-name">Redis</div>
+                  <div class="node-desc">Cache + Locks</div>
+                  <span class="node-port">:6379</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">PostgreSQL</div>
+                  <div class="node-desc">Task Queue</div>
+                  <span class="node-port">:5432</span>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">FAISS</div>
+                  <div class="node-desc">Vector Store</div>
+                </div>
+                <div class="diagram-node">
+                  <div class="node-name">SQLCipher</div>
+                  <div class="node-desc">Encrypted DB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="services-section">
+      <div class="container">
+        <div class="decorative-line"></div>
+        <span class="section-label">Core Services</span>
+        <h2 class="section-title">10 Microservices</h2>
+        <p class="section-desc">8 application services + 2 infrastructure services working in concert</p>
+
+        <div class="services-grid">
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">api-gateway</span>
+              <span class="service-port">:8000</span>
+            </div>
+            <p class="service-desc">Central entry point handling JWT auth, request routing, rate limiting, and WebSocket
+              connections for real-time updates.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">gemma-service</span>
+              <span class="service-port">:8001</span>
+            </div>
+            <p class="service-desc">Conversational AI powered by Gemma 3 4B (Q4 quantized). Integrates RAG context,
+              emotional awareness, and business analysis.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">gpu-coordinator</span>
+              <span class="service-port">:8002</span>
+            </div>
+            <p class="service-desc">VRAM orchestration via Redis semaphores. Manages model loading, memory allocation,
+              and preemptive pausing.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">transcription-service</span>
+              <span class="service-port">:8003</span>
+            </div>
+            <p class="service-desc">Real-time ASR using Parakeet TDT 0.6B. Includes speaker diarization (Sortformer) and
+              streaming audio processing.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">rag-service</span>
+              <span class="service-port">:8004</span>
+            </div>
+            <p class="service-desc">Retrieval-augmented generation with FAISS vector storage. Handles conversation
+              memory and knowledge bases.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">emotion-service</span>
+              <span class="service-port">:8005</span>
+            </div>
+            <p class="service-desc">Multi-dimensional emotion analysis using fine-tuned DistilRoBERTa. Provides
+              sentiment scoring and temporal tracking.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">ml-service</span>
+              <span class="service-port">:8006</span>
+            </div>
+            <p class="service-desc">"System 2" thinking with 29 specialized engines. Titan AutoML, Oracle Causal, Newton
+              Symbolic, and more.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">insights-service</span>
+              <span class="service-port">:8010</span>
+            </div>
+            <p class="service-desc">Analytics and AutoML experiments. Revenue forecasting, anomaly detection, and
+              business intelligence.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="engines-section">
+      <div class="container">
+        <div class="decorative-line"></div>
+        <span class="section-label">ML Capabilities</span>
+        <h2 class="section-title">29 ML Engines</h2>
+        <p class="section-desc">Specialized processing engines for analytical thinking</p>
+
+        <div class="engine-category reveal">
+          <h4 class="category-title">Core AI Models</h4>
+          <div class="engines-grid">
+            <div class="engine-item">Gemma 3 4B</div>
+            <div class="engine-item">Parakeet ASR</div>
+            <div class="engine-item">TitaNet Speaker</div>
+            <div class="engine-item">DistilRoBERTa</div>
+            <div class="engine-item">MiniLM Embeddings</div>
+            <div class="engine-item">Sortformer Diar</div>
+          </div>
+        </div>
+
+        <div class="engine-category reveal">
+          <h4 class="category-title">AutoML and Predictive</h4>
+          <div class="engines-grid">
+            <div class="engine-item">Titan AutoML</div>
+            <div class="engine-item">Oracle Causal</div>
+            <div class="engine-item">Newton Symbolic</div>
+            <div class="engine-item">Chronos Temporal</div>
+            <div class="engine-item">Galileo Geometric</div>
+            <div class="engine-item">Scout Discovery</div>
+          </div>
+        </div>
+
+        <div class="engine-category reveal">
+          <h4 class="category-title">Financial Analysis</h4>
+          <div class="engines-grid">
+            <div class="engine-item">Revenue Forecast</div>
+            <div class="engine-item">Cash Flow</div>
+            <div class="engine-item">Budget Variance</div>
+            <div class="engine-item">Profit Margin</div>
+            <div class="engine-item">Cost Optimization</div>
+            <div class="engine-item">Pricing Strategy</div>
+          </div>
+        </div>
+
+        <div class="engine-category reveal">
+          <h4 class="category-title">Advanced Analytics</h4>
+          <div class="engines-grid">
+            <div class="engine-item">Chaos Non-Linear</div>
+            <div class="engine-item">Anomaly Detector</div>
+            <div class="engine-item">Clustering Engine</div>
+            <div class="engine-item">Customer LTV</div>
+            <div class="engine-item">Market Basket</div>
+            <div class="engine-item">Spend Pattern</div>
+            <div class="engine-item">FAISS Retrieval</div>
+            <div class="engine-item">Universal Graph</div>
+            <div class="engine-item">Flash Inference</div>
+            <div class="engine-item">Mirror Synthetic</div>
+            <div class="engine-item">RAG Evaluation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="k8s-section">
+      <div class="container">
+        <div class="decorative-line"></div>
+        <span class="section-label">Deployment</span>
+        <h2 class="section-title">Kubernetes Ready</h2>
+        <p class="section-desc">Production-ready K8s manifests with NVIDIA GPU passthrough</p>
+
+        <div class="k8s-grid">
+          <div class="k8s-card reveal">
+            <h4>Manifests</h4>
+            <ul class="k8s-list">
+              <li>namespace.yaml</li>
+              <li>secrets.yaml (12 keys)</li>
+              <li>services.yaml (ClusterIP)</li>
+              <li>deployments.yaml (842 lines)</li>
+              <li>ingress.yaml (NGINX)</li>
+              <li>nvidia-device-plugin.yaml</li>
+            </ul>
+          </div>
+
+          <div class="k8s-card reveal">
+            <h4>GPU Passthrough</h4>
+            <ul class="k8s-list">
+              <li>NVIDIA Device Plugin DaemonSet</li>
+              <li>Direct device mounts (/dev/nvidia*)</li>
+              <li>CUDA runtime in containers</li>
+              <li>Resource limits: nvidia.com/gpu: 1</li>
+              <li>Shared GPU across pods</li>
+            </ul>
+          </div>
+
+          <div class="k8s-card reveal">
+            <h4>Kustomize Overlays</h4>
+            <ul class="k8s-list">
+              <li>base/ (common resources)</li>
+              <li>overlays/local/ (dev)</li>
+              <li>overlays/install/ (prod)</li>
+              <li>Health check probes</li>
+              <li>Init containers for setup</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tech-section">
+      <div class="container">
+        <div class="decorative-line"></div>
+        <span class="section-label">Stack</span>
+        <h2 class="section-title">Technology</h2>
+        <p class="section-desc">Production-grade tools and frameworks</p>
+
+        <div class="tech-grid reveal">
+          <div class="tech-category">
+            <h4>AI / ML</h4>
+            <div class="tech-list">
+              <div class="tech-item">PyTorch 2.0</div>
+              <div class="tech-item">NVIDIA NeMo</div>
+              <div class="tech-item">Hugging Face Transformers</div>
+              <div class="tech-item">FAISS</div>
+              <div class="tech-item">llama.cpp (GGUF)</div>
+              <div class="tech-item">scikit-learn</div>
+            </div>
+          </div>
+
+          <div class="tech-category">
+            <h4>Backend</h4>
+            <div class="tech-list">
+              <div class="tech-item">Python 3.11</div>
+              <div class="tech-item">FastAPI + Uvicorn</div>
+              <div class="tech-item">PostgreSQL 15</div>
+              <div class="tech-item">Redis</div>
+              <div class="tech-item">WebSocket</div>
+              <div class="tech-item">SQLCipher (AES-256)</div>
+            </div>
+          </div>
+
+          <div class="tech-category">
+            <h4>Infrastructure</h4>
+            <div class="tech-list">
+              <div class="tech-item">Docker + Compose</div>
+              <div class="tech-item">Kubernetes + Kustomize</div>
+              <div class="tech-item">CUDA 12.1</div>
+              <div class="tech-item">NGINX Ingress</div>
+              <div class="tech-item">Ubuntu 22.04</div>
+              <div class="tech-item">systemd</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-text">2025 Pruitt Colon</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

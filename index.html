@@ -1,121 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Why Hire Pruitt | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pruitt Colon - AI Engineer</title>
+  <meta name="description" content="AI Engineer building production ML systems. 60K+ lines of code, 29 ML engines, 10 microservices.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/design-system.css">
   <style>
-    :root {
-      --bg-1: #0d0d0e;
-      --bg-2: #11131a;
-      --accent: #00aaff;
-      --text: #f1f5ff;
-      --card-bg: rgba(255, 255, 255, 0.06);
-      --card-border: rgba(255, 255, 255, 0.2);
-      --radius: 1rem;
-      --shadow: 0 0 20px rgba(0, 170, 255, 0.3);
-      --transition: all 0.3s ease;
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-32) var(--space-6) var(--space-24);
+      position: relative;
+      overflow: hidden;
     }
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{font-family:"Inter",sans-serif;background:linear-gradient(135deg,var(--bg-1)0%,var(--bg-2)100%);color:var(--text);overflow-x:hidden}
-    /* NAV */
-    nav{position:fixed;width:100%;top:0;left:0;padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);background:rgba(0,0,0,0.25);border-bottom:1px solid rgba(255,255,255,0.06);transition:var(--transition);z-index:1000}
-    nav.scrolled{padding:.6rem 3rem;background:rgba(0,0,0,.55)}
-    .brand{font-family:"Orbitron",sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:.03em}
-    .nav-links{list-style:none;display:flex;gap:2rem}
-    .nav-links a{text-decoration:none;color:var(--text);font-weight:600;position:relative}
-    .nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--accent);transition:var(--transition)}
-    .nav-links a:hover::after{width:100%}
-    /* HERO */
-    #hero{position:relative;width:100%;height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-    #tsparticles{position:absolute;inset:0;z-index:-1}
-    .hero-content{max-width:800px;padding:0 2rem}
-    .hero-content h1{font-family:"Orbitron",sans-serif;font-size:clamp(2.8rem,6vw,4.5rem);font-weight:800;letter-spacing:.04em;text-shadow:0 0 15px rgba(0,170,255,.7)}
-    .hero-content p{margin-top:1rem;font-size:clamp(1.1rem,2.2vw,1.35rem);opacity:.9}
-    .btn{display:inline-block;margin-top:2rem;padding:1rem 3rem;font-size:1.05rem;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;box-shadow:0 0 10px rgba(0,170,255,.7);transition:var(--transition)}
-    .btn:hover{transform:translateY(-3px)scale(1.03);box-shadow:0 0 20px rgba(0,170,255,.9)}
-    /* WRAPPER */
-    .wrapper{width:90%;max-width:1100px;margin:0 auto}
-    section.card{margin:2.5rem 0;padding:3rem 2rem;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(14px);position:relative;overflow:hidden}
-    section.card h2{font-family:"Orbitron",sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:1rem;color:var(--accent);text-shadow:0 0 10px rgba(0,170,255,.6)}
-    section.card p{font-size:1.05rem;max-width:70ch;line-height:1.8}
-    .cta-secondary{display:inline-block;margin-top:1.8rem;padding:.9rem 2.5rem;font-size:1rem;font-weight:600;color:var(--text);border:2px solid var(--accent);border-radius:var(--radius);transition:var(--transition);position:relative;overflow:hidden}
-    .cta-secondary::before{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s ease;z-index:-1}
-    .cta-secondary:hover::before{transform:scaleX(1)}
-    .cta-secondary:hover{color:#fff}
-    /* REVEAL */
-    .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
-    .reveal.visible{opacity:1;transform:translateY(0)}
-    /* FOOTER */
-    footer{text-align:center;padding:3rem 1rem;font-size:.9rem;opacity:.6}
-    /* MOBILE NAV */
-    .menu-toggle{display:none;background:none;border:none;font-size:1.8rem;color:var(--text);cursor:pointer}
-    @media(max-width:720px){
-      .menu-toggle{display:block}
-      .nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(0,0,0,.9);padding:1.5rem 3rem;gap:1.2rem;transform:translateY(-120%);opacity:0;pointer-events:none;transition:var(--transition)}
-      .nav-links.open{transform:translateY(0);opacity:1;pointer-events:auto}
+    
+    /* Animated Gradient Orbs - Soft, organic */
+    .hero-orbs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float-orb 20s ease-in-out infinite;
+    }
+    
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #e8e4df 0%, #d4cfc7 100%);
+      top: -10%;
+      right: -5%;
+      animation-delay: 0s;
+    }
+    
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #f0ebe4 0%, #e2dcd3 100%);
+      bottom: 10%;
+      left: -10%;
+      animation-delay: -7s;
+    }
+    
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, #ebe7e0 0%, #ddd8cf 100%);
+      top: 40%;
+      right: 20%;
+      animation-delay: -14s;
+    }
+    
+    @keyframes float-orb {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -30px) scale(1.05); }
+      50% { transform: translate(-20px, 20px) scale(0.95); }
+      75% { transform: translate(20px, 10px) scale(1.02); }
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Stagger animation for hero elements */
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+      opacity: 0;
+      animation: fadeUp 0.6s var(--ease-out) 0.05s forwards;
+    }
+    
+    .hero-subtitle {
+      max-width: 500px;
+      margin-bottom: var(--space-10);
+      opacity: 0;
+      animation: fadeUp 0.6s var(--ease-out) 0.7s forwards;
+    }
+    
+    .hero-cta {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s var(--ease-out) 0.9s forwards;
+    }
+    
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .hero-eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+    
+    .hero-eyebrow span {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    
+    .hero-title {
+      max-width: 700px;
+      margin-bottom: var(--space-6);
+      /* FIXED height locks subtitle position - no jumping regardless of text wrap */
+      height: 160px;
+      display: flex;
+      align-items: flex-start;
+      overflow: visible;
+    }
+    
+    @media (max-width: 900px) {
+      .hero-title {
+        height: 180px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        height: 200px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .hero-title {
+        height: 180px;
+      }
+    }
+    
+    .hero-title h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      line-height: var(--leading-tight);
+    }
+    
+    /* Typewriter effect */
+    .typewriter-text {
+      display: inline;
+    }
+    
+    .typewriter-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.1em;
+      background: var(--accent);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: cursorBlink 1s step-end infinite;
+    }
+    
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    /* Recruiter Summary Arrow - Prominent CTA */
+    .scroll-hint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-4);
+      margin-top: var(--space-12);
+      opacity: 0;
+      animation: fadeUp 0.6s var(--ease-out) 1.2s forwards;
+    }
+    
+    .scroll-hint-text {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--text-secondary);
+      text-align: center;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    .scroll-hint-arrow {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+      animation: bounceDown 1.5s ease-in-out infinite;
+      transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+    }
+    
+    .scroll-hint-arrow:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+    }
+    
+    .scroll-hint-arrow svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      stroke-width: 2.5;
+    }
+    
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+    
+    .hero-subtitle p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+    
+    /* Stats Section */
+    .stats-section {
+      padding: var(--space-20) 0;
+      background: var(--bg-secondary);
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-8);
+    }
+    
+    @media (max-width: 768px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-6);
+      }
+    }
+    
+    .stat {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s var(--ease-out);
+    }
+    
+    .stats.visible .stat:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+    .stats.visible .stat:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+    .stats.visible .stat:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+    .stats.visible .stat:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+    
+    .stat-value {
+      font-size: var(--text-4xl);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      margin-bottom: var(--space-2);
+    }
+    
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+    
+    /* Featured Section */
+    .featured-section {
+      padding: var(--space-24) 0;
+    }
+    
+    .featured-header {
+      margin-bottom: var(--space-12);
+    }
+    
+    .featured-header h2 {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+    
+    .featured-header p {
+      color: var(--text-secondary);
+      max-width: 500px;
+    }
+    
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: var(--space-6);
+    }
+    
+    @media (max-width: 900px) {
+      .featured-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .featured-card {
+      padding: var(--space-8);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .featured-card-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-4);
+    }
+    
+    .featured-card h3 {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+    
+    .featured-card p {
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-6);
+    }
+    
+    .featured-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+    
+    .featured-tag {
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+    }
+    
+    /* Side Cards Stack */
+    .side-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    
+    .side-card {
+      padding: var(--space-6);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .side-card h4 {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-medium);
+      margin-bottom: var(--space-2);
+    }
+    
+    .side-card p {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    
+    /* Decorative Elements */
+    .decorative-line {
+      width: 60px;
+      height: 1px;
+      background: var(--border-hover);
+      margin-bottom: var(--space-8);
     }
   </style>
 </head>
 <body>
-  <!-- NAV -->
-  <nav id="navbar">
-    <div class="brand">Pruitt Colon</div>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="nemo-server.html">Showcase</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="resume.html">Resume</a></li>
-      <li><a href="skills.html">Skills</a></li>
-      <li><a href="projects.html">Projects</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
-  <!-- HERO -->
-  <section id="hero">
-    <div id="tsparticles"></div>
-    <div class="hero-content">
-      <h1>Why Hire Pruitt?</h1>
-      <p>AI Engineer · Full-Stack Developer · IoT Systems Architect</p>
-      <a href="about.html" class="btn">Learn More</a>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Pruitt Colon</a>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="architecture.html" class="nav-link">Architecture</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
     </div>
-  </section>
-  <!-- MAIN CONTENT -->
-  <div class="wrapper">
-    <section class="card reveal" id="welcome">
-      <h2>Welcome</h2>
-      <p>I build enterprise AI systems that scale. My background combines software engineering, GPU-accelerated machine learning, IoT orchestration, and full-stack development. I architect intelligent systems using PyTorch, FastAPI, and modern DevOps practices - from AR glasses to smart home automation.</p>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <!-- Soft animated orbs -->
+      <div class="hero-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      
+      <div class="container">
+        <div class="hero-content reveal">
+          <div class="hero-eyebrow">
+            <span class="dot"></span>
+            <span>Available for opportunities</span>
+          </div>
+          
+          <div class="hero-title">
+            <h1>Building <span class="typewriter-text" id="typewriter"></span><span class="typewriter-cursor"></span></h1>
+          </div>
+          
+          <div class="hero-subtitle">
+            <p>AI Engineer focused on real-world ML deployment. I build systems that handle the complexity of production environments.</p>
+          </div>
+          
+          <div class="hero-cta">
+            <a href="architecture.html" class="btn btn-primary btn-lg">View Complete Architecture</a>
+            <a href="contact.html" class="btn btn-secondary btn-lg">Get in Touch</a>
+          </div>
+          
+          <div class="scroll-hint">
+            <span class="scroll-hint-text">60 Second Recruiter Summary</span>
+            <a href="#summary" class="scroll-hint-arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
-    <section class="card reveal">
-      <h2>Why I Built This Site</h2>
-      <p>Breaking into AI engineering requires proof of capability. This portfolio showcases my flagship project - <strong>NeMo AI Ecosystem</strong>, a complete voice-controlled life automation system with 12,000+ lines of enterprise Python code. It integrates AR glasses, IoT hubs, smart home devices, and enterprise-grade AI (NeMo ASR, Gemma LLM, RAG) into a unified platform. Every line demonstrates scalable engineering, GPU optimization, and full-stack product development.</p>
-      <a href="nemo-server.html" class="btn" style="margin-top:1rem; display:inline-block;">Explore NeMo Ecosystem →</a>
+
+    <section class="stats-section" id="summary">
+      <div class="container">
+        <div class="stats reveal">
+          <div class="stat">
+            <div class="stat-value">60K+</div>
+            <div class="stat-label">Lines of Python</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">29</div>
+            <div class="stat-label">ML Engines</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">10</div>
+            <div class="stat-label">Microservices</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">1</div>
+            <div class="stat-label">GPU Required</div>
+          </div>
+        </div>
+      </div>
     </section>
-    <section class="card reveal" style="text-align:center">
-      <h2>Ready to Optimize Your Workflow?</h2>
-      <p>Let me bring the same precision and innovation to your projects. From network engineering to full‑stack automation, I turn complex challenges into streamlined solutions.</p>
-      <a href="contact.html" class="cta-secondary">Contact Me</a>
+
+    <section class="featured-section">
+      <div class="container">
+        <div class="featured-header reveal">
+          <div class="decorative-line"></div>
+          <h2>Featured Work</h2>
+          <p>Production systems designed for real-world deployment</p>
+        </div>
+        
+        <div class="featured-grid">
+          <div class="featured-card reveal">
+            <span class="featured-card-label">Flagship Project</span>
+            <h3>NeMo AI Platform</h3>
+            <p>A comprehensive multimodal AI platform featuring real-time speech transcription, speaker verification, emotion analysis, and RAG-powered conversational AI. All orchestrated on a single consumer GPU through intelligent resource management.</p>
+            <div class="featured-tags">
+              <span class="featured-tag">PyTorch</span>
+              <span class="featured-tag">NVIDIA NeMo</span>
+              <span class="featured-tag">FastAPI</span>
+              <span class="featured-tag">Kubernetes</span>
+              <span class="featured-tag">Docker</span>
+              <span class="featured-tag">FAISS</span>
+            </div>
+            <a href="architecture.html" class="btn btn-primary">Explore Architecture</a>
+          </div>
+          
+          <div class="side-cards">
+            <div class="side-card reveal">
+              <h4>GPU Coordination</h4>
+              <p>Custom semaphore-based system for sharing a single GPU across multiple ML models with preemptive scheduling.</p>
+            </div>
+            <div class="side-card reveal">
+              <h4>Privacy-First</h4>
+              <p>100% local processing with AES-256 encrypted databases. No cloud dependencies, no data leaves the device.</p>
+            </div>
+            <div class="side-card reveal">
+              <h4>Production Ready</h4>
+              <p>Full Kubernetes deployment with health checks, graceful shutdowns, and horizontal scaling support.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-  </div>
-  <!-- FOOTER -->
-  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-text">2025 Pruitt Colon</p>
+  </footer>
+
+  <script src="js/main.js"></script>
   <script>
-    /* NAV SHRINK */
-    const nav=document.getElementById("navbar");
-    window.addEventListener("scroll",()=>nav.classList.toggle("scrolled",window.scrollY>60));
-    /* MOBILE MENU */
-    const toggle=document.getElementById("menu-toggle");
-    const links=document.getElementById("nav-links");
-    toggle.addEventListener("click",()=>links.classList.toggle("open"));
-    /* TSParticles */
-    tsParticles.load("tsparticles",{
-      background:{color:{value:"transparent"}},fpsLimit:60,particles:{number:{value:70,density:{enable:true,area:800}},color:{value:"#00aaff"},shape:{type:"circle"},opacity:{value:.5,random:true},size:{value:{min:1,max:4}},links:{enable:true,distance:130,color:"#00aaff",opacity:.4,width:1},move:{enable:true,speed:1.2,outModes:{default:"bounce"}}},detectRetina:true});
-    /* REVEAL */
-    const observer=new IntersectionObserver((entries)=>{entries.forEach((entry)=>{if(entry.isIntersecting){entry.target.classList.add("visible");observer.unobserve(entry.target);}})},{threshold:.15});
-    document.querySelectorAll(".reveal").forEach((el)=>observer.observe(el));
+    // Typewriter Effect
+    class Typewriter {
+      constructor(element, phrases, options = {}) {
+        this.element = element;
+        this.phrases = phrases;
+        this.typeSpeed = options.typeSpeed || 80;
+        this.deleteSpeed = options.deleteSpeed || 50;
+        this.pauseAfterType = options.pauseAfterType || 2000;
+        this.pauseAfterDelete = options.pauseAfterDelete || 500;
+        this.currentPhraseIndex = 0;
+        this.currentCharIndex = 0;
+        this.isDeleting = false;
+        
+        this.type();
+      }
+      
+      type() {
+        const currentPhrase = this.phrases[this.currentPhraseIndex];
+        
+        if (this.isDeleting) {
+          // Deleting
+          this.element.textContent = currentPhrase.substring(0, this.currentCharIndex - 1);
+          this.currentCharIndex--;
+          
+          if (this.currentCharIndex === 0) {
+            this.isDeleting = false;
+            this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.phrases.length;
+            setTimeout(() => this.type(), this.pauseAfterDelete);
+            return;
+          }
+        } else {
+          // Typing
+          this.element.textContent = currentPhrase.substring(0, this.currentCharIndex + 1);
+          this.currentCharIndex++;
+          
+          if (this.currentCharIndex === currentPhrase.length) {
+            this.isDeleting = true;
+            setTimeout(() => this.type(), this.pauseAfterType);
+            return;
+          }
+        }
+        
+        const speed = this.isDeleting ? this.deleteSpeed : this.typeSpeed;
+        setTimeout(() => this.type(), speed);
+      }
+    }
+    
+    // Initialize typewriter on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const typewriterElement = document.getElementById('typewriter');
+      if (typewriterElement) {
+        new Typewriter(typewriterElement, [
+          'production AI systems that work',
+          'scalable ML infrastructure',
+          'intelligent voice applications',
+          'privacy-first AI solutions'
+        ], {
+          typeSpeed: 70,
+          deleteSpeed: 40,
+          pauseAfterType: 2500,
+          pauseAfterDelete: 400
+        });
+      }
+    });
   </script>
 </body>
 </html>

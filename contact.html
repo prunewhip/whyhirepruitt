@@ -1,419 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact • Why Hire Pruitt</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact - Pruitt Colon</title>
+  <meta name="description" content="Get in touch for AI engineering opportunities and collaborations.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/design-system.css">
   <style>
-    :root {
-      --bg-1: #0c0e11;
-      --bg-2: #0f1219;
-      --accent: #00aaff;
-      --text: #f0f6ff;
-      --card-bg: rgba(255,255,255,0.07);
-      --card-border: rgba(255,255,255,0.18);
-      --radius: 1rem;
-      --shadow: 0 0 20px rgba(0,170,255,0.28);
-      --transition: all .3s ease;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(130deg, var(--bg-1) 0%, var(--bg-2) 100%);
-      background-size: 200% 200%;
-      animation: gradientBG 12s ease infinite;
-      color: var(--text);
-      overflow-x: hidden;
-    }
-    @keyframes gradientBG {
-      0%   { background-position: 0 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0 50%; }
-    }
-    #tsparticles {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-    }
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 1rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(12px);
-      background: rgba(0,0,0,0.25);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: var(--transition);
-      z-index: 1000;
-    }
-    nav.scrolled {
-      padding: .6rem 3rem;
-      background: rgba(0,0,0,0.55);
-    }
-    .brand {
-      font-family: "Orbitron", sans-serif;
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: .03em;
-    }
-      .card p { font-size: 1rem; }
-      footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding: 1.5rem 0;
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 2rem;
-    }
-    .nav-links a {
-      color: var(--text);
-      font-weight: 600;
-      text-decoration: none;
+    /* Contact Page */
+    .contact-hero {
+      padding: var(--space-40) 0 var(--space-24);
       position: relative;
+      overflow: hidden;
     }
-    .nav-links a::after {
-      content: "";
+    
+    /* Animated Concentric Circles - Contact page graphic */
+    .contact-circles {
       position: absolute;
-      left: 0;
-      bottom: -4px;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: var(--transition);
+      top: 50%;
+      right: 5%;
+      transform: translateY(-50%);
+      width: 400px;
+      height: 400px;
+      pointer-events: none;
+      z-index: 0;
     }
-    .nav-links a:hover::after {
-      width: 100%;
+    
+    .circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      opacity: 0.4;
     }
-    .menu-toggle {
-      display: none;
-      background: none;
+    
+    .circle-1 {
+      width: 100px;
+      height: 100px;
+      animation: circleExpand 8s ease-in-out infinite;
+    }
+    
+    .circle-2 {
+      width: 180px;
+      height: 180px;
+      animation: circleExpand 8s ease-in-out infinite 0.5s;
+    }
+    
+    .circle-3 {
+      width: 260px;
+      height: 260px;
+      animation: circleExpand 8s ease-in-out infinite 1s;
+    }
+    
+    .circle-4 {
+      width: 340px;
+      height: 340px;
+      animation: circleExpand 8s ease-in-out infinite 1.5s;
+    }
+    
+    /* Center dot */
+    .circle-center {
+      width: 8px;
+      height: 8px;
+      background: var(--text-tertiary);
       border: none;
-      font-size: 1.8rem;
-      color: var(--text);
-      cursor: pointer;
+      opacity: 0.6;
+      animation: centerPulse 2s ease-in-out infinite;
     }
-    @media (max-width: 720px) {
-      .menu-toggle {
-        display: block;
-      }
-      .nav-links {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: rgba(0,0,0,0.92);
-        padding: 1.4rem 3rem;
-        gap: 1.2rem;
-        transform: translateY(-120%);
-        opacity: 0;
-        pointer-events: none;
-        transition: var(--transition);
-      }
-      .nav-links.open {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
+    
+    @keyframes circleExpand {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.6; }
     }
-    .wrapper {
-      width: 90%;
-      max-width: 800px;
-      margin: 7rem auto 0 auto;
-      animation: fadeIn .5s both;
+    
+    @keyframes centerPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.3); }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+    
+    @media (max-width: 1100px) {
+      .contact-circles { display: none; }
     }
-    header.page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header.page-header h1 {
-      font-family: "Orbitron", sans-serif;
-      font-size: clamp(2.2rem,5vw,3.2rem);
-      color: var(--accent);
-      margin-bottom: .5rem;
-      text-shadow: 0 0 10px rgba(0,170,255,.5);
-    }
-    header.page-header p {
-      font-size: 1.1rem;
-      font-weight: 500;
-      opacity: .85;
-    }
-    form.contact-form {
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 2rem;
+    
+    .contact-grid {
       display: grid;
-      gap: 1.4rem;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
     }
-    .field-group {
+    
+    @media (max-width: 900px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-10);
+      }
+    }
+    
+    .contact-intro h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      margin-bottom: var(--space-4);
+    }
+    
+    .contact-intro p {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-8);
+    }
+    
+    .contact-links {
       display: flex;
       flex-direction: column;
+      gap: var(--space-4);
     }
-    .field-group label {
-      margin-bottom: .5rem;
-      font-weight: 600;
-    }
-    .field-group input,
-    .field-group textarea {
-      padding: .8rem;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: .6rem;
-      font-size: 1rem;
-      background: rgba(0,0,0,.3);
-      color: var(--text);
-      transition: var(--transition);
-    }
-    .field-group input:focus,
-    .field-group textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 6px rgba(0,170,255,.4);
-    }
-    .send-btn {
-      background: var(--accent);
-      color: #000;
-      padding: .9rem 1.6rem;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 1.05rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .send-btn:hover {
-      background: #0088dd;
-      box-shadow: 0 0 10px rgba(0,170,255,.4);
-    }
-    .success-message {
-      display: none;
-      font-size: 1rem;
-      color: #7cff9c;
-      text-shadow: 0 0 12px #7cff9c;
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .success-message.show {
-      display: block;
-      animation: popIn 0.6s ease-out forwards,
-                 glowPulse 1.5s ease-in-out 0.6s infinite alternate;
-    }
-    @keyframes popIn {
-      0%   { opacity: 0; transform: scale(0.5); }
-      80%  { opacity: 1; transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    @keyframes glowPulse {
-      from { text-shadow: 0 0 12px #7cff9c; }
-      to   { text-shadow: 0 0 24px #7cff9c; }
-    }
-    .error-message {
-      text-align: center;
-      margin-top: 1rem;
-      font-weight: 600;
-      color: #ff5c5c;
-      display: none;
-    }
-    #submitOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
+    
+    .contact-link {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 2000;
+      gap: var(--space-4);
+      padding: var(--space-4) var(--space-5);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      transition: all var(--duration-fast) var(--ease-out);
     }
-    .tech-loader {
+    
+    .contact-link:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .contact-link-icon {
+      font-size: var(--text-lg);
+      color: var(--text-tertiary);
+    }
+    
+    .contact-link-text {
+      flex: 1;
+    }
+    
+    .contact-link-label {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: 2px;
+    }
+    
+    .contact-link-value {
+      font-weight: var(--weight-medium);
+      font-size: var(--text-sm);
+    }
+    
+    .contact-link-arrow {
+      color: var(--text-tertiary);
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+    
+    .contact-link:hover .contact-link-arrow {
+      transform: translateX(4px);
+    }
+    
+    /* Availability */
+    .availability-note {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      background: rgba(22, 163, 74, 0.06);
+      border: 1px solid rgba(22, 163, 74, 0.15);
+      border-radius: var(--radius-lg);
+      margin-top: var(--space-6);
+    }
+    
+    .availability-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .availability-text {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    
+    /* Form */
+    .contact-form-wrapper {
+      padding: var(--space-8);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .form-header {
+      margin-bottom: var(--space-6);
+    }
+    
+    .form-header h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+    
+    .form-header p {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+    
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+    
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-submit {
+      margin-top: var(--space-2);
+    }
+    
+    /* Status */
+    .form-status {
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
       text-align: center;
-      color: var(--accent);
+      font-size: var(--text-sm);
+      display: none;
     }
-    .tech-loader svg {
-      width: 120px;
-      height: 120px;
-      transform: rotate(-90deg);
+    
+    .form-status.success {
+      display: block;
+      background: rgba(22, 163, 74, 0.08);
+      border: 1px solid rgba(22, 163, 74, 0.2);
+      color: var(--success);
     }
-    .tech-loader circle {
-      fill: none;
-      stroke: var(--accent);
-      stroke-width: 4;
-      stroke-dasharray: 283;
-      stroke-dashoffset: 283;
-      animation: dash 1.2s ease-in-out forwards;
+    
+    .form-status.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #dc2626;
     }
-    .loader-text {
-      margin-top: 1rem;
-      font-weight: 600;
-      opacity: 0;
-      animation: fadeIn 0.6s 1.2s forwards;
-    }
-    @keyframes dash {
-      to { stroke-dashoffset: 0; }
+    
+    /* Decorative */
+    .decorative-line {
+      width: 60px;
+      height: 1px;
+      background: var(--border-hover);
+      margin-bottom: var(--space-6);
     }
   </style>
 </head>
 <body>
-  <div id="tsparticles"></div>
-
-  <nav id="navbar">
-    <div class="brand">Pruitt Colon</div>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="nemo-server.html">Showcase</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="resume.html" target="_blank">Resume</a></li>
-      <li><a href="skills.html">Skills</a></li>
-      <li><a href="projects.html">Projects</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
-
-  <div class="wrapper">
-    <header class="page-header">
-      <h1>Contact Me</h1>
-      <p>Let’s build something great together</p>
-    </header>
-
-    <form id="contactForm"
-          class="contact-form"
-          action="https://api.web3forms.com/submit"
-          method="POST">
-      <input type="hidden"
-             name="access_key"
-             value="fd000586-0b1f-424f-b6ad-f1546ca00190">
-
-      <div class="field-group">
-        <label for="name">Name</label>
-        <input type="text"
-               name="name"
-               id="name"
-               required
-               placeholder="Your Name">
-      </div>
-
-      <div class="field-group">
-        <label for="email">Email</label>
-        <input type="email"
-               name="email"
-               id="email"
-               required
-               placeholder="you@example.com">
-      </div>
-
-      <div class="field-group">
-        <label for="message">Message</label>
-        <textarea name="message"
-                  id="message"
-                  rows="5"
-                  required
-                  placeholder="What opportunity would you like to discuss?"></textarea>
-      </div>
-
-      <button type="submit" class="send-btn">Send Message</button>
-
-      <div class="success-message" id="success-message">
-        Thank you for your message and I will respond to you shortly!
-      </div>
-      <div class="error-message" id="error-message">
-        Oops! Something went wrong.
-      </div>
-    </form>
-
-    <div id="submitOverlay">
-      <div class="tech-loader">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45"/>
-        </svg>
-        <div class="loader-text">Sending...</div>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Pruitt Colon</a>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="architecture.html" class="nav-link">Architecture</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
       </div>
     </div>
-  </div>
-   </div>
-  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
-   </div>
+  </nav>
+
+  <main>
+    <section class="contact-hero">
+      <!-- Animated Concentric Circles -->
+      <div class="contact-circles" aria-hidden="true">
+        <div class="circle circle-center"></div>
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+        <div class="circle circle-4"></div>
+      </div>
+      
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-intro reveal">
+            <div class="decorative-line"></div>
+            <h1>Get in Touch</h1>
+            <p>Interested in discussing AI engineering opportunities or technical collaborations? I'd love to hear from you.</p>
+            
+            <div class="contact-links">
+              <a href="mailto:pruittcolon@outlook.com" class="contact-link">
+                <span class="contact-link-icon">@</span>
+                <div class="contact-link-text">
+                  <div class="contact-link-label">Email</div>
+                  <div class="contact-link-value">pruittcolon@outlook.com</div>
+                </div>
+                <span class="contact-link-arrow">→</span>
+              </a>
+              
+              <a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" target="_blank" class="contact-link">
+                <span class="contact-link-icon">in</span>
+                <div class="contact-link-text">
+                  <div class="contact-link-label">LinkedIn</div>
+                  <div class="contact-link-value">linkedin.com/in/pruitt-colon-b3a73128a</div>
+                </div>
+                <span class="contact-link-arrow">→</span>
+              </a>
+              
+              <a href="https://github.com/pruittcolon" target="_blank" class="contact-link">
+                <span class="contact-link-icon">&lt;/&gt;</span>
+                <div class="contact-link-text">
+                  <div class="contact-link-label">GitHub</div>
+                  <div class="contact-link-value">github.com/pruittcolon</div>
+                </div>
+                <span class="contact-link-arrow">→</span>
+              </a>
+            </div>
+            
+            <div class="availability-note">
+              <span class="availability-dot"></span>
+              <span class="availability-text">Currently available for full-time opportunities</span>
+            </div>
+          </div>
+          
+          <div class="contact-form-wrapper reveal">
+            <div class="form-header">
+              <h2>Send a Message</h2>
+              <p>I typically respond within 24 hours</p>
+            </div>
+            
+            <form class="contact-form" action="https://api.web3forms.com/submit" method="POST" id="contact-form">
+              <input type="hidden" name="access_key" value="fd000586-0b1f-424f-b6ad-f1546ca00190">
+              <input type="hidden" name="subject" value="Portfolio Contact Form">
+              <input type="hidden" name="redirect" value="">
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="name">Name</label>
+                  <input type="text" class="form-input" id="name" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="email">Email</label>
+                  <input type="email" class="form-input" id="email" name="email" required placeholder="you@company.com">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="company">Company (optional)</label>
+                <input type="text" class="form-input" id="company" name="company" placeholder="Your company">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="message">Message</label>
+                <textarea class="form-textarea" id="message" name="message" required placeholder="Tell me about the opportunity or project..."></textarea>
+              </div>
+              
+              <div class="form-submit">
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Send Message</button>
+              </div>
+              
+              <div class="form-status" id="form-status"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-text">2025 Pruitt Colon</p>
+  </footer>
+
+  <script src="js/main.js"></script>
   <script>
-    const nav = document.getElementById('navbar');
-    window.addEventListener('scroll', () =>
-      nav.classList.toggle('scrolled', window.scrollY > 60)
-    );
-
-    document.getElementById('menu-toggle').addEventListener('click', () =>
-      document.getElementById('nav-links').classList.toggle('open')
-    );
-
-    tsParticles.load('tsparticles', {
-      fullScreen: { enable: true, zIndex: -1 },
-      fpsLimit: 60,
-      detectRetina: true,
-      particles: {
-        number: { value: 70, density: { enable: true, area: 900 } },
-        color: { value: '#00aaff' },
-        shape: { type: 'circle' },
-        opacity: { value: 0.5, random: true },
-        size: { value: { min: 1, max: 4 } },
-        links: {
-          enable: true,
-          distance: 130,
-          color: '#00aaff',
-          opacity: 0.35,
-          width: 1
-        },
-        move: { enable: true, speed: 1.2, outModes: { default: 'bounce' } }
-      }
-    });
-
-    const form       = document.getElementById('contactForm');
-    const overlay    = document.getElementById('submitOverlay');
-    const successMsg = document.getElementById('success-message');
-    const errorMsg   = document.getElementById('error-message');
-
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-      // no early hide of success message or error message here
-      errorMsg.style.display = 'none';
-
-      overlay.style.display = 'flex';
-
-      const data = new FormData(form);
+    // Form submission
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+      
       try {
-        const res = await fetch(form.action, {
+        const response = await fetch(form.action, {
           method: 'POST',
-          body: data
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
         });
-        await new Promise(r => setTimeout(r, 1800));
-        overlay.style.display = 'none';
-
-        if (res.ok) {
+        
+        if (response.ok) {
+          status.className = 'form-status success';
+          status.textContent = 'Message sent successfully! I\'ll get back to you soon.';
           form.reset();
-          successMsg.classList.add('show');
         } else {
-          errorMsg.style.display = 'block';
+          throw new Error('Failed to send');
         }
-      } catch (e) {
-        overlay.style.display = 'none';
-        errorMsg.style.display = 'block';
+      } catch (err) {
+        status.className = 'form-status error';
+        status.textContent = 'Something went wrong. Please try emailing directly.';
       }
+      
+      submitBtn.textContent = 'Send Message';
+      submitBtn.disabled = false;
     });
   </script>
 </body>

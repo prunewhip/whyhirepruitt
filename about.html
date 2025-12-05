@@ -1,302 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About • Why Hire Pruitt</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Pruitt Colon</title>
+  <meta name="description" content="AI Engineer with a Master's in Software Engineering. Building production ML systems.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/design-system.css">
   <style>
-    :root {
-      --bg-1: #0d0d0e;
-      --bg-2: #11131a;
-      --accent: #00aaff;
-      --text: #f1f5ff;
-      --card-bg: rgba(255, 255, 255, 0.06);
-      --card-border: rgba(255, 255, 255, 0.2);
-      --radius: 1rem;
-      --shadow: 0 0 20px rgba(0, 170, 255, 0.3);
-      --transition: all 0.3s ease;
+    /* About Page - Clean Two-Column Layout */
+    /* Background inherited from design-system.css --bg-primary: #faf9f7 */
+    
+    .about-hero {
+      padding: var(--space-32) 0 var(--space-24);
+      min-height: 100vh;
+      background: var(--bg-primary); /* Soft cream background */
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
-      background-size: 200% 200%;
-      animation: gradientBG 12s ease infinite;
-      color: var(--text);
-      overflow-x: hidden;
-    }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    #tsparticles { position: fixed; inset: 0; z-index: -1; }
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 1rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(12px);
-      background: rgba(0, 0, 0, 0.25);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      transition: var(--transition);
-      z-index: 1000;
-    }
-    nav.scrolled {
-      padding: 0.6rem 3rem;
-      background: rgba(0, 0, 0, 0.55);
-    }
-    .brand {
-      font-family: "Orbitron", sans-serif;
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: 0.03em;
-    }
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 2rem;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 600;
-      position: relative;
-    }
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -4px;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: var(--transition);
-    }
-    .nav-links a:hover::after { width: 100%; }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      color: var(--text);
-      cursor: pointer;
-    }
-    @media (max-width: 720px) {
-      .menu-toggle { display: block; }
-      .nav-links {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: rgba(0, 0, 0, 0.9);
-        padding: 1.5rem 3rem;
-        gap: 1.2rem;
-        transform: translateY(-120%);
-        opacity: 0;
-        pointer-events: none;
-        transition: var(--transition);
-      }
-      .nav-links.open {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
-    }
-    .wrapper {
-      width: 90%;
-      max-width: 1100px;
-      margin: 7rem auto 0 auto;
-      animation: fadeIn 0.5s ease both;
-    }
-    header.page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header.page-header h1 {
-      font-family: "Orbitron", sans-serif;
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
-    }
-    header.page-header p {
-      font-size: 1.1rem;
-      font-weight: 500;
-      opacity: 0.8;
-    }
-   .photo {
-  width: 260px;
-  height: 260px;
-  border-radius: var(--radius);
-  object-fit: cover;
-  object-position: top; 
-  box-shadow: var(--shadow);
-  border: 2px solid var(--accent);
-  margin: 2rem auto;
-  display: block;
-  transition: var(--transition);
-}
-    .photo:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 60px rgba(0, 170, 255, 0.5);
-    }
-    section.bio {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 2rem 2.5rem;
-      margin-bottom: 2.5rem;
-      text-align: center;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border);
-    }
-    section.bio h2 {
-      font-size: 1.8rem;
-      color: var(--accent);
-      margin-bottom: 1rem;
-      font-family: "Orbitron", sans-serif;
-    }
-    section.bio p {
-      font-size: 1.05rem;
-      margin-bottom: 1rem;
-      line-height: 1.7;
-    }
-    .cta-row {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .cta-btn {
-      background: var(--accent);
-      color: #000;
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: var(--radius);
-      font-weight: 700;
-      font-size: 1.05rem;
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    .cta-btn:hover {
-      background: #0088dd;
-      box-shadow: 0 0 10px rgba(0, 170, 255, 0.4);
-    }
-    section.values {
+    
+    .about-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1.8rem;
-      margin-bottom: 3rem;
+      grid-template-columns: 320px 1fr;
+      gap: var(--space-12);
+      align-items: start;
     }
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
+    
+    @media (max-width: 900px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+      }
+    }
+    
+    /* Left Column - Photo & Links */
+    .about-photo {
+      position: sticky;
+      top: var(--space-24);
+    }
+    
+    @media (max-width: 900px) {
+      .about-photo {
+        position: static;
+        max-width: 280px;
+        margin: 0 auto;
+      }
+    }
+    
+    .photo-wrapper {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-secondary);
+    }
+    
+    .photo-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .photo-links {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    
+    .photo-link {
+      flex: 1;
+      padding: var(--space-3);
       text-align: center;
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(8px);
-      transition: var(--transition);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-fast) var(--ease-out);
     }
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 24px rgba(0, 170, 255, 0.2);
+    
+    .photo-link:hover {
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+      background: var(--surface);
     }
-    .card h3 {
-      margin-bottom: 0.5rem;
-      font-size: 1.2rem;
-      color: var(--accent);
-      font-family: "Orbitron", sans-serif;
+    
+    /* Right Column - Content */
+    .about-content {
+      max-width: 600px;
     }
-    .card p { font-size: 1rem; }
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding: 1.5rem 0;
-      color: #aaa;
-      font-size: 0.9rem;
+    
+    @media (max-width: 900px) {
+      .about-content {
+        max-width: 100%;
+      }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    
+    .about-content h1 {
+      font-size: var(--text-4xl);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      margin-bottom: var(--space-2);
+    }
+    
+    @media (max-width: 480px) {
+      .about-content h1 {
+        font-size: var(--text-3xl);
+      }
+    }
+    
+    .about-role {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+    }
+    
+    .about-bio {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+    }
+    
+    .about-bio strong {
+      color: var(--text-primary);
+      font-weight: var(--weight-semibold);
+    }
+    
+    /* Experience Section */
+    .experience-section {
+      margin-top: var(--space-12);
+      padding-top: var(--space-10);
+      border-top: 1px solid var(--border);
+    }
+    
+    .section-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-6);
+    }
+    
+    .experience-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    
+    .experience-item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: var(--space-4);
+    }
+    
+    @media (max-width: 640px) {
+      .experience-item {
+        grid-template-columns: 1fr;
+        gap: var(--space-1);
+      }
+    }
+    
+    .experience-date {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+    
+    .experience-title {
+      font-weight: var(--weight-medium);
+      margin-bottom: 2px;
+    }
+    
+    .experience-company {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    
+    /* Education */
+    .education-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-top: var(--space-8);
+    }
+    
+    @media (max-width: 640px) {
+      .education-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .education-card {
+      padding: var(--space-5);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--bg-elevated);
+    }
+    
+    .education-degree {
+      font-weight: var(--weight-medium);
+      margin-bottom: 2px;
+    }
+    
+    .education-school {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+    
+    /* Skills */
+    .skills-section {
+      margin-top: var(--space-12);
+      padding-top: var(--space-10);
+      border-top: 1px solid var(--border);
+    }
+    
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+    }
+    
+    @media (max-width: 640px) {
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .skills-category h4 {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-3);
+    }
+    
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    
+    .skill-tag {
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
     }
   </style>
 </head>
 <body>
-  <div id="tsparticles"></div>
-  <nav id="navbar">
-    <div class="brand">Pruitt Colon</div>
-    <button class="menu-toggle" id="menu-toggle">☰</button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="nemo-server.html">Showcase</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="resume.html">Resume</a></li>
-      <li><a href="skills.html">Skills</a></li>
-      <li><a href="projects.html">Projects</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Pruitt Colon</a>
+      <button class="nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="architecture.html" class="nav-link">Architecture</a>
+        <a href="about.html" class="nav-link active">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+    </div>
   </nav>
-  <div class="wrapper">
-    <header class="page-header">
-      <h1>About Me</h1>
-      <p>AI Engineer • Full-Stack Developer • IoT Systems Architect</p>
-    </header>
-<img src="assets/profile.jpeg" alt="Pruitt Colon, IT professional specializing in network engineering and automation, smiling at a workbench" class="photo" />
-    <section class="bio">
-      <h2 style="font-size: 1.8rem;">My Journey: Telecom to Software Engineering to AI</h2>
-      <p>I began in fiber optics and telecom, where I earned my Lean Six Sigma Green Belt and learned to think in systems. Lean methodology taught me to identify bottlenecks, eliminate waste, and optimize complex workflows - skills that became the foundation of how I approach software architecture. Watching senior engineers solve impossible network issues sparked my transition into software engineering - I wanted to build the tools that solve those problems at scale.</p>
-      
-      <p>That spark led me to earn a <strong>Master's in Software Engineering (AI Specialization) from Western Governors University</strong> and a <strong>Bachelor's in Computer Science</strong>. I apply lean systems thinking to software development - breaking down complex AI systems into efficient, scalable components with minimal coupling and maximum value delivery.</p>
-      
-      <p>Today, I architect distributed AI platforms - most notably <strong>NeMo AI Ecosystem</strong>, a complete voice-controlled life automation system with 12,000+ lines of Python code. It implements a 6-microservice architecture (API Gateway, Transcription, Gemma AI, RAG, Emotion, GPU Coordinator) that integrates AR wearables (Even Reality glasses), IoT hubs, smart home devices, and enterprise AI (NeMo ASR, Gemma LLM, RAG) into a unified platform. I specialize in microservices, PyTorch, FastAPI, Docker, GPU coordination, and IoT orchestration for real-world deployment.</p>
-      
-      <div class="cta-row">
-        <a href="nemo-server.html" class="cta-btn">View NeMo Ecosystem</a>
-        <a href="resume.html" class="cta-btn">View Resume</a>
+
+  <main>
+    <section class="about-hero">
+      <div class="container">
+        <div class="about-grid">
+          <!-- Left Column - Photo -->
+          <aside class="about-photo reveal">
+            <div class="photo-wrapper">
+              <img src="assets/Profile_Image.png" alt="Pruitt Colon">
+            </div>
+            <div class="photo-links">
+              <a href="https://github.com/pruittcolon" target="_blank" class="photo-link">GitHub</a>
+              <a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" target="_blank" class="photo-link">LinkedIn</a>
+            </div>
+          </aside>
+          
+          <!-- Right Column - Content -->
+          <div class="about-content">
+            <div class="reveal">
+              <h1>Pruitt Colon</h1>
+              <p class="about-role">AI Engineer · Systems Architect</p>
+            </div>
+            
+            <div class="reveal">
+              <p class="about-bio">
+                I'm an AI Engineer with a <strong>Master's in Software Engineering (AI Specialization)</strong> from Western Governors University and 8+ years of systems engineering experience.
+              </p>
+              <p class="about-bio">
+                My flagship project, the <strong>NeMo AI Platform</strong>, represents 60,000+ lines of production Python code with 10 services, 29 ML engines, real-time transcription, RAG-powered context and intelligent GPU coordination on a single consumer GPU.
+              </p>
+              <p class="about-bio">
+                I combine deep technical expertise in <strong>PyTorch, NeMo, FastAPI, and Docker</strong> with a security-first mindset. My background in telecommunications provides lean systems thinking and precision engineering.
+              </p>
+            </div>
+            
+            <!-- Experience -->
+            <section class="experience-section reveal">
+              <p class="section-label">Experience</p>
+              <div class="experience-list">
+                <div class="experience-item">
+                  <span class="experience-date">2024 - 2025</span>
+                  <div>
+                    <h3 class="experience-title">Network Engineer</h3>
+                    <p class="experience-company">BTI Solutions</p>
+                  </div>
+                </div>
+                <div class="experience-item">
+                  <span class="experience-date">2022 - 2024</span>
+                  <div>
+                    <h3 class="experience-title">Fiber Optic Technician</h3>
+                    <p class="experience-company">GCOMM Tech / Wyyerd Fiber</p>
+                  </div>
+                </div>
+                <div class="experience-item">
+                  <span class="experience-date">2016 - 2020</span>
+                  <div>
+                    <h3 class="experience-title">Integration Technician</h3>
+                    <p class="experience-company">SubCom</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Education Cards -->
+              <div class="education-grid">
+                <div class="education-card">
+                  <p class="education-degree">M.S. Software Engineering</p>
+                  <p class="education-school">Western Governors University · AI Specialization</p>
+                </div>
+                <div class="education-card">
+                  <p class="education-degree">B.S. Computer Science</p>
+                  <p class="education-school">University of the People</p>
+                </div>
+              </div>
+            </section>
+            
+            <!-- Skills -->
+            <section class="skills-section reveal">
+              <p class="section-label">Technical Stack</p>
+              
+              <div class="skills-grid">
+                <div class="skills-category">
+                  <h4>AI / ML</h4>
+                  <div class="skills-list">
+                    <span class="skill-tag">PyTorch</span>
+                    <span class="skill-tag">NVIDIA NeMo</span>
+                    <span class="skill-tag">Hugging Face</span>
+                    <span class="skill-tag">FAISS</span>
+                    <span class="skill-tag">llama.cpp</span>
+                    <span class="skill-tag">scikit-learn</span>
+                  </div>
+                </div>
+                
+                <div class="skills-category">
+                  <h4>Models</h4>
+                  <div class="skills-list">
+                    <span class="skill-tag">Parakeet ASR</span>
+                    <span class="skill-tag">TitaNet</span>
+                    <span class="skill-tag">Gemma 3</span>
+                    <span class="skill-tag">DistilRoBERTa</span>
+                    <span class="skill-tag">MiniLM</span>
+                  </div>
+                </div>
+                
+                <div class="skills-category">
+                  <h4>Backend</h4>
+                  <div class="skills-list">
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">FastAPI</span>
+                    <span class="skill-tag">PostgreSQL</span>
+                    <span class="skill-tag">Redis</span>
+                    <span class="skill-tag">WebSocket</span>
+                  </div>
+                </div>
+                
+                <div class="skills-category">
+                  <h4>Infrastructure</h4>
+                  <div class="skills-list">
+                    <span class="skill-tag">Docker</span>
+                    <span class="skill-tag">Kubernetes</span>
+                    <span class="skill-tag">CUDA</span>
+                    <span class="skill-tag">Linux</span>
+                    <span class="skill-tag">Nginx</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
     </section>
-    <section class="values">
-      <div class="card"><h3>Architecture</h3><p>I design scalable systems with microservice patterns, GPU optimization, and security-first principles.</p></div>
-      <div class="card"><h3>AI/ML Engineering</h3><p>I build production ML pipelines with PyTorch, Transformers, NeMo, and CUDA acceleration.</p></div>
-      <div class="card"><h3>IoT & Integration</h3><p>I orchestrate complex systems - AR glasses, smart homes, mobile apps, and cloud APIs working as one.</p></div>
-      <div class="card"><h3>Product Development</h3><p>I ship enterprise-grade software with testing, security, documentation, and deployment automation.</p></div>
-    </section>
-  </div>
-  <footer>© 2025 Pruitt Colon | whyhirepruitt.dev</footer>
-  <script>
-    const nav = document.getElementById("navbar");
-    window.addEventListener("scroll", () => nav.classList.toggle("scrolled", window.scrollY > 60));
-    document.getElementById("menu-toggle").addEventListener("click", () => {
-      document.getElementById("nav-links").classList.toggle("open");
-    });
-    tsParticles.load("tsparticles", {
-      fullScreen: { enable:true, zIndex:-1 },
-      fpsLimit:60,
-      detectRetina:true,
-      particles:{
-        number:{value:70,density:{enable:true,area:900}},
-        color:{value:"#00aaff"},
-        shape:{type:"circle"},
-        opacity:{value:0.5,random:true},
-        size:{value:{min:1,max:4}},
-        links:{enable:true,distance:130,color:"#00aaff",opacity:0.4,width:1},
-        move:{enable:true,speed:1.2,outModes:{default:"bounce"}}
-      }
-    });
-  </script>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-text">© 2025 Pruitt Colon</p>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
