@@ -1,0 +1,85 @@
+# Kustomize Configuration
+# k8s/base/kustomization.yaml
+#
+# Environment management:
+# - Base configuration sharing
+# - Environment overlays
+# - Secret references
+# - Resource generation
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nemo-system
+
+# Common labels for all resources
+commonLabels:
+  app.kubernetes.io/name: nemo-server
+  app.kubernetes.io/part-of: ml-platform
+
+# Resources to include
+resources:
+  - namespace.yaml
+  - deployments.yaml
+  - services.yaml
+  - ingress.yaml
+  - configmaps.yaml
+  - nvidia-device-plugin.yaml
+
+# Config map generator
+configMapGenerator:
+  - name: app-config
+    literals:
+      - LOG_LEVEL=INFO
+      - REDIS_HOST=redis-service
+      - REDIS_PORT=6379
+      - ML_SERVICE_URL=http://ml-service:8000
+      - GEMMA_SERVICE_URL=http://gemma-service:8000
+
+# Secret references (values from external)
+secretGenerator:
+  - name: app-secrets
+    type: Opaque
+    files:
+      - secrets/jwt-secret-key
+      - secrets/db-encryption-key
+      - secrets/redis-password
+
+# Image tags for all deployments
+images:
+  - name: nemo/api-gateway
+    newTag: v1.2.0
+  - name: nemo/ml-service
+    newTag: v1.2.0
+  - name: nemo/gemma-service
+    newTag: v1.2.0
+
+# Patches for environment-specific configuration
+patchesStrategicMerge:
+  - patches/resource-limits.yaml
+
+---
+# k8s/overlays/production/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+namespace: nemo-production
+
+# Production-specific patches
+patchesStrategicMerge:
+  - production-resources.yaml
+
+# Production replicas
+replicas:
+  - name: api-gateway
+    count: 3
+  - name: ml-service
+    count: 2
+
+# Production image tags
+images:
+  - name: nemo/api-gateway
+    newTag: v1.2.0-prod

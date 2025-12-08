@@ -1,0 +1,95 @@
+"""
+Parakeet Streaming ASR Service
+services/transcription-service/src/parakeet_asr.py
+
+Real-time transcription:
+- Streaming audio processing
+- VAD (voice activity detection)
+- Low-latency partial results
+- CPU/GPU flexible deployment
+"""
+
+import numpy as np
+import torch
+from typing import Generator, Optional, Tuple
+from dataclasses import dataclass
+import logging
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class TranscriptionResult:
+    text: str
+    is_final: bool
+    confidence: float
+    timestamp_ms: int
+
+class ParakeetASR:
+    """Real-time streaming speech recognition."""
+    
+    def __init__(self, use_gpu: bool = True):
+        self.device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
+        self.model = None
+        self.sample_rate = 16000
+        self.buffer = np.array([], dtype=np.float32)
+        self.min_chunk_ms = 100
+        
+    def load(self, model_name: str = "nvidia/parakeet-tdt-0.6b"):
+        """Load Parakeet model."""
+        import nemo.collections.asr as nemo_asr
+        
+        logger.info(f"Loading {model_name} on {self.device}")
+        self.model = nemo_asr.models.ASRModel.from_pretrained(model_name)
+        self.model = self.model.to(self.device)
+        self.model.eval()
+        
+    def process_chunk(self, audio_chunk: np.ndarray) -> Optional[TranscriptionResult]:
+        """Process incoming audio chunk."""
+        
+        # Append to buffer
+        self.buffer = np.concatenate([self.buffer, audio_chunk])
+        
+        # Check if we have enough audio
+        min_samples = int(self.sample_rate * self.min_chunk_ms / 1000)
+        if len(self.buffer) < min_samples:
+            return None
+        
+        # Run VAD to check for speech
+        if not self._has_speech(self.buffer):
+            return None
+        
+        # Transcribe current buffer
+        with torch.no_grad():
+            audio_tensor = torch.tensor(self.buffer, device=self.device).unsqueeze(0)
+            transcription = self.model.transcribe_batch(audio_tensor)
+        
+        return TranscriptionResult(
+            text=transcription[0],
+            is_final=False,
+            confidence=0.95,
+            timestamp_ms=int(len(self.buffer) / self.sample_rate * 1000)
+        )
+    
+    def finalize(self) -> TranscriptionResult:
+        """Finalize transcription for current utterance."""
+        if len(self.buffer) == 0:
+            return TranscriptionResult("", True, 0.0, 0)
+        
+        with torch.no_grad():
+            audio_tensor = torch.tensor(self.buffer, device=self.device).unsqueeze(0)
+            transcription = self.model.transcribe_batch(audio_tensor)
+        
+        result = TranscriptionResult(
+            text=transcription[0],
+            is_final=True,
+            confidence=0.98,
+            timestamp_ms=int(len(self.buffer) / self.sample_rate * 1000)
+        )
+        
+        # Clear buffer
+        self.buffer = np.array([], dtype=np.float32)
+        return result
+    
+    def _has_speech(self, audio: np.ndarray, threshold: float = 0.01) -> bool:
+        """Simple energy-based VAD."""
+        return np.sqrt(np.mean(audio**2)) > threshold

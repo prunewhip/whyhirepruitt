@@ -1,0 +1,93 @@
+"""
+DistilRoBERTa Emotion Analysis Service
+services/emotion-service/src/emotion_analyzer.py
+
+Emotion detection features:
+- Multi-dimensional emotion classification
+- Sentiment scoring
+- Valence/arousal prediction
+- Conversation context awareness
+"""
+
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import numpy as np
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+import logging
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class EmotionResult:
+    primary_emotion: str
+    confidence: float
+    emotions: Dict[str, float]
+    sentiment: float  # -1 to 1
+    valence: float    # pleasantness
+    arousal: float    # intensity
+
+class EmotionAnalyzer:
+    """DistilRoBERTa-based emotion classification."""
+    
+    EMOTION_LABELS = [
+        'admiration', 'amusement', 'anger', 'annoyance', 'approval',
+        'caring', 'confusion', 'curiosity', 'desire', 'disappointment',
+        'disapproval', 'disgust', 'embarrassment', 'excitement', 'fear',
+        'gratitude', 'grief', 'joy', 'love', 'nervousness',
+        'neutral', 'optimism', 'pride', 'realization', 'relief',
+        'remorse', 'sadness', 'surprise'
+    ]
+    
+    def __init__(self, model_name: str = "j-hartmann/emotion-english-distilroberta-base"):
+        self.model_name = model_name
+        self.model = None
+        self.tokenizer = None
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+    def load(self):
+        """Load emotion classification model."""
+        logger.info(f"Loading emotion model: {self.model_name}")
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name)
+        self.model = self.model.to(self.device)
+        self.model.eval()
+        
+    @torch.no_grad()
+    def analyze(self, text: str) -> EmotionResult:
+        """Analyze emotions in text."""
+        inputs = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        
+        outputs = self.model(**inputs)
+        probs = torch.softmax(outputs.logits, dim=-1)[0].cpu().numpy()
+        
+        # Get emotion scores
+        emotions = {label: float(prob) for label, prob in zip(self.EMOTION_LABELS, probs)}
+        
+        # Find primary emotion
+        primary_idx = np.argmax(probs)
+        primary_emotion = self.EMOTION_LABELS[primary_idx]
+        
+        # Calculate sentiment and valence/arousal
+        sentiment = self._calculate_sentiment(emotions)
+        valence, arousal = self._calculate_va(emotions)
+        
+        return EmotionResult(
+            primary_emotion=primary_emotion,
+            confidence=float(probs[primary_idx]),
+            emotions=emotions,
+            sentiment=sentiment,
+            valence=valence,
+            arousal=arousal
+        )
+    
+    def _calculate_sentiment(self, emotions: Dict[str, float]) -> float:
+        """Map emotions to sentiment score."""
+        positive = ['joy', 'love', 'admiration', 'approval', 'gratitude', 'optimism']
+        negative = ['anger', 'disgust', 'fear', 'sadness', 'disappointment']
+        
+        pos_score = sum(emotions.get(e, 0) for e in positive)
+        neg_score = sum(emotions.get(e, 0) for e in negative)
+        
+        return float(pos_score - neg_score)

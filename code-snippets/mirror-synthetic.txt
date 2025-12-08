@@ -1,0 +1,89 @@
+"""
+Mirror Synthetic Data Engine
+services/ml-service/src/engines/mirror_engine.py
+
+Generates synthetic data that:
+- Preserves statistical properties
+- Maintains column correlations
+- Protects sensitive information
+- Supports privacy-compliant testing
+"""
+
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Optional, Any
+from dataclasses import dataclass
+from scipy import stats
+
+@dataclass
+class SyntheticResult:
+    synthetic_data: pd.DataFrame
+    quality_score: float
+    privacy_metrics: Dict[str, float]
+
+class MirrorEngine:
+    """Generates privacy-safe synthetic data preserving statistical properties."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        self.column_models = {}
+        self.correlation_matrix = None
+        
+    async def analyze(self, df: pd.DataFrame, n_samples: int = None) -> SyntheticResult:
+        """Generate synthetic data matching the input distribution."""
+        
+        if n_samples is None:
+            n_samples = len(df)
+        
+        # Step 1: Learn column distributions
+        self._fit_column_models(df)
+        
+        # Step 2: Capture correlations
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        if len(numeric_cols) > 1:
+            self.correlation_matrix = df[numeric_cols].corr()
+        
+        # Step 3: Generate synthetic columns
+        synthetic_df = self._generate_synthetic(df, n_samples)
+        
+        # Step 4: Restore correlations using Cholesky decomposition
+        if self.correlation_matrix is not None:
+            synthetic_df = self._apply_correlations(synthetic_df, numeric_cols)
+        
+        # Step 5: Calculate quality metrics
+        quality = self._calculate_quality(df, synthetic_df)
+        privacy = self._calculate_privacy(df, synthetic_df)
+        
+        return SyntheticResult(
+            synthetic_data=synthetic_df,
+            quality_score=quality,
+            privacy_metrics=privacy
+        )
+    
+    def _fit_column_models(self, df: pd.DataFrame):
+        """Fit distribution models for each column."""
+        for col in df.columns:
+            if df[col].dtype in [np.float64, np.int64]:
+                # Fit kernel density estimation
+                self.column_models[col] = {
+                    'type': 'kde',
+                    'model': stats.gaussian_kde(df[col].dropna())
+                }
+            else:
+                # Categorical: use frequency distribution
+                self.column_models[col] = {
+                    'type': 'categorical',
+                    'values': df[col].value_counts(normalize=True).to_dict()
+                }
+    
+    def _generate_synthetic(self, df: pd.DataFrame, n: int) -> pd.DataFrame:
+        """Generate synthetic samples from learned distributions."""
+        synthetic = {}
+        for col, model in self.column_models.items():
+            if model['type'] == 'kde':
+                synthetic[col] = model['model'].resample(n)[0]
+            else:
+                values = list(model['values'].keys())
+                probs = list(model['values'].values())
+                synthetic[col] = np.random.choice(values, size=n, p=probs)
+        return pd.DataFrame(synthetic)

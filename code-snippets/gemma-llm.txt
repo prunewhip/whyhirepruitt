@@ -1,0 +1,72 @@
+"""
+Gemma LLM Service - Local Language Model
+services/gemma-service/src/main.py
+
+Features:
+- 4-bit GGUF quantization via llama.cpp
+- Streaming token generation
+- Context window management
+- Multi-turn conversation handling
+"""
+
+from llama_cpp import Llama
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional, AsyncGenerator
+import asyncio
+
+app = FastAPI(title="Gemma LLM Service")
+
+class Message(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[Message]
+    max_tokens: int = 1024
+    temperature: float = 0.7
+
+class GemmaService:
+    """Local LLM inference with 4-bit quantization."""
+    
+    def __init__(self):
+        self.model = Llama(
+            model_path="/models/gemma-3-4b.gguf",
+            n_ctx=8192,           # 8K context window
+            n_gpu_layers=35,      # Offload to GPU
+            n_threads=4,          # CPU threads for non-GPU ops
+            verbose=False
+        )
+    
+    async def chat(self, messages: List[Message], **kwargs) -> str:
+        """Synchronous chat completion."""
+        response = self.model.create_chat_completion(
+            messages=[m.dict() for m in messages],
+            max_tokens=kwargs.get("max_tokens", 1024),
+            temperature=kwargs.get("temperature", 0.7)
+        )
+        return response["choices"][0]["message"]["content"]
+    
+    async def stream_chat(self, messages: List[Message]) -> AsyncGenerator[str, None]:
+        """Streaming token generation for real-time responses."""
+        response = self.model.create_chat_completion(
+            messages=[m.dict() for m in messages],
+            stream=True
+        )
+        
+        for chunk in response:
+            delta = chunk["choices"][0].get("delta", {})
+            if "content" in delta:
+                yield delta["content"]
+
+gemma = GemmaService()
+
+@app.post("/chat")
+async def chat_endpoint(request: ChatRequest):
+    """Chat with Gemma model."""
+    response = await gemma.chat(
+        request.messages,
+        max_tokens=request.max_tokens,
+        temperature=request.temperature
+    )
+    return {"response": response}

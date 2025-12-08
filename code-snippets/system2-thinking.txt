@@ -1,0 +1,109 @@
+"""
+System 2 Thinking - ML Verification Layer
+services/ml-service/src/system2_verifier.py
+
+Dual-process architecture:
+- Fast LLM responses (System 1)
+- Statistical verification (System 2)
+- Confidence scoring
+- Business insight extraction
+"""
+
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class VerificationResult:
+    llm_claim: str
+    statistical_support: float
+    is_verified: bool
+    confidence: float
+    corrections: List[str]
+    insights: List[str]
+
+class System2Verifier:
+    """Statistical verification of LLM outputs."""
+    
+    def __init__(self, titan_engine, oracle_engine):
+        self.titan = titan_engine  # Predictive analytics
+        self.oracle = oracle_engine  # Causal inference
+        
+    async def verify_claim(
+        self, 
+        claim: str,
+        data: Any,
+        context: Dict
+    ) -> VerificationResult:
+        """Verify LLM-generated claim against data."""
+        
+        # Extract testable assertions from claim
+        assertions = self._parse_assertions(claim)
+        
+        verified_count = 0
+        corrections = []
+        insights = []
+        
+        for assertion in assertions:
+            result = await self._test_assertion(assertion, data, context)
+            
+            if result['verified']:
+                verified_count += 1
+            else:
+                corrections.append(result['correction'])
+                
+            if result.get('insight'):
+                insights.append(result['insight'])
+                
+        support = verified_count / len(assertions) if assertions else 0
+        
+        return VerificationResult(
+            llm_claim=claim,
+            statistical_support=support,
+            is_verified=support > 0.8,
+            confidence=self._calculate_confidence(support, len(assertions)),
+            corrections=corrections,
+            insights=insights
+        )
+    
+    async def _test_assertion(self, assertion: Dict, data: Any, context: Dict) -> Dict:
+        """Test single assertion against data."""
+        
+        if assertion['type'] == 'correlation':
+            # Use Titan for correlation analysis
+            result = await self.titan.analyze(data, assertion['target'])
+            verified = assertion['variable'] in result.feature_importance
+            return {
+                'verified': verified,
+                'correction': None if verified else f"{assertion['variable']} has low predictive power",
+                'insight': f"Top predictor: {max(result.feature_importance, key=result.feature_importance.get)}"
+            }
+            
+        elif assertion['type'] == 'causal':
+            # Use Oracle for causal verification
+            result = await self.oracle.analyze(
+                data, 
+                treatment=assertion['cause'],
+                outcome=assertion['effect']
+            )
+            verified = result['treatment_effect'] > 0 and result['refutation_passed']
+            return {
+                'verified': verified,
+                'correction': None if verified else "Causal relationship not confirmed",
+                'insight': f"Treatment effect: {result['treatment_effect']:.3f}"
+            }
+            
+        return {'verified': False, 'correction': 'Unknown assertion type'}
+    
+    def _parse_assertions(self, claim: str) -> List[Dict]:
+        """Extract testable assertions from natural language claim."""
+        # Simplified - in production would use NLP
+        assertions = []
+        if 'increases' in claim or 'correlates' in claim:
+            assertions.append({'type': 'correlation', 'variable': 'extracted_var', 'target': 'target'})
+        if 'causes' in claim or 'leads to' in claim:
+            assertions.append({'type': 'causal', 'cause': 'cause_var', 'effect': 'effect_var'})
+        return assertions

@@ -1,0 +1,84 @@
+# Kubernetes Deployment Configuration
+# k8s/base/deployments.yaml
+#
+# Production deployment with:
+# - GPU resource requests
+# - Health probes
+# - Resource limits
+# - Volume mounts for models
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma-service
+  labels:
+    app: gemma-service
+    tier: ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gemma-service
+  template:
+    metadata:
+      labels:
+        app: gemma-service
+    spec:
+      containers:
+      - name: gemma
+        image: nemo/gemma-service:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "2"
+          limits:
+            memory: "16Gi"
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: models
+          mountPath: /models
+          readOnly: true
+        - name: cache
+          mountPath: /app/.cache
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: redis-credentials
+              key: url
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 5
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: model-storage
+      - name: cache
+        emptyDir: {}
+      nodeSelector:
+        nvidia.com/gpu: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gemma-service
+spec:
+  selector:
+    app: gemma-service
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP

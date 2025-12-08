@@ -1,0 +1,67 @@
+"""
+AES-256 Database Encryption
+services/ml-service/src/security/encryption.py
+
+Security features:
+- AES-256-GCM encryption
+- Key derivation with PBKDF2
+- Secure key storage
+- Transparent data encryption
+"""
+
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+import os
+import base64
+
+class DatabaseEncryption:
+    """AES-256-GCM encryption for SQLite databases."""
+    
+    def __init__(self, master_key: str):
+        self.key = self._derive_key(master_key)
+        self.aesgcm = AESGCM(self.key)
+    
+    def _derive_key(self, password: str, salt: bytes = None) -> bytes:
+        """Derive 256-bit key using PBKDF2-HMAC-SHA256."""
+        if salt is None:
+            salt = os.environ.get("ENCRYPTION_SALT", "nemo-default").encode()
+            
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,  # 256 bits
+            salt=salt,
+            iterations=100_000,
+            backend=default_backend()
+        )
+        return kdf.derive(password.encode())
+    
+    def encrypt(self, plaintext: bytes) -> bytes:
+        """Encrypt data with random nonce."""
+        nonce = os.urandom(12)  # 96-bit nonce
+        ciphertext = self.aesgcm.encrypt(nonce, plaintext, None)
+        return nonce + ciphertext  # Prepend nonce
+    
+    def decrypt(self, data: bytes) -> bytes:
+        """Decrypt data extracting nonce from prefix."""
+        nonce = data[:12]
+        ciphertext = data[12:]
+        return self.aesgcm.decrypt(nonce, ciphertext, None)
+    
+    def encrypt_database(self, db_path: str, output_path: str):
+        """Encrypt entire SQLite database file."""
+        with open(db_path, "rb") as f:
+            plaintext = f.read()
+            
+        encrypted = self.encrypt(plaintext)
+        
+        with open(output_path, "wb") as f:
+            f.write(encrypted)
+    
+    def decrypt_database(self, encrypted_path: str) -> bytes:
+        """Decrypt database to memory for processing."""
+        with open(encrypted_path, "rb") as f:
+            encrypted = f.read()
+            
+        return self.decrypt(encrypted)

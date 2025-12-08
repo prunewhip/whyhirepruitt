@@ -1,0 +1,79 @@
+"""
+NVIDIA NeMo Speech AI Pipeline
+services/transcription-service/src/nemo_pipeline.py
+
+Speech AI features:
+- Parakeet ASR transcription
+- TitaNet speaker verification
+- GPU-accelerated inference
+- Streaming audio processing
+"""
+
+import nemo.collections.asr as nemo_asr
+import torch
+import numpy as np
+from typing import Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+class NeMoPipeline:
+    """NVIDIA NeMo-based speech AI pipeline."""
+    
+    def __init__(self, device: str = "cuda"):
+        self.device = torch.device(device if torch.cuda.is_available() else "cpu")
+        self.asr_model = None
+        self.speaker_model = None
+        
+    def load_models(self):
+        """Load NeMo pretrained models."""
+        
+        # Load Parakeet TDT for transcription
+        logger.info("Loading Parakeet ASR model...")
+        self.asr_model = nemo_asr.models.ASRModel.from_pretrained(
+            "nvidia/parakeet-tdt-0.6b"
+        )
+        self.asr_model = self.asr_model.to(self.device)
+        self.asr_model.eval()
+        
+        # Load TitaNet for speaker verification
+        logger.info("Loading TitaNet speaker model...")
+        self.speaker_model = nemo_asr.models.EncDecSpeakerLabelModel.from_pretrained(
+            "nvidia/speakerverification_en_titanet_large"
+        )
+        self.speaker_model = self.speaker_model.to(self.device)
+        self.speaker_model.eval()
+        
+        logger.info("NeMo models loaded successfully")
+        
+    @torch.no_grad()
+    def transcribe(self, audio_path: str) -> str:
+        """Transcribe audio file to text."""
+        transcription = self.asr_model.transcribe([audio_path])
+        return transcription[0]
+    
+    @torch.no_grad()
+    def transcribe_streaming(self, audio_chunk: np.ndarray) -> str:
+        """Process streaming audio chunk."""
+        # Convert to tensor
+        audio_tensor = torch.tensor(audio_chunk, dtype=torch.float32)
+        audio_tensor = audio_tensor.unsqueeze(0).to(self.device)
+        
+        # Get logits and decode
+        logits = self.asr_model.forward(audio_tensor)
+        transcription = self.asr_model.decoding.decode(logits)
+        return transcription[0]
+    
+    @torch.no_grad()
+    def get_speaker_embedding(self, audio_path: str) -> np.ndarray:
+        """Extract speaker embedding for verification."""
+        embedding = self.speaker_model.get_embedding(audio_path)
+        return embedding.cpu().numpy()
+    
+    def verify_speaker(self, audio1: str, audio2: str, threshold: float = 0.7) -> bool:
+        """Verify if two audio samples are from same speaker."""
+        emb1 = self.get_speaker_embedding(audio1)
+        emb2 = self.get_speaker_embedding(audio2)
+        
+        similarity = np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2))
+        return bool(similarity > threshold)

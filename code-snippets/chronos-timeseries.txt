@@ -1,0 +1,92 @@
+"""
+Chronos Time Series Forecasting Engine
+services/ml-service/src/engines/chronos_engine.py
+
+Temporal analysis features:
+- Prophet-based forecasting
+- Seasonality detection
+- Trend analysis
+- Anomaly detection in time series
+"""
+
+import pandas as pd
+import numpy as np
+from prophet import Prophet
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+
+@dataclass
+class ForecastResult:
+    forecast: pd.DataFrame
+    trend: pd.Series
+    seasonality: Dict[str, pd.Series]
+    anomalies: List[int]
+
+class ChronosEngine:
+    """Time series forecasting with automatic seasonality detection."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        self.model = None
+        
+    async def analyze(
+        self, 
+        df: pd.DataFrame, 
+        date_col: str,
+        target_col: str,
+        periods: int = 30
+    ) -> ForecastResult:
+        """Generate time series forecast with trend and seasonality."""
+        
+        # Prepare data for Prophet
+        prophet_df = df[[date_col, target_col]].copy()
+        prophet_df.columns = ['ds', 'y']
+        prophet_df['ds'] = pd.to_datetime(prophet_df['ds'])
+        
+        # Configure Prophet with automatic seasonality
+        self.model = Prophet(
+            yearly_seasonality='auto',
+            weekly_seasonality='auto',
+            daily_seasonality='auto',
+            changepoint_prior_scale=0.05,
+            seasonality_prior_scale=10,
+            interval_width=0.95
+        )
+        
+        # Fit model
+        self.model.fit(prophet_df)
+        
+        # Generate forecast
+        future = self.model.make_future_dataframe(periods=periods)
+        forecast = self.model.predict(future)
+        
+        # Extract components
+        trend = forecast['trend']
+        seasonality = self._extract_seasonality(forecast)
+        
+        # Detect anomalies (points outside confidence interval)
+        anomalies = self._detect_anomalies(prophet_df, forecast)
+        
+        return ForecastResult(
+            forecast=forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']],
+            trend=trend,
+            seasonality=seasonality,
+            anomalies=anomalies
+        )
+    
+    def _extract_seasonality(self, forecast: pd.DataFrame) -> Dict[str, pd.Series]:
+        """Extract seasonality components."""
+        components = {}
+        for col in ['yearly', 'weekly', 'daily']:
+            if col in forecast.columns:
+                components[col] = forecast[col]
+        return components
+    
+    def _detect_anomalies(self, actual: pd.DataFrame, forecast: pd.DataFrame) -> List[int]:
+        """Find points outside prediction interval."""
+        merged = actual.merge(forecast[['ds', 'yhat_lower', 'yhat_upper']], on='ds')
+        anomalies = merged[
+            (merged['y'] < merged['yhat_lower']) | 
+            (merged['y'] > merged['yhat_upper'])
+        ].index.tolist()
+        return anomalies

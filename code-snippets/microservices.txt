@@ -1,0 +1,90 @@
+"""
+Microservices Architecture - API Gateway
+services/api-gateway/src/router.py
+
+Hub-and-spoke pattern:
+- Central request routing
+- Service discovery
+- Load balancing
+- Circuit breaking
+"""
+
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
+import httpx
+from typing import Dict, Optional
+import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
+
+class ServiceRouter:
+    """Central router for microservices architecture."""
+    
+    # Service registry with endpoints
+    SERVICES = {
+        "ml": {"url": "http://ml-service:8000", "timeout": 120},
+        "gemma": {"url": "http://gemma-service:8000", "timeout": 60},
+        "rag": {"url": "http://rag-service:8000", "timeout": 30},
+        "transcription": {"url": "http://transcription-service:8000", "timeout": 45},
+        "emotion": {"url": "http://emotion-service:8000", "timeout": 15},
+        "insights": {"url": "http://insights-service:8000", "timeout": 30},
+    }
+    
+    def __init__(self):
+        self.clients: Dict[str, httpx.AsyncClient] = {}
+        self.circuit_breakers: Dict[str, int] = {}
+        
+    async def startup(self):
+        """Initialize HTTP clients for each service."""
+        for name, config in self.SERVICES.items():
+            self.clients[name] = httpx.AsyncClient(
+                base_url=config["url"],
+                timeout=config["timeout"]
+            )
+            self.circuit_breakers[name] = 0
+            
+    async def shutdown(self):
+        """Close all HTTP clients."""
+        for client in self.clients.values():
+            await client.aclose()
+            
+    async def route(self, service: str, path: str, method: str, **kwargs) -> dict:
+        """Route request to appropriate service."""
+        
+        if service not in self.clients:
+            raise HTTPException(404, f"Unknown service: {service}")
+            
+        # Check circuit breaker
+        if self.circuit_breakers[service] > 5:
+            raise HTTPException(503, f"Service {service} temporarily unavailable")
+            
+        try:
+            client = self.clients[service]
+            response = await client.request(method, path, **kwargs)
+            
+            # Reset circuit breaker on success
+            self.circuit_breakers[service] = 0
+            
+            return response.json()
+            
+        except httpx.TimeoutException:
+            self.circuit_breakers[service] += 1
+            logger.error(f"Timeout calling {service}")
+            raise HTTPException(504, f"Service {service} timeout")
+            
+        except httpx.HTTPError as e:
+            self.circuit_breakers[service] += 1
+            logger.error(f"Error calling {service}: {e}")
+            raise HTTPException(502, f"Service {service} error")
+            
+    async def health_check(self) -> Dict[str, str]:
+        """Check health of all services."""
+        results = {}
+        for name in self.SERVICES:
+            try:
+                response = await self.clients[name].get("/health")
+                results[name] = "healthy" if response.status_code == 200 else "unhealthy"
+            except Exception:
+                results[name] = "unreachable"
+        return results

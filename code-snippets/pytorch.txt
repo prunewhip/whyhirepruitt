@@ -1,0 +1,67 @@
+"""
+PyTorch Model Inference Pipeline
+services/ml-service/src/inference/pytorch_runner.py
+
+Core ML infrastructure:
+- GPU memory management
+- Batch processing
+- Model quantization
+- Inference optimization
+"""
+
+import torch
+import torch.nn as nn
+from typing import List, Dict, Any, Optional
+import numpy as np
+
+class PyTorchRunner:
+    """Production PyTorch inference with GPU optimization."""
+    
+    def __init__(self, model_path: str, device: str = "cuda"):
+        self.device = torch.device(device if torch.cuda.is_available() else "cpu")
+        self.model = self._load_model(model_path)
+        self.model.eval()
+        
+    def _load_model(self, path: str) -> nn.Module:
+        """Load model with automatic device placement."""
+        model = torch.load(path, map_location=self.device)
+        
+        # Apply dynamic quantization for faster inference
+        if self.device.type == "cpu":
+            model = torch.quantization.quantize_dynamic(
+                model, {nn.Linear}, dtype=torch.qint8
+            )
+        return model.to(self.device)
+    
+    @torch.no_grad()
+    def predict_batch(self, inputs: np.ndarray, batch_size: int = 32) -> np.ndarray:
+        """Batched inference with memory optimization."""
+        results = []
+        
+        for i in range(0, len(inputs), batch_size):
+            batch = torch.tensor(
+                inputs[i:i+batch_size], 
+                dtype=torch.float32,
+                device=self.device
+            )
+            
+            # Run inference
+            outputs = self.model(batch)
+            results.append(outputs.cpu().numpy())
+            
+            # Clear GPU memory between batches
+            if self.device.type == "cuda":
+                torch.cuda.empty_cache()
+        
+        return np.concatenate(results, axis=0)
+    
+    def get_memory_usage(self) -> Dict[str, float]:
+        """Monitor GPU memory for resource management."""
+        if self.device.type != "cuda":
+            return {"gpu_available": False}
+            
+        return {
+            "allocated_mb": torch.cuda.memory_allocated() / 1024**2,
+            "cached_mb": torch.cuda.memory_reserved() / 1024**2,
+            "max_mb": torch.cuda.max_memory_allocated() / 1024**2
+        }

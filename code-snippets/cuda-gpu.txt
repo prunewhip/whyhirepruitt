@@ -1,0 +1,83 @@
+# NVIDIA CUDA Device Plugin
+# k8s/base/nvidia-device-plugin.yaml
+#
+# GPU acceleration for Kubernetes:
+# - Device discovery
+# - Resource scheduling
+# - GPU memory management
+# - Multi-GPU support
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nvidia-device-plugin-daemonset
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: nvidia-device-plugin-ds
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: nvidia-device-plugin-ds
+    spec:
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      priorityClassName: system-node-critical
+      containers:
+        - name: nvidia-device-plugin-ctr
+          image: nvcr.io/nvidia/k8s-device-plugin:v0.14.1
+          env:
+            - name: FAIL_ON_INIT_ERROR
+              value: "false"
+            - name: PASS_DEVICE_SPECS
+              value: "true"
+            - name: DEVICE_LIST_STRATEGY
+              value: "envvar"
+            - name: DEVICE_ID_STRATEGY
+              value: "uuid"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+
+---
+# GPU Node Labeling
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gpu-node-labeler
+data:
+  label-script.sh: |
+    #!/bin/bash
+    # Label nodes with GPU capabilities
+    if nvidia-smi &> /dev/null; then
+      GPU_COUNT=$(nvidia-smi --query-gpu=count --format=csv,noheader | head -1)
+      GPU_MEM=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader | head -1)
+      kubectl label node $(hostname) nvidia.com/gpu=true --overwrite
+      kubectl label node $(hostname) nvidia.com/gpu.count=$GPU_COUNT --overwrite
+      kubectl label node $(hostname) nvidia.com/gpu.memory=$GPU_MEM --overwrite
+    fi
+
+---
+# Resource Quota for GPU
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: gpu-quota
+  namespace: nemo-system
+spec:
+  hard:
+    requests.nvidia.com/gpu: "2"
+    limits.nvidia.com/gpu: "2"

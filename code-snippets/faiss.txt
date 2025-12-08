@@ -1,0 +1,76 @@
+"""
+FAISS Vector Store Implementation
+services/ml-service/src/stores/faiss_store.py
+
+Semantic search features:
+- GPU-accelerated indexing
+- Approximate nearest neighbor
+- Embedding storage
+- Query optimization
+"""
+
+import faiss
+import numpy as np
+from typing import List, Tuple, Optional
+import pickle
+
+class FAISSVectorStore:
+    """GPU-accelerated vector similarity search."""
+    
+    def __init__(self, dimension: int = 768, use_gpu: bool = True):
+        self.dimension = dimension
+        self.use_gpu = use_gpu
+        
+        # Create index with IVF for large-scale search
+        quantizer = faiss.IndexFlatL2(dimension)
+        self.index = faiss.IndexIVFFlat(
+            quantizer, 
+            dimension, 
+            100,  # Number of clusters
+            faiss.METRIC_L2
+        )
+        
+        # Move to GPU if available
+        if use_gpu and faiss.get_num_gpus() > 0:
+            res = faiss.StandardGpuResources()
+            self.index = faiss.index_cpu_to_gpu(res, 0, self.index)
+            
+        self.metadata = {}  # Store associated metadata
+        self.trained = False
+        
+    def add(self, embeddings: np.ndarray, ids: List[str], metadata: List[dict] = None):
+        """Add vectors to the index."""
+        if not self.trained:
+            self.index.train(embeddings)
+            self.trained = True
+            
+        self.index.add(embeddings)
+        
+        for i, id_ in enumerate(ids):
+            self.metadata[id_] = metadata[i] if metadata else {}
+    
+    def search(self, query: np.ndarray, k: int = 10) -> List[Tuple[str, float, dict]]:
+        """Find k nearest neighbors."""
+        if query.ndim == 1:
+            query = query.reshape(1, -1)
+            
+        distances, indices = self.index.search(query, k)
+        
+        results = []
+        for dist, idx in zip(distances[0], indices[0]):
+            if idx >= 0:
+                id_ = list(self.metadata.keys())[idx]
+                results.append((id_, float(dist), self.metadata[id_]))
+                
+        return results
+    
+    def save(self, path: str):
+        """Persist index to disk."""
+        if self.use_gpu:
+            cpu_index = faiss.index_gpu_to_cpu(self.index)
+            faiss.write_index(cpu_index, f"{path}.index")
+        else:
+            faiss.write_index(self.index, f"{path}.index")
+            
+        with open(f"{path}.meta", "wb") as f:
+            pickle.dump(self.metadata, f)

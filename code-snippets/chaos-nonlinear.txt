@@ -1,0 +1,113 @@
+"""
+Chaos Non-Linear Dynamics Engine
+services/ml-service/src/engines/chaos_engine.py
+
+Complex system analysis:
+- Lyapunov exponent calculation
+- Phase space reconstruction
+- Attractor identification
+- Non-linear pattern detection
+"""
+
+import numpy as np
+import pandas as pd
+from scipy.signal import find_peaks
+from scipy.spatial.distance import cdist
+from typing import Dict, List, Any, Optional, Tuple
+from dataclasses import dataclass
+
+@dataclass
+class ChaosResult:
+    lyapunov_exponent: float
+    is_chaotic: bool
+    embedding_dimension: int
+    correlation_dimension: float
+    attractor_type: str
+
+class ChaosEngine:
+    """Non-linear dynamics and chaos theory analysis."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        
+    async def analyze(self, df: pd.DataFrame, column: str) -> ChaosResult:
+        """Analyze time series for chaotic behavior."""
+        
+        series = df[column].dropna().values
+        
+        # Find optimal embedding parameters
+        tau = self._find_delay(series)
+        m = self._find_embedding_dim(series, tau)
+        
+        # Reconstruct phase space
+        embedded = self._embed(series, m, tau)
+        
+        # Calculate Lyapunov exponent
+        lyap = self._lyapunov_exponent(embedded)
+        
+        # Calculate correlation dimension
+        corr_dim = self._correlation_dimension(embedded)
+        
+        # Classify attractor
+        attractor = self._classify_attractor(lyap, corr_dim)
+        
+        return ChaosResult(
+            lyapunov_exponent=lyap,
+            is_chaotic=lyap > 0,
+            embedding_dimension=m,
+            correlation_dimension=corr_dim,
+            attractor_type=attractor
+        )
+    
+    def _find_delay(self, x: np.ndarray) -> int:
+        """Find optimal delay using first minimum of autocorrelation."""
+        n = len(x)
+        autocorr = np.correlate(x - x.mean(), x - x.mean(), mode='full')
+        autocorr = autocorr[n-1:] / autocorr[n-1]
+        
+        minima, _ = find_peaks(-autocorr[:n//4])
+        return minima[0] if len(minima) > 0 else 1
+    
+    def _find_embedding_dim(self, x: np.ndarray, tau: int) -> int:
+        """Estimate embedding dimension using false nearest neighbors."""
+        for m in range(1, 10):
+            fnn_ratio = self._false_nearest_neighbors(x, m, tau)
+            if fnn_ratio < 0.1:
+                return m
+        return 3
+    
+    def _embed(self, x: np.ndarray, m: int, tau: int) -> np.ndarray:
+        """Takens embedding of time series."""
+        n = len(x) - (m - 1) * tau
+        embedded = np.zeros((n, m))
+        for i in range(m):
+            embedded[:, i] = x[i*tau : i*tau + n]
+        return embedded
+    
+    def _lyapunov_exponent(self, embedded: np.ndarray) -> float:
+        """Estimate largest Lyapunov exponent."""
+        n = len(embedded)
+        dists = cdist(embedded, embedded)
+        np.fill_diagonal(dists, np.inf)
+        
+        divergence = []
+        for i in range(min(100, n-10)):
+            j = np.argmin(dists[i])
+            if i + 10 < n and j + 10 < n:
+                d0 = dists[i, j]
+                d1 = np.linalg.norm(embedded[i+10] - embedded[j+10])
+                if d0 > 0 and d1 > 0:
+                    divergence.append(np.log(d1 / d0) / 10)
+        
+        return np.mean(divergence) if divergence else 0.0
+    
+    def _classify_attractor(self, lyap: float, corr_dim: float) -> str:
+        """Classify the type of attractor."""
+        if lyap < 0:
+            return "fixed_point"
+        elif lyap == 0:
+            return "limit_cycle"
+        elif corr_dim < 3:
+            return "low_dim_chaos"
+        else:
+            return "high_dim_chaos"

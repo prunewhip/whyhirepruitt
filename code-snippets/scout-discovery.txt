@@ -1,0 +1,92 @@
+"""
+Scout Feature Discovery Engine
+services/ml-service/src/engines/scout_engine.py
+
+Automated feature analysis:
+- Feature importance ranking
+- Correlation detection
+- Information gain calculation
+- Redundancy elimination
+"""
+
+import pandas as pd
+import numpy as np
+from scipy import stats
+from sklearn.feature_selection import mutual_info_classif, mutual_info_regression
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+
+@dataclass
+class FeatureReport:
+    importance_scores: Dict[str, float]
+    correlations: pd.DataFrame
+    recommended_features: List[str]
+    redundant_pairs: List[tuple]
+
+class ScoutEngine:
+    """Automated feature discovery and selection."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        
+    async def analyze(self, df: pd.DataFrame, target: str) -> FeatureReport:
+        """Analyze features and recommend optimal subset."""
+        
+        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        if target in numeric_cols:
+            numeric_cols.remove(target)
+        
+        X = df[numeric_cols]
+        y = df[target]
+        
+        # Calculate information gain
+        if y.dtype in ['object', 'category'] or y.nunique() < 10:
+            mi_scores = mutual_info_classif(X.fillna(0), y)
+        else:
+            mi_scores = mutual_info_regression(X.fillna(0), y)
+        
+        importance = dict(zip(numeric_cols, mi_scores))
+        importance = dict(sorted(importance.items(), key=lambda x: x[1], reverse=True))
+        
+        # Compute correlation matrix
+        correlations = X.corr()
+        
+        # Find redundant feature pairs
+        redundant = self._find_redundant(correlations, threshold=0.9)
+        
+        # Select non-redundant top features
+        recommended = self._select_features(importance, redundant)
+        
+        return FeatureReport(
+            importance_scores=importance,
+            correlations=correlations,
+            recommended_features=recommended,
+            redundant_pairs=redundant
+        )
+    
+    def _find_redundant(self, corr: pd.DataFrame, threshold: float) -> List[tuple]:
+        """Find highly correlated feature pairs."""
+        redundant = []
+        cols = corr.columns
+        for i, col1 in enumerate(cols):
+            for col2 in cols[i+1:]:
+                if abs(corr.loc[col1, col2]) > threshold:
+                    redundant.append((col1, col2, corr.loc[col1, col2]))
+        return redundant
+    
+    def _select_features(self, importance: Dict, redundant: List) -> List[str]:
+        """Select top features excluding redundant ones."""
+        selected = []
+        excluded = set()
+        
+        for feature, score in importance.items():
+            if feature not in excluded:
+                selected.append(feature)
+                # Exclude correlated features
+                for pair in redundant:
+                    if feature == pair[0]:
+                        excluded.add(pair[1])
+                    elif feature == pair[1]:
+                        excluded.add(pair[0])
+        
+        return selected[:10]  # Top 10 features

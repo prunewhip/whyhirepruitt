@@ -1,0 +1,91 @@
+"""
+SQLCipher Encrypted Database
+shared/crypto/encrypted_db.py
+
+Encrypted storage features:
+- AES-256-CBC SQLite encryption
+- Transparent query execution
+- Key rotation support
+- Secure memory handling
+"""
+
+import sqlite3
+from typing import Any, List, Optional, Tuple
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
+class EncryptedDatabase:
+    """SQLCipher-encrypted SQLite database wrapper."""
+    
+    def __init__(self, db_path: str, key: str = None):
+        self.db_path = db_path
+        self.key = key or self._load_key()
+        self.connection = None
+        
+    def _load_key(self) -> str:
+        """Load encryption key from Docker secret or environment."""
+        # Try Docker secret first
+        secret_path = "/run/secrets/db_encryption_key"
+        if os.path.exists(secret_path):
+            with open(secret_path, "r") as f:
+                return f.read().strip()
+        
+        # Fall back to environment variable
+        key = os.environ.get("DB_ENCRYPTION_KEY")
+        if not key or len(key) < 32:
+            raise ValueError("Encryption key must be at least 32 characters")
+        return key
+    
+    def connect(self):
+        """Open encrypted database connection."""
+        self.connection = sqlite3.connect(self.db_path)
+        
+        # Enable SQLCipher encryption
+        self.connection.execute(f"PRAGMA key = '{self.key}'")
+        self.connection.execute("PRAGMA cipher_page_size = 4096")
+        self.connection.execute("PRAGMA kdf_iter = 256000")
+        self.connection.execute("PRAGMA cipher_hmac_algorithm = HMAC_SHA512")
+        self.connection.execute("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA512")
+        
+        # Verify encryption is working
+        try:
+            self.connection.execute("SELECT count(*) FROM sqlite_master")
+            logger.info(f"Encrypted database opened: {self.db_path}")
+        except sqlite3.DatabaseError as e:
+            raise ValueError("Failed to decrypt database - invalid key") from e
+            
+    def execute(self, query: str, params: Tuple = ()) -> sqlite3.Cursor:
+        """Execute SQL query on encrypted database."""
+        return self.connection.execute(query, params)
+    
+    def executemany(self, query: str, params_list: List[Tuple]):
+        """Execute batch insert/update."""
+        return self.connection.executemany(query, params_list)
+    
+    def fetchall(self, query: str, params: Tuple = ()) -> List[Tuple]:
+        """Execute query and return all results."""
+        cursor = self.execute(query, params)
+        return cursor.fetchall()
+    
+    def fetchone(self, query: str, params: Tuple = ()) -> Optional[Tuple]:
+        """Execute query and return single result."""
+        cursor = self.execute(query, params)
+        return cursor.fetchone()
+    
+    def commit(self):
+        """Commit current transaction."""
+        self.connection.commit()
+        
+    def close(self):
+        """Close database connection."""
+        if self.connection:
+            self.connection.close()
+            logger.info(f"Database closed: {self.db_path}")
+    
+    def rotate_key(self, new_key: str):
+        """Rotate encryption key."""
+        self.connection.execute(f"PRAGMA rekey = '{new_key}'")
+        self.key = new_key
+        logger.info("Encryption key rotated successfully")

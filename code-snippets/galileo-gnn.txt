@@ -1,0 +1,81 @@
+"""
+Galileo Graph Neural Network Engine
+services/ml-service/src/engines/galileo_engine.py
+
+Relational data analysis:
+- Entity relationship discovery
+- Network structure analysis
+- Link prediction
+- Community detection
+"""
+
+import numpy as np
+import pandas as pd
+import networkx as nx
+from typing import Dict, List, Any, Optional, Tuple
+from dataclasses import dataclass
+
+@dataclass
+class GraphResult:
+    nodes: List[str]
+    edges: List[Tuple[str, str, float]]
+    communities: Dict[str, int]
+    centrality: Dict[str, float]
+    link_predictions: List[Tuple[str, str, float]]
+
+class GalileoEngine:
+    """Graph neural network for discovering relational patterns."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        self.graph = None
+        
+    async def analyze(
+        self, 
+        df: pd.DataFrame,
+        source_col: str,
+        target_col: str,
+        weight_col: str = None
+    ) -> GraphResult:
+        """Analyze entity relationships and network structure."""
+        
+        # Build graph from data
+        self.graph = nx.Graph()
+        
+        for _, row in df.iterrows():
+            weight = row[weight_col] if weight_col else 1.0
+            self.graph.add_edge(row[source_col], row[target_col], weight=weight)
+        
+        # Detect communities using Louvain
+        communities = self._detect_communities()
+        
+        # Calculate centrality metrics
+        centrality = nx.pagerank(self.graph)
+        
+        # Predict missing links
+        link_predictions = self._predict_links()
+        
+        return GraphResult(
+            nodes=list(self.graph.nodes()),
+            edges=[(u, v, d['weight']) for u, v, d in self.graph.edges(data=True)],
+            communities=communities,
+            centrality=centrality,
+            link_predictions=link_predictions
+        )
+    
+    def _detect_communities(self) -> Dict[str, int]:
+        """Louvain community detection."""
+        from networkx.algorithms.community import louvain_communities
+        
+        communities = louvain_communities(self.graph)
+        node_to_community = {}
+        for i, community in enumerate(communities):
+            for node in community:
+                node_to_community[node] = i
+        return node_to_community
+    
+    def _predict_links(self, top_k: int = 10) -> List[Tuple[str, str, float]]:
+        """Predict likely missing edges using Jaccard coefficient."""
+        predictions = list(nx.jaccard_coefficient(self.graph))
+        predictions.sort(key=lambda x: x[2], reverse=True)
+        return [(u, v, score) for u, v, score in predictions[:top_k]]

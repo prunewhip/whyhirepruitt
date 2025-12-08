@@ -1,0 +1,68 @@
+"""
+Oracle Causal Inference Engine
+services/ml-service/src/engines/oracle_engine.py
+
+Uses DoWhy library for:
+- Causal graph discovery
+- Treatment effect estimation
+- Counterfactual analysis
+- Business impact quantification
+"""
+
+import pandas as pd
+import numpy as np
+from dowhy import CausalModel
+from typing import Dict, List, Any, Optional
+
+class OracleEngine:
+    """Causal inference engine for understanding cause-and-effect."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.causal_model = None
+        self.identified_estimand = None
+        
+    async def analyze(self, df: pd.DataFrame, treatment: str, outcome: str) -> Dict:
+        """Perform causal analysis to quantify treatment effects."""
+        
+        # Step 1: Build causal graph from data
+        self.causal_model = CausalModel(
+            data=df,
+            treatment=treatment,
+            outcome=outcome,
+            common_causes=self._identify_confounders(df, treatment, outcome)
+        )
+        
+        # Step 2: Identify causal effect
+        self.identified_estimand = self.causal_model.identify_effect(
+            proceed_when_unidentifiable=True
+        )
+        
+        # Step 3: Estimate average treatment effect
+        estimate = self.causal_model.estimate_effect(
+            self.identified_estimand,
+            method_name="backdoor.propensity_score_matching"
+        )
+        
+        # Step 4: Refutation tests for robustness
+        refutation = self.causal_model.refute_estimate(
+            self.identified_estimand,
+            estimate,
+            method_name="random_common_cause"
+        )
+        
+        return {
+            "treatment_effect": float(estimate.value),
+            "confidence_interval": estimate.get_confidence_intervals(),
+            "refutation_passed": refutation.refutation_result,
+            "causal_graph": self._visualize_graph()
+        }
+    
+    def _identify_confounders(self, df, treatment, outcome) -> List[str]:
+        """Automatically identify potential confounding variables."""
+        candidates = [c for c in df.columns if c not in [treatment, outcome]]
+        confounders = []
+        for col in candidates:
+            if self._is_confounder(df, col, treatment, outcome):
+                confounders.append(col)
+        return confounders

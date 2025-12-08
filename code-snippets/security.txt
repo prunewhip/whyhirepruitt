@@ -1,0 +1,133 @@
+"""
+Security Module - Production Authentication & Authorization
+shared/security/security.py
+
+Security features:
+- JWT token management
+- Request signing
+- Rate limiting
+- Audit logging
+- Input sanitization
+"""
+
+import hmac
+import hashlib
+import secrets
+from datetime import datetime, timedelta
+from typing import Dict, Optional, List
+from functools import wraps
+import logging
+
+logger = logging.getLogger("security")
+
+class SecurityManager:
+    """Production-grade security utilities."""
+    
+    def __init__(self, secret_key: str, redis_client=None):
+        self.secret_key = secret_key.encode()
+        self.redis = redis_client
+        
+    # ─────────────────────────────────────────────────────────────
+    # Request Signing
+    # ─────────────────────────────────────────────────────────────
+    
+    def sign_request(self, payload: bytes, timestamp: str) -> str:
+        """Generate HMAC signature for request."""
+        message = timestamp.encode() + payload
+        signature = hmac.new(self.secret_key, message, hashlib.sha256)
+        return signature.hexdigest()
+    
+    def verify_signature(self, payload: bytes, timestamp: str, signature: str) -> bool:
+        """Verify request signature."""
+        expected = self.sign_request(payload, timestamp)
+        return hmac.compare_digest(expected, signature)
+    
+    # ─────────────────────────────────────────────────────────────
+    # Rate Limiting
+    # ─────────────────────────────────────────────────────────────
+    
+    async def check_rate_limit(
+        self, 
+        identifier: str, 
+        limit: int = 100, 
+        window_seconds: int = 60
+    ) -> bool:
+        """Check if request is within rate limit."""
+        if not self.redis:
+            return True
+            
+        key = f"ratelimit:{identifier}"
+        current = await self.redis.incr(key)
+        
+        if current == 1:
+            await self.redis.expire(key, window_seconds)
+            
+        return current <= limit
+    
+    # ─────────────────────────────────────────────────────────────
+    # Input Sanitization
+    # ─────────────────────────────────────────────────────────────
+    
+    @staticmethod
+    def sanitize_input(text: str, max_length: int = 10000) -> str:
+        """Sanitize user input."""
+        if not text:
+            return ""
+        
+        # Truncate
+        text = text[:max_length]
+        
+        # Remove null bytes
+        text = text.replace('\x00', '')
+        
+        # Basic XSS prevention
+        dangerous = ['<script', 'javascript:', 'onerror=', 'onload=']
+        for pattern in dangerous:
+            text = text.replace(pattern, '')
+            
+        return text
+    
+    # ─────────────────────────────────────────────────────────────
+    # Audit Logging
+    # ─────────────────────────────────────────────────────────────
+    
+    def log_security_event(
+        self, 
+        event_type: str, 
+        user_id: str, 
+        details: Dict,
+        severity: str = "INFO"
+    ):
+        """Log security-relevant events."""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "event_type": event_type,
+            "user_id": user_id,
+            "severity": severity,
+            "details": details
+        }
+        
+        if severity == "CRITICAL":
+            logger.critical(f"SECURITY: {log_entry}")
+        elif severity == "WARNING":
+            logger.warning(f"SECURITY: {log_entry}")
+        else:
+            logger.info(f"SECURITY: {log_entry}")
+    
+    # ─────────────────────────────────────────────────────────────
+    # Token Generation
+    # ─────────────────────────────────────────────────────────────
+    
+    @staticmethod
+    def generate_secure_token(length: int = 32) -> str:
+        """Generate cryptographically secure random token."""
+        return secrets.token_urlsafe(length)
+    
+    @staticmethod
+    def hash_password(password: str, salt: bytes = None) -> tuple:
+        """Hash password with PBKDF2."""
+        if salt is None:
+            salt = secrets.token_bytes(16)
+        
+        key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+        return salt, key

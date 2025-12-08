@@ -1,0 +1,78 @@
+"""
+FastAPI REST API Implementation
+services/api-gateway/src/main.py
+
+Production API features:
+- Async request handling
+- Pydantic validation
+- OpenAPI documentation
+- Health checks and middleware
+"""
+
+from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+from typing import Dict, Any, List, Optional
+import time
+
+app = FastAPI(
+    title="NeMo ML Service API",
+    description="Production ML inference API",
+    version="1.0.0"
+)
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class PredictRequest(BaseModel):
+    engine_name: str = Field(..., description="ML engine to use")
+    data: Dict[str, Any] = Field(..., description="Input data")
+    options: Optional[Dict[str, Any]] = Field(default={})
+
+class PredictResponse(BaseModel):
+    status: str
+    predictions: Any
+    processing_time_ms: float
+    engine_version: str
+
+@app.middleware("http")
+async def add_timing_header(request: Request, call_next):
+    """Add response timing for monitoring."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    response.headers["X-Process-Time"] = f"{(time.perf_counter() - start)*1000:.2f}ms"
+    return response
+
+@app.post("/predict", response_model=PredictResponse)
+async def predict(request: PredictRequest):
+    """Run ML prediction with selected engine."""
+    start = time.perf_counter()
+    
+    engine = engine_registry.get(request.engine_name)
+    if not engine:
+        raise HTTPException(404, f"Engine '{request.engine_name}' not found")
+    
+    result = await engine.analyze(request.data, **request.options)
+    
+    return PredictResponse(
+        status="success",
+        predictions=result,
+        processing_time_ms=(time.perf_counter() - start) * 1000,
+        engine_version=engine.version
+    )
+
+@app.get("/health")
+async def health_check():
+    """Kubernetes liveness probe endpoint."""
+    return {"status": "healthy", "timestamp": time.time()}
+
+@app.get("/engines")
+async def list_engines():
+    """List available ML engines."""
+    return {"engines": list(engine_registry.keys())}

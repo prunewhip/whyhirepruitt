@@ -1,0 +1,73 @@
+"""
+Newton Symbolic Regression Engine
+services/ml-service/src/engines/newton_engine.py
+
+Uses genetic programming to:
+- Discover mathematical equations from data
+- Produce human-readable formulas
+- Enable interpretable predictions
+- Find optimal complexity-accuracy tradeoff
+"""
+
+import numpy as np
+import pandas as pd
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+from gplearn.genetic import SymbolicRegressor
+
+@dataclass
+class SymbolicResult:
+    equation: str
+    r_squared: float
+    complexity: int
+    predictions: np.ndarray
+
+class NewtonEngine:
+    """Symbolic regression for discovering interpretable equations."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        self.regressor = None
+        self.best_program = None
+        
+    async def analyze(self, df: pd.DataFrame, target: str) -> SymbolicResult:
+        """Discover mathematical formula explaining the target variable."""
+        
+        X = df.drop(columns=[target]).select_dtypes(include=[np.number])
+        y = df[target]
+        
+        # Configure genetic programming
+        self.regressor = SymbolicRegressor(
+            population_size=1000,
+            generations=50,
+            stopping_criteria=0.01,
+            p_crossover=0.7,
+            p_subtree_mutation=0.1,
+            p_hoist_mutation=0.05,
+            p_point_mutation=0.1,
+            max_samples=0.9,
+            verbose=1,
+            parsimony_coefficient=0.01,  # Favor simpler equations
+            function_set=['add', 'sub', 'mul', 'div', 'sqrt', 'log', 'sin', 'cos']
+        )
+        
+        # Evolve equations
+        self.regressor.fit(X, y)
+        self.best_program = self.regressor._program
+        
+        # Extract readable equation
+        equation = self._format_equation(self.best_program, X.columns)
+        
+        return SymbolicResult(
+            equation=equation,
+            r_squared=self.regressor.score(X, y),
+            complexity=self.best_program.length_,
+            predictions=self.regressor.predict(X)
+        )
+    
+    def _format_equation(self, program, feature_names: List[str]) -> str:
+        """Convert program tree to readable equation string."""
+        equation = str(program)
+        for i, name in enumerate(feature_names):
+            equation = equation.replace(f'X{i}', name)
+        return equation

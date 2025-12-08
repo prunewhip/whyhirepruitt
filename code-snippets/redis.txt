@@ -1,0 +1,79 @@
+"""
+Redis GPU Semaphore Implementation
+services/queue-service/src/gpu_semaphore.py
+
+Coordinates exclusive GPU access:
+- Distributed locking across services
+- Automatic lock expiration
+- Priority queue for GPU requests
+- Pub/sub for status updates
+"""
+
+import redis.asyncio as redis
+import asyncio
+from typing import Optional
+from contextlib import asynccontextmanager
+import logging
+
+logger = logging.getLogger(__name__)
+
+class GPUSemaphore:
+    """Distributed GPU lock using Redis for single-GPU multi-service coordination."""
+    
+    def __init__(self, redis_url: str = "redis://localhost:6379"):
+        self.redis = redis.from_url(redis_url)
+        self.lock_key = "nemo:gpu:lock"
+        self.queue_key = "nemo:gpu:queue"
+        self.holder_key = "nemo:gpu:holder"
+        
+    async def acquire(self, service_name: str, timeout: int = 30) -> bool:
+        """Attempt to acquire exclusive GPU access."""
+        # Try to get the lock
+        acquired = await self.redis.set(
+            self.lock_key, 
+            service_name,
+            nx=True,  # Only set if not exists
+            ex=timeout  # Auto-expire after timeout
+        )
+        
+        if acquired:
+            await self.redis.set(self.holder_key, service_name)
+            logger.info(f"GPU lock acquired by {service_name}")
+            return True
+        
+        return False
+    
+    async def release(self, service_name: str) -> bool:
+        """Release GPU lock if we hold it."""
+        current_holder = await self.redis.get(self.holder_key)
+        
+        if current_holder and current_holder.decode() == service_name:
+            await self.redis.delete(self.lock_key)
+            await self.redis.delete(self.holder_key)
+            
+            # Notify waiting services
+            await self.redis.publish("nemo:gpu:released", service_name)
+            logger.info(f"GPU lock released by {service_name}")
+            return True
+        
+        return False
+    
+    @asynccontextmanager
+    async def gpu_context(self, service_name: str, max_wait: int = 60):
+        """Context manager for safe GPU access."""
+        acquired = False
+        wait_time = 0
+        
+        while not acquired and wait_time < max_wait:
+            acquired = await self.acquire(service_name)
+            if not acquired:
+                await asyncio.sleep(1)
+                wait_time += 1
+        
+        if not acquired:
+            raise TimeoutError(f"Failed to acquire GPU lock after {max_wait}s")
+        
+        try:
+            yield
+        finally:
+            await self.release(service_name)

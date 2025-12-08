@@ -1,0 +1,49 @@
+# Docker Multi-Stage Build
+# docker/Dockerfile.gemma
+#
+# Production container with:
+# - CUDA runtime for GPU
+# - Multi-stage build for small image
+# - Health checks
+# - Non-root user
+
+# Stage 1: Build dependencies
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps -w /wheels -r requirements.txt
+
+# Stage 2: Production runtime
+FROM nvidia/cuda:12.1-runtime-ubuntu22.04
+
+# Install Python
+RUN apt-get update && apt-get install -y \
+    python3.11 python3-pip curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 nemo
+WORKDIR /app
+
+# Copy wheels from builder
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache-dir /wheels/*
+
+# Copy application code
+COPY --chown=nemo:nemo src/ ./src/
+
+# Switch to non-root user
+USER nemo
+
+# Environment configuration
+ENV PYTHONUNBUFFERED=1
+ENV CUDA_VISIBLE_DEVICES=0
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,78 @@
+"""
+Llama.cpp LLM Inference Engine
+services/gemma-service/src/llama_runner.py
+
+Efficient local inference:
+- GGUF model loading
+- 4-bit quantization support
+- Batch token processing
+- Memory-efficient generation
+"""
+
+from llama_cpp import Llama
+from typing import List, Dict, Optional, Generator
+import logging
+
+logger = logging.getLogger(__name__)
+
+class LlamaRunner:
+    """Efficient C++ LLM inference with quantization support."""
+    
+    def __init__(self, model_path: str, config: Dict = None):
+        self.config = config or {}
+        self.model = None
+        self.model_path = model_path
+        
+    def load(self):
+        """Load GGUF model with GPU offloading."""
+        logger.info(f"Loading model: {self.model_path}")
+        
+        self.model = Llama(
+            model_path=self.model_path,
+            n_ctx=self.config.get('context_length', 8192),
+            n_gpu_layers=self.config.get('gpu_layers', 35),
+            n_threads=self.config.get('cpu_threads', 4),
+            n_batch=self.config.get('batch_size', 512),
+            verbose=False
+        )
+        
+        logger.info(f"Model loaded: {self.model.n_ctx()} context tokens")
+        
+    def generate(
+        self, 
+        prompt: str,
+        max_tokens: int = 512,
+        temperature: float = 0.7,
+        top_p: float = 0.95
+    ) -> str:
+        """Generate completion for prompt."""
+        
+        output = self.model(
+            prompt,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            stop=["</s>", "[INST]"],
+            echo=False
+        )
+        
+        return output['choices'][0]['text']
+    
+    def stream_generate(
+        self, 
+        prompt: str,
+        max_tokens: int = 512
+    ) -> Generator[str, None, None]:
+        """Stream tokens as they're generated."""
+        
+        for chunk in self.model(
+            prompt,
+            max_tokens=max_tokens,
+            stream=True
+        ):
+            token = chunk['choices'][0]['text']
+            yield token
+    
+    def get_embedding(self, text: str) -> List[float]:
+        """Get embedding vector for text."""
+        return self.model.embed(text)

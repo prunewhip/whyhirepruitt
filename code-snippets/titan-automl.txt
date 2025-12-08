@@ -1,0 +1,61 @@
+"""
+Titan AutoML Engine - Flagship predictive analytics engine
+services/ml-service/src/engines/titan_engine.py
+
+This engine automatically:
+- Engineers features from raw data
+- Selects optimal model architecture
+- Performs hyperparameter tuning
+- Generates production predictions
+"""
+
+import torch
+import pandas as pd
+import numpy as np
+from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+
+@dataclass
+class PredictionResult:
+    predictions: np.ndarray
+    confidence: np.ndarray
+    feature_importance: Dict[str, float]
+
+class TitanEngine:
+    """Production AutoML engine with ensemble predictions."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.models = {}
+        self.feature_engineer = FeatureEngineer()
+        self.model_selector = ModelSelector()
+        
+    async def analyze(self, df: pd.DataFrame, target_column: str) -> PredictionResult:
+        """Full analysis pipeline with automatic feature engineering."""
+        
+        # Step 1: Automatic feature engineering
+        features = self.feature_engineer.transform(df, target_column)
+        
+        # Step 2: Model selection and training
+        best_model = await self.model_selector.select(features, df[target_column])
+        
+        # Step 3: Generate predictions with confidence intervals
+        with torch.no_grad():
+            predictions = best_model.predict(features)
+            confidence = best_model.predict_proba(features)
+        
+        # Step 4: Calculate feature importance
+        importance = self._calculate_importance(best_model, features)
+        
+        return PredictionResult(
+            predictions=predictions,
+            confidence=confidence,
+            feature_importance=importance
+        )
+    
+    def _calculate_importance(self, model, features) -> Dict[str, float]:
+        """SHAP-based feature importance calculation."""
+        import shap
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(features)
+        return dict(zip(features.columns, np.abs(shap_values).mean(0)))
