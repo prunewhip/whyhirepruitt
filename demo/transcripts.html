@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>Transcripts - Vox Amelior</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="assets/css/design-tokens.css?v=2024110802">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+
+  <!-- Vox Amelior Design System -->
+  <link rel="stylesheet" href="assets/css/vox-amelior.css">
+
+  <script src="assets/js/mock_data.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/app.js?v=2024110501"></script>
+  <script src="assets/js/auth.js?v=2024110501"></script>
+
+  <style>
+    .segment-highlight {
+      outline: 2px solid var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+  </style>
+  <script src="assets/js/offline-banner.js"></script>
+</head>
+
+<body class="gemma-theme">
+  <style>
+    .demo-mode-banner {
+      background: linear-gradient(90deg, #FF6B6B, #FF8E53);
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 99999;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+      margin-top: 40px !important;
+        }
+
+        .vox-nav {
+            top: 40px !important;
+    }
+  </style>
+  <div class="demo-mode-banner">
+    ⚠️ DEMO MODE - Static Data Simulation
+  </div>
+
+  <!-- Navigation (Vox Amelior) -->
+  <nav class="vox-nav">
+    <div class="vox-nav-inner">
+      <a href="index.html" class="vox-logo">
+        <div class="vox-logo-mark">
+          <img src="assets/images/logo.png" alt="Vox Amelior Logo">
+        </div>
+        <span class="vox-logo-text">Vox Amelior</span>
+      </a>
+
+      <div class="vox-nav-links">
+        <a href="index.html" class="vox-nav-link">Dashboard</a>
+        <a href="gemma.html" class="vox-nav-link">AI Assistant</a>
+        <a href="nexus.html" class="vox-nav-link">Analytics</a>
+        <a href="transcripts.html" class="vox-nav-link active">Transcripts</a>
+        <a href="settings.html" class="vox-nav-link">Settings</a>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <span id="current-user" style="color: var(--vox-grey-500); font-size: 0.9rem;"></span>
+        <div id="api-status"></div>
+        <a href="login.html" class="vox-btn vox-btn-ghost">Sign Out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+
+    <section class="fade-in-up" style="text-align: center; margin-bottom: 3rem;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Full Transcripts</h1>
+      <p class="text-muted">View and export complete conversation transcripts</p>
+    </section>
+
+    <!-- 3D Waveform Visualization -->
+    <section class="fade-in-up delay-50" style="margin-bottom: 2rem;">
+      <div class="scene-shell" id="transcripts-viz" style="height: 200px; border-radius: 1rem; overflow: hidden;"></div>
+    </section>
+
+    <!-- Actions -->
+    <section class="fade-in-up delay-100" style="margin-bottom: 2rem;">
+      <div style="display: flex; gap: 1rem; justify-content: space-between; flex-wrap: wrap;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="exportTranscript('json')">
+            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+            Export JSON
+          </button>
+          <button class="btn btn-ghost" onclick="exportTranscript('txt')">
+            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+            Export TXT
+          </button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button id="back-button" class="btn btn-ghost" style="display: none;" onclick="returnToTranscriptList()">
+            <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+            Back to Transcripts
+          </button>
+        </div>
+        <div class="flex">
+          <span class="badge badge-success" id="transcript-count">0 transcripts</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transcript Viewer -->
+    <section class="fade-in-up delay-200">
+      <div class="glass-card">
+        <div id="transcript-viewer">
+          <!-- Loading -->
+          <div id="loading">
+            <div class="skeleton" style="height: 200px; margin-bottom: 1rem;"></div>
+            <div class="skeleton" style="height: 200px;"></div>
+          </div>
+
+          <!-- Transcript Content -->
+          <div id="transcript-content" class="hidden"></div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="hidden" style="text-align: center; padding: 3rem 0;">
+            <i data-lucide="file-x"
+              style="width: 64px; height: 64px; color: var(--text-tertiary); margin-bottom: 1rem;"></i>
+            <h3>No Transcripts Available</h3>
+            <p class="text-muted">Start recording to see transcripts here</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestedJobId = urlParams.get('job');
+    const jumpToSecondsParam = urlParams.get('t');
+
+    let viewerMode = 'list';
+    let currentTranscripts = [];
+    let currentTranscript = null;
+
+    function setLoadingState(isLoading) {
+      const loading = document.getElementById('loading');
+      const content = document.getElementById('transcript-content');
+      const emptyState = document.getElementById('empty-state');
+      if (isLoading) {
+        loading.classList.remove('hidden');
+        content.classList.add('hidden');
+        emptyState.classList.add('hidden');
+      } else {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function updateTranscriptCount(label) {
+      document.getElementById('transcript-count').textContent = label;
+    }
+
+    function formatSeconds(value) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric) || numeric < 0) return '--:--';
+      const total = Math.floor(numeric);
+      const minutes = Math.floor(total / 60);
+      const seconds = total % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '--';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString();
+    }
+
+    async function loadTranscriptList(limit = 100) {
+      viewerMode = 'list';
+      currentTranscript = null;
+      document.getElementById('back-button').style.display = 'none';
+      setLoadingState(true);
+
+      try {
+        const result = await api.getAllTranscripts(limit);
+        currentTranscripts = result.transcripts || result.results || [];
+
+        setLoadingState(false);
+
+        if (currentTranscripts.length === 0) {
+          document.getElementById('empty-state').classList.remove('hidden');
+          updateTranscriptCount('0 transcripts');
+        } else {
+          document.getElementById('transcript-content').classList.remove('hidden');
+          renderTranscriptList(currentTranscripts);
+          updateTranscriptCount(`${currentTranscripts.length} transcripts`);
+        }
+      } catch (error) {
+        console.error('Failed to load transcripts:', error);
+        setLoadingState(false);
+        document.getElementById('empty-state').classList.remove('hidden');
+        updateTranscriptCount('0 transcripts');
+      }
+    }
+
+    function renderTranscriptList(transcripts) {
+      const content = document.getElementById('transcript-content');
+      content.innerHTML = '';
+
+      transcripts.forEach((transcript, index) => {
+        const section = document.createElement('div');
+        section.style.marginBottom = '2rem';
+        section.style.paddingBottom = '2rem';
+        section.style.borderBottom = '1px solid var(--glass-border)';
+
+        const timestamp = transcript.created_at || transcript.timestamp || new Date().toISOString();
+
+        section.innerHTML = `
+          <div style="margin-bottom: 1rem;">
+            <h3 style="margin-bottom: 0.5rem;">Transcript #${index + 1}</h3>
+            <div class="text-muted" style="font-size: 0.875rem;">${escapeHTML(formatDateTime(timestamp))}</div>
+          </div>
+          <div id="transcript-${index}"></div>
+        `;
+
+        content.appendChild(section);
+
+        const segments = transcript.segments || [];
+        const segmentsContainer = document.getElementById(`transcript-${index}`);
+
+        segments.forEach(seg => {
+          const segEl = document.createElement('div');
+          segEl.style.marginBottom = '1rem';
+          segEl.style.padding = '1rem';
+          segEl.style.background = 'var(--glass)';
+          segEl.style.borderRadius = 'var(--radius-md)';
+
+          const avatar = createSpeakerAvatar(seg.speaker || 'Unknown');
+
+          segEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+              ${avatar.outerHTML}
+              <strong>${escapeHTML(seg.speaker || 'Unknown')}</strong>
+              <span class="text-muted" style="font-size: 0.75rem;">${formatSeconds(seg.start_time)} - ${formatSeconds(seg.end_time)}</span>
+            </div>
+            <div style="line-height: 1.6;">${escapeHTML(seg.text || '')}</div>
+          `;
+
+          segmentsContainer.appendChild(segEl);
+        });
+      });
+    }
+
+    async function loadSingleTranscript(jobId, jumpToSeconds) {
+      viewerMode = 'single';
+      currentTranscripts = [];
+      document.getElementById('back-button').style.display = 'inline-flex';
+      setLoadingState(true);
+
+      try {
+        const result = await api.getTranscript(jobId);
+        const transcript = result.transcript || result.data;
+        if (!transcript) throw new Error('Transcript not found');
+        currentTranscript = transcript;
+
+        setLoadingState(false);
+        renderSingleTranscript(transcript);
+        updateTranscriptCount(`Transcript ${jobId}`);
+        if (Number.isFinite(jumpToSeconds)) {
+          highlightAndScrollToSegment(jumpToSeconds);
+        }
+      } catch (error) {
+        console.error('Failed to load transcript:', error);
+        setLoadingState(false);
+        const emptyState = document.getElementById('empty-state');
+        emptyState.classList.remove('hidden');
+        emptyState.querySelector('h3').textContent = 'Transcript Not Found';
+        emptyState.querySelector('p').textContent = 'Check the link or view recent transcripts.';
+        updateTranscriptCount('Transcript unavailable');
+      }
+    }
+
+    function renderSingleTranscript(transcript) {
+      const content = document.getElementById('transcript-content');
+      const emptyState = document.getElementById('empty-state');
+      emptyState.classList.add('hidden');
+      content.classList.remove('hidden');
+      content.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.style.marginBottom = '1.5rem';
+      header.innerHTML = `
+        <h3 style="margin-bottom: 0.5rem;">Transcript — ${escapeHTML(transcript.job_id || 'Unknown')}</h3>
+        <div class="text-muted" style="font-size: 0.85rem;">
+          Recorded: ${escapeHTML(formatDateTime(transcript.created_at || transcript.timestamp))} • Duration: ${formatSeconds(transcript.audio_duration)}
+        </div>
+      `;
+      content.appendChild(header);
+
+      const segments = transcript.segments || [];
+      if (segments.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'text-muted';
+        empty.textContent = 'No segments available for this transcript.';
+        content.appendChild(empty);
+        return;
+      }
+
+      segments.forEach(seg => {
+        const segEl = document.createElement('div');
+        segEl.className = 'glass-card';
+        segEl.style.padding = '1rem';
+        segEl.style.marginBottom = '1rem';
+        segEl.dataset.segmentStart = seg.start_time ?? '';
+        segEl.dataset.segmentEnd = seg.end_time ?? '';
+
+        const avatar = createSpeakerAvatar(seg.speaker || 'Unknown');
+
+        segEl.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+            ${avatar.outerHTML}
+            <div style="flex: 1;">
+              <strong>${escapeHTML(seg.speaker || 'Unknown')}</strong>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                ${formatSeconds(seg.start_time)} - ${formatSeconds(seg.end_time)}
+              </div>
+            </div>
+            ${seg.emotion ? `<span class="chip">${escapeHTML(seg.emotion)}</span>` : ''}
+          </div>
+          <div style="line-height: 1.6;">${escapeHTML(seg.text || '')}</div>
+        `;
+
+        content.appendChild(segEl);
+      });
+    }
+
+    function highlightAndScrollToSegment(targetSeconds) {
+      const segments = Array.from(document.querySelectorAll('[data-segment-start]'));
+      if (segments.length === 0) return;
+
+      const seconds = Number(targetSeconds);
+      if (!Number.isFinite(seconds)) return;
+
+      let targetSegment = null;
+      for (const segment of segments) {
+        const start = Number(segment.dataset.segmentStart);
+        const end = Number(segment.dataset.segmentEnd);
+        if (Number.isFinite(start) && Number.isFinite(end) && seconds >= start && seconds <= end) {
+          targetSegment = segment;
+          break;
+        }
+      }
+
+      if (!targetSegment) {
+        targetSegment = segments[0];
+      }
+
+      if (targetSegment) {
+        targetSegment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetSegment.classList.add('segment-highlight');
+        setTimeout(() => targetSegment.classList.remove('segment-highlight'), 4000);
+      }
+    }
+
+    function exportTranscript(format) {
+      if (viewerMode === 'single') {
+        if (!currentTranscript) {
+          showToast('Error', 'Transcript not ready yet', 'error');
+          return;
+        }
+        downloadTranscriptData([currentTranscript], format);
+        return;
+      }
+
+      if (currentTranscripts.length === 0) {
+        showToast('Error', 'No transcripts to export', 'error');
+        return;
+      }
+
+      downloadTranscriptData(currentTranscripts, format);
+    }
+
+    function downloadTranscriptData(transcripts, format) {
+      let content;
+      let filename;
+      let mimeType;
+
+      if (format === 'json') {
+        content = JSON.stringify(transcripts, null, 2);
+        filename = `transcripts_${Date.now()}.json`;
+        mimeType = 'application/json';
+      } else {
+        const blocks = transcripts.map((t, i) => {
+          const segments = t.segments || [];
+          const title = t.job_id ? `Transcript ${t.job_id}` : `Transcript #${i + 1}`;
+          const header = `${title}\nRecorded: ${formatDateTime(t.created_at || t.timestamp)}`;
+          const lines = segments.map(s => `[${formatSeconds(s.start_time)}] ${(s.speaker || 'Unknown')}: ${s.text || ''}`);
+          return `${header}\n\n${lines.join('\n')}`;
+        });
+        content = blocks.join('\n\n');
+        filename = `transcripts_${Date.now()}.txt`;
+        mimeType = 'text/plain';
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showToast('Success', `Exported ${filename}`, 'success');
+    }
+
+    function returnToTranscriptList() {
+      window.location.href = 'transcripts.html';
+    }
+
+    async function initPage() {
+      const authenticated = await Auth.init({ requireAuth: true });
+      if (!authenticated) return;
+
+      const jumpToSeconds = jumpToSecondsParam ? Number(jumpToSecondsParam) : null;
+      if (requestedJobId) {
+        await loadSingleTranscript(requestedJobId, jumpToSeconds);
+      } else {
+        await loadTranscriptList();
+      }
+
+      lucide.createIcons();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPage);
+    } else {
+      initPage();
+    }
+  </script>
+
+  <!-- Three.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- 3D Waveform Scene -->
+  <script type="module" src="assets/js/pages/transcripts-scene.js"></script>
+
+</body>
+
+</html>

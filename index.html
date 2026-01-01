@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pruitt Colon - AI Engineer</title>
   <meta name="description"
-    content="AI Engineer building production ML systems. 60K+ lines of code, 29 ML engines, 10 microservices.">
+    content="Full-stack AI Engineer. 332K+ lines across 7 languages, 36 ML engines, 12 microservices.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -164,8 +164,8 @@
     .hero-title {
       max-width: 700px;
       margin-bottom: var(--space-6);
-      /* FIXED height locks subtitle position - no jumping regardless of text wrap */
-      height: 160px;
+      /* Fixed min-height ensures subtitle doesn't jump during typewriter animation */
+      min-height: 180px;
       display: flex;
       align-items: flex-start;
       overflow: visible;
@@ -985,7 +985,7 @@
         <a href="index.html" class="nav-link active">Home</a>
         <a href="architecture.html" class="nav-link">Architecture</a>
         <a href="about.html" class="nav-link">About</a>
-        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="demo/index.html" class="nav-link">Demo</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
     </div>
@@ -1004,22 +1004,26 @@
         <div class="hero-content reveal">
           <div class="hero-eyebrow">
             <span class="dot"></span>
-            <span>Available for opportunities</span>
+            <span>Secure. Private. Offline.</span>
           </div>
 
           <div class="hero-title">
-            <h1>Building <span class="typewriter-text" id="typewriter"></span><span class="typewriter-cursor"></span>
+            <h1>Enterprise AI. <br>Running Safely <span class="typewriter-text" id="typewriter"></span><span
+                class="typewriter-cursor"></span>
             </h1>
           </div>
 
           <div class="hero-subtitle">
-            <p>AI Engineer focused on real-world ML deployment. I build systems that handle the complexity of production
-              environments.</p>
+            <p>Deploy strict, air-gapped AI engines that never send data to the cloud. Complete data privacy. Zero API
+              fees.
+              100% Offline.</p>
           </div>
 
           <div class="hero-cta">
             <a href="architecture.html" class="btn btn-primary btn-lg">View Complete Architecture</a>
-            <a href="contact.html" class="btn btn-secondary btn-lg">Get in Touch</a>
+            <a href="demo/index.html" class="vox-btn vox-btn-ghost" style="padding: 1rem 2rem; font-size: 1.1rem;">
+              View Demo
+            </a>
           </div>
 
           <div class="scroll-hint">
@@ -1039,20 +1043,20 @@
       <div class="container">
         <div class="stats reveal">
           <div class="stat">
-            <div class="stat-value">60K+</div>
-            <div class="stat-label">Lines of Python</div>
+            <div class="stat-value">332K+</div>
+            <div class="stat-label">Lines of Code</div>
           </div>
           <div class="stat">
-            <div class="stat-value">29</div>
+            <div class="stat-value">36</div>
             <div class="stat-label">ML Engines</div>
           </div>
           <div class="stat">
-            <div class="stat-value">10</div>
+            <div class="stat-value">12</div>
             <div class="stat-label">Microservices</div>
           </div>
           <div class="stat">
-            <div class="stat-value">1</div>
-            <div class="stat-label">GPU Required</div>
+            <div class="stat-value">7</div>
+            <div class="stat-label">Coding Languages</div>
           </div>
         </div>
       </div>
@@ -1064,16 +1068,27 @@
         <div class="quick-summary reveal">
           <div class="decorative-line"></div>
           <span class="section-label">60-Second Overview</span>
-          <h2 class="section-title">What This Project Demonstrates</h2>
-          <p class="section-desc">A complete AI platform built from scratch. The kind of work that takes a team at most
-            companies.</p>
+          <h2 class="section-title">What Is This Project?</h2>
+          <p class="section-desc" style="font-size: 1.1rem; max-width: 800px; margin: 0 auto 1.5rem auto;">
+            <strong>Vox Amelior</strong> is a real-time enterprise transcription and analytics platform that runs
+            entirely offline on consumer hardware.
+            It performs live speech-to-text, speaker identification, sentiment analysis, and 36 specialized ML engines -
+            all on a single GPU with just 6GB VRAM.
+            No cloud dependencies. No API fees. Complete data privacy.
+            <a href="demo/index.html"
+              style="color: var(--accent); font-weight: var(--weight-medium); text-decoration: underline;">See it in
+              action</a>.
+          </p>
+          <p class="section-desc" style="color: var(--text-tertiary); font-size: 0.95rem;">What this project
+            demonstrates about my engineering capabilities:</p>
 
           <div class="summary-grid">
             <div class="summary-item">
               <div class="summary-icon">🏗️</div>
               <div class="summary-content">
                 <strong>Full-Stack AI Engineering</strong>
-                <p>60K+ lines of Python across 10 microservices. Not a tutorial project, a production system.</p>
+                <p>332K+ lines across 7 coding languages and 12 microservices. Not a tutorial project, a production
+                  system.</p>
               </div>
             </div>
             <div class="summary-item">
@@ -1188,7 +1203,8 @@
               <span class="featured-tag">Docker</span>
               <span class="featured-tag">FAISS</span>
             </div>
-            <a href="architecture.html" class="btn btn-primary">Explore Architecture</a>
+            <a href="demo/index.html" class="btn btn-primary">View Live Demo</a>
+            <a href="architecture.html" class="btn btn-secondary">Explore Architecture</a>
           </div>
 
           <div class="side-cards">
@@ -1237,7 +1253,6 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p class="footer-text">© 2025 Pruitt Colon. Built with PyTorch, FastAPI & Kubernetes.</p>
       </div>
     </div>
   </footer>
@@ -1296,10 +1311,10 @@
       const typewriterElement = document.getElementById('typewriter');
       if (typewriterElement) {
         new Typewriter(typewriterElement, [
-          'production AI systems that work',
-          'scalable ML infrastructure',
-          'intelligent voice applications',
-          'privacy-first AI solutions'
+          'on your own hardware.',
+          'without cloud dependencies.',
+          'with complete data privacy.',
+          'using local LLMs.'
         ], {
           typeSpeed: 70,
           deleteSpeed: 40,

@@ -177,6 +177,148 @@ const keywordData = {
         folder: 'services/ml-service/src/engines/'
     },
 
+    // Financial Analysis Engines
+    'ROI Prediction': {
+        category: 'ml-engines',
+        summary: 'Return on investment prediction and analysis',
+        explanation: 'Predicts investment returns using historical data and market factors. Provides confidence intervals and risk-adjusted projections.',
+        files: [
+            { name: 'roi_prediction_engine.py', path: 'services/ml-service/src/engines/roi_prediction_engine.py', size: '22KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Cost Optimization': {
+        category: 'ml-engines',
+        summary: 'Cost reduction and resource optimization',
+        explanation: 'Identifies cost-saving opportunities across operations. Uses constraint optimization to recommend budget allocations.',
+        files: [
+            { name: 'cost_optimization_engine.py', path: 'services/ml-service/src/engines/cost_optimization_engine.py', size: '28KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Spend Pattern': {
+        category: 'ml-engines',
+        summary: 'Spending behavior analysis and anomaly detection',
+        explanation: 'Analyzes spending patterns to identify trends and anomalies. Detects unusual transactions and categorizes expenses.',
+        files: [
+            { name: 'spend_pattern_engine.py', path: 'services/ml-service/src/engines/spend_pattern_engine.py', size: '24KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Budget Variance': {
+        category: 'ml-engines',
+        summary: 'Budget vs actual spending analysis',
+        explanation: 'Compares planned budgets against actual spending. Identifies variances and provides root cause analysis.',
+        files: [
+            { name: 'budget_variance_engine.py', path: 'services/ml-service/src/engines/budget_variance_engine.py', size: '15KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Revenue Forecasting': {
+        category: 'ml-engines',
+        summary: 'Revenue prediction using time-series analysis',
+        explanation: 'Forecasts future revenue using historical trends, seasonality, and external factors. Multiple forecasting models with ensemble averaging.',
+        files: [
+            { name: 'revenue_forecasting_engine.py', path: 'services/ml-service/src/engines/revenue_forecasting_engine.py', size: '13KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Customer LTV': {
+        category: 'ml-engines',
+        summary: 'Customer lifetime value prediction',
+        explanation: 'Calculates expected lifetime value for each customer. Segments customers by value tier and predicts retention.',
+        files: [
+            { name: 'customer_ltv_engine.py', path: 'services/ml-service/src/engines/customer_ltv_engine.py', size: '13KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Inventory Optimization': {
+        category: 'ml-engines',
+        summary: 'Inventory levels and reorder point optimization',
+        explanation: 'Optimizes inventory levels to minimize holding costs while preventing stockouts. Calculates safety stock and reorder points.',
+        files: [
+            { name: 'inventory_optimization_engine.py', path: 'services/ml-service/src/engines/inventory_optimization_engine.py', size: '14KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Pricing Strategy': {
+        category: 'ml-engines',
+        summary: 'Dynamic pricing and price elasticity analysis',
+        explanation: 'Analyzes price elasticity and competitive positioning. Recommends optimal pricing strategies based on demand models.',
+        files: [
+            { name: 'pricing_strategy_engine.py', path: 'services/ml-service/src/engines/pricing_strategy_engine.py', size: '14KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Market Basket': {
+        category: 'ml-engines',
+        summary: 'Product association and cross-sell analysis',
+        explanation: 'Identifies frequently co-purchased products using association rules. Generates cross-sell recommendations.',
+        files: [
+            { name: 'market_basket_engine.py', path: 'services/ml-service/src/engines/market_basket_engine.py', size: '14KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Cash Flow': {
+        category: 'ml-engines',
+        summary: 'Cash flow prediction and analysis',
+        explanation: 'Forecasts cash inflows and outflows. Identifies liquidity risks and recommends working capital adjustments.',
+        files: [
+            { name: 'cash_flow_engine.py', path: 'services/ml-service/src/engines/cash_flow_engine.py', size: '12KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    // Advanced Analytics Engines
+    'Anomaly Detection': {
+        category: 'ml-engines',
+        summary: 'Multi-method anomaly and outlier detection',
+        explanation: 'Ensemble-based anomaly detection using Isolation Forest, LOF, and statistical methods. Identifies outliers with confidence scores.',
+        files: [
+            { name: 'anomaly_engine.py', path: 'services/ml-service/src/engines/anomaly_engine.py', size: '16KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Clustering Engine': {
+        category: 'ml-engines',
+        summary: 'Multi-algorithm customer segmentation',
+        explanation: 'Performs clustering using K-Means, DBSCAN, and hierarchical methods. Auto-selects optimal cluster count with silhouette analysis.',
+        files: [
+            { name: 'clustering_engine.py', path: 'services/ml-service/src/engines/clustering_engine.py', size: '17KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Statistical Engine': {
+        category: 'ml-engines',
+        summary: 'Comprehensive statistical analysis suite',
+        explanation: 'Full statistical analysis including hypothesis tests, correlations, and distributions. Generates summary statistics and significance tests.',
+        files: [
+            { name: 'statistical_engine.py', path: 'services/ml-service/src/engines/statistical_engine.py', size: '23KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Lead Scoring': {
+        category: 'ml-engines',
+        summary: 'ML-powered lead qualification scoring',
+        explanation: 'Scores leads based on likelihood to convert. Uses gradient boosting with feature importance for transparent scoring.',
+        files: [
+            { name: 'lead_scoring_engine.py', path: 'services/ml-service/src/engines/lead_scoring_engine.py', size: '32KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
     // ══════════════════════════════════════════════════════════
     // BACKEND - Tier 2
     // ══════════════════════════════════════════════════════════
@@ -315,6 +457,70 @@ const keywordData = {
         folder: 'k8s/base/'
     },
 
+    'Rate Limiting': {
+        category: 'security',
+        summary: 'Adaptive rate limiting with Redis backend',
+        explanation: 'Protects against DDoS and brute force attacks. Adaptive limits adjust based on request patterns and user reputation.',
+        files: [
+            { name: 'adaptive_rate_limit.py', path: 'shared/security/adaptive_rate_limit.py', size: '13KB' },
+            { name: 'redis_rate_limit.py', path: 'shared/security/redis_rate_limit.py', size: '9KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
+    'MFA Authentication': {
+        category: 'security',
+        summary: 'Multi-factor authentication with TOTP',
+        explanation: 'Time-based one-time passwords for second factor authentication. QR code enrollment and backup codes for recovery.',
+        files: [
+            { name: 'mfa.py', path: 'shared/security/mfa.py', size: '14KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
+    'PII Detection': {
+        category: 'security',
+        summary: 'Automatic PII scanning and redaction',
+        explanation: 'Detects personal identifiable information in text. Automatic redaction protects sensitive data in logs and exports.',
+        files: [
+            { name: 'pii_detector.py', path: 'shared/security/pii_detector.py', size: '12KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
+    'Content Sanitizer': {
+        category: 'security',
+        summary: 'XSS prevention and content sanitization',
+        explanation: 'Sanitizes user input to prevent cross-site scripting attacks. HTML encoding and dangerous pattern removal.',
+        files: [
+            { name: 'content_sanitizer.py', path: 'shared/security/content_sanitizer.py', size: '4KB' },
+            { name: 'xss.py', path: 'shared/security/xss.py', size: '12KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
+    'Input Validation': {
+        category: 'security',
+        summary: 'Schema-based request validation',
+        explanation: 'Validates all API inputs against strict schemas. Rejects malformed requests before processing.',
+        files: [
+            { name: 'validation.py', path: 'shared/security/validation.py', size: '7KB' },
+            { name: 'file_validator.py', path: 'shared/security/file_validator.py', size: '9KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
+    'Audit Logging': {
+        category: 'security',
+        summary: 'Comprehensive security event audit trail',
+        explanation: 'Logs all security-relevant events with tamper-evident formatting. Supports compliance requirements and forensic analysis.',
+        files: [
+            { name: 'audit_logger.py', path: 'shared/security/audit_logger.py', size: '9KB' },
+            { name: 'audit_events.py', path: 'shared/security/audit_events.py', size: '8KB' }
+        ],
+        folder: 'shared/security/'
+    },
+
     // ══════════════════════════════════════════════════════════
     // ARCHITECTURE PATTERNS - Tier 3
     // ══════════════════════════════════════════════════════════
@@ -331,10 +537,11 @@ const keywordData = {
 
     'Microservices': {
         category: 'patterns',
-        summary: '10 services following hub-and-spoke pattern',
-        explanation: 'API Gateway routes to specialized services (Gemma, Transcription, RAG, ML, Emotion, Insights). Internal network isolates services.',
+        summary: '12 services following hub-and-spoke pattern',
+        explanation: 'API Gateway routes to specialized services (Gemma, Transcription, RAG, ML, Emotion, Insights, N8N, Fiserv). NGINX handles TLS termination. Internal network isolates services.',
         files: [
-            { name: 'main.py', path: 'services/api-gateway/src/main.py', size: '45KB' }
+            { name: 'main.py', path: 'services/api-gateway/src/main.py', size: '45KB' },
+            { name: 'docker-compose.yml', path: 'docker/docker-compose.yml', size: '22KB' }
         ],
         folder: 'services/'
     },
@@ -357,6 +564,64 @@ const keywordData = {
             { name: 'engines.py', path: 'services/ml-service/src/engines.py', size: '61KB' }
         ],
         folder: 'services/ml-service/src/'
+    },
+
+    // ══════════════════════════════════════════════════════════
+    // NEW ADDITIONS - Enterprise Integrations
+    // ══════════════════════════════════════════════════════════
+
+    'Salesforce CRM': {
+        category: 'ml-engines',
+        summary: '5 specialized CRM analytics engines for enterprise sales',
+        explanation: 'Suite of Salesforce-integrated engines: Churn Prediction, Next-Best-Action, Deal Velocity, Competitive Intelligence, and Customer 360 health scoring.',
+        files: [
+            { name: 'salesforce_churn_engine.py', path: 'services/ml-service/src/engines/salesforce_churn_engine.py', size: '25KB' },
+            { name: 'salesforce_nba_engine.py', path: 'services/ml-service/src/engines/salesforce_nba_engine.py', size: '23KB' },
+            { name: 'salesforce_c360_engine.py', path: 'services/ml-service/src/engines/salesforce_c360_engine.py', size: '36KB' }
+        ],
+        folder: 'services/ml-service/src/engines/'
+    },
+
+    'Fiserv Banking': {
+        category: 'backend',
+        summary: 'SCU credit union integration for banking data',
+        explanation: 'Banking hub service connecting to Fiserv API for account balances, transaction history, and financial analytics via OAuth2 authentication.',
+        files: [
+            { name: 'main.py', path: 'services/fiserv-service/src/main.py', size: '15KB' }
+        ],
+        folder: 'services/fiserv-service/src/'
+    },
+
+    'n8n Automation': {
+        category: 'patterns',
+        summary: 'Voice commands and smart home automation',
+        explanation: 'Integration service for Voice Monkey enabling Alexa voice control. Provides webhook endpoints for n8n workflow automation.',
+        files: [
+            { name: 'main.py', path: 'services/n8n-service/src/main.py', size: '10KB' }
+        ],
+        folder: 'services/n8n-service/src/'
+    },
+
+    'HTTPS/TLS': {
+        category: 'security',
+        summary: 'TLS 1.3 reverse proxy with NGINX',
+        explanation: 'Production HTTPS with certificate management, security headers (HSTS, CSP), and load balancing. All traffic encrypted in transit.',
+        files: [
+            { name: 'Dockerfile.nginx', path: 'docker/Dockerfile.nginx', size: '1KB' },
+            { name: 'default.conf', path: 'docker/nginx/default.conf', size: '3KB' }
+        ],
+        folder: 'docker/nginx/'
+    },
+
+    'Istio Service Mesh': {
+        category: 'infrastructure',
+        summary: 'Service mesh for microservices communication',
+        explanation: 'Istio configuration for VirtualService routing, DestinationRule policies, mTLS between services, and traffic management.',
+        files: [
+            { name: 'virtual-services.yaml', path: 'k8s/istio/virtual-services.yaml', size: '5KB' },
+            { name: 'destination-rules.yaml', path: 'k8s/istio/destination-rules.yaml', size: '3KB' }
+        ],
+        folder: 'k8s/istio/'
     }
 };
 

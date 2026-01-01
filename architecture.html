@@ -39,7 +39,7 @@
       line-height: var(--leading-relaxed);
     }
 
-    /* Visual Architecture Diagram - Custom CSS Grid Based */
+    /* Visual Architecture Diagram - SVG Overlay Based */
     .arch-visual-section {
       padding: var(--space-16) 0 var(--space-24);
     }
@@ -65,7 +65,7 @@
       margin-bottom: var(--space-10);
     }
 
-    /* Custom Architecture Diagram */
+    /* New Diagram Styles */
     .arch-diagram {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
@@ -73,24 +73,38 @@
       padding: var(--space-10);
       box-shadow: var(--shadow-sm);
       overflow-x: auto;
+      /* Allow scrolling if it gets too wide */
+      position: relative;
     }
 
     .diagram-layers {
       display: flex;
       flex-direction: column;
-      gap: var(--space-6);
-      min-width: 800px;
+      gap: 100px;
+      /* Increased gap for clear lines */
+      min-width: 1000px;
+      /* Ensure enough width */
+      position: relative;
+      z-index: 2;
+      align-items: center;
+      /* Center everything */
     }
 
     .diagram-layer {
       display: flex;
       align-items: center;
       gap: var(--space-4);
+      position: relative;
+      width: 100%;
+      justify-content: center;
     }
 
     .layer-label {
-      width: 100px;
-      flex-shrink: 0;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 80px;
       font-size: var(--text-xs);
       font-weight: var(--weight-medium);
       color: var(--text-tertiary);
@@ -100,29 +114,56 @@
 
     .layer-content {
       display: flex;
-      gap: var(--space-3);
-      flex: 1;
+      /* Default flex */
+      gap: var(--space-6);
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Grid for Services to prevent messy wrapping */
+    #layer-services .layer-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-8);
+      /* wider gap */
     }
 
     .diagram-node {
-      flex: 1;
-      padding: var(--space-4) var(--space-5);
+      padding: var(--space-4) var(--space-6);
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       text-align: center;
       transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+      z-index: 2;
+      min-width: 160px;
+      background-clip: padding-box;
+      /* Cleaner borders */
     }
 
     .diagram-node:hover {
       border-color: var(--border-hover);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-md);
+      background: var(--bg-elevated);
+    }
+
+    /* Node States */
+    .diagram-node.active-pulse {
+      animation: pulse 2s infinite;
+      border-color: var(--success);
+      color: var(--text-primary);
     }
 
     .diagram-node.gateway {
       border-color: rgba(22, 163, 74, 0.3);
       background: rgba(22, 163, 74, 0.05);
+    }
+
+    .diagram-node.gpu-node {
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.05);
     }
 
     .node-name {
@@ -148,30 +189,31 @@
       border-radius: var(--radius-sm);
     }
 
-    /* Connector Lines */
-    .layer-connector {
-      display: flex;
-      justify-content: center;
-      padding: var(--space-2) 0;
-      padding-left: 116px;
-    }
-
-    .connector-line {
-      width: 2px;
-      height: 24px;
-      background: linear-gradient(to bottom, var(--border-hover), var(--border));
-      position: relative;
-    }
-
-    .connector-line::after {
-      content: '';
+    /* SVG Overlay */
+    .svg-overlay {
       position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 6px solid var(--border);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .connector-path {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 1.5;
+      opacity: 0.6;
+      transition: stroke 0.3s ease, opacity 0.3s ease, stroke-width 0.3s ease;
+    }
+
+    .connector-path.active {
+      stroke: var(--success);
+      stroke-width: 2.5;
+      opacity: 1;
+      stroke-dasharray: 10;
+      animation: flow 1s linear infinite;
     }
 
     /* Services Grid */
@@ -203,6 +245,7 @@
     .service-card:hover {
       border-color: var(--border-hover);
       box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
 
     .service-header {
@@ -257,7 +300,7 @@
 
     .engines-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: var(--space-3);
     }
 
@@ -271,14 +314,18 @@
       border-radius: var(--radius-md);
       text-align: center;
       transition: all var(--duration-fast) var(--ease-out);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .engine-item:hover {
       border-color: var(--border-hover);
       background: var(--bg-secondary);
+      transform: translateY(-2px);
     }
 
-    /* K8s Section */
+    /* K8s Section - Keeping original styling */
     .k8s-section {
       padding: var(--space-16) 0;
       background: var(--bg-secondary);
@@ -321,10 +368,6 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .k8s-list li:last-child {
-      border-bottom: none;
-    }
-
     .k8s-list li::before {
       content: ">";
       position: absolute;
@@ -332,49 +375,6 @@
       color: var(--text-tertiary);
       font-family: var(--font-mono);
       font-size: var(--text-xs);
-    }
-
-    /* Tech Stack */
-    .tech-section {
-      padding: var(--space-16) 0;
-    }
-
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-8);
-    }
-
-    @media (max-width: 768px) {
-      .tech-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .tech-category h4 {
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin-bottom: var(--space-4);
-    }
-
-    .tech-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-    }
-
-    .tech-item {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      padding: var(--space-2) 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tech-item:last-child {
-      border-bottom: none;
     }
 
     /* Decorative */
@@ -400,7 +400,7 @@
         <a href="index.html" class="nav-link">Home</a>
         <a href="architecture.html" class="nav-link active">Architecture</a>
         <a href="about.html" class="nav-link">About</a>
-        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="demo/index.html" class="nav-link">Demo</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
     </div>
@@ -411,7 +411,9 @@
       <div class="container">
         <div class="arch-intro reveal">
           <h1>Architecture</h1>
-          <p>A technical deep-dive into the NeMo AI Platform: 10 services, 29 ML engines, full Kubernetes deployment,
+          <p>A technical deep-dive into the NeMo AI Platform architecture: 12 distributed services, 37 specialized ML
+            engines, full Kubernetes
+            deployment with Istio service mesh,
             all orchestrated on a single consumer GPU.</p>
         </div>
       </div>
@@ -422,121 +424,120 @@
         <div class="decorative-line"></div>
         <span class="section-label">System Overview</span>
         <h2 class="section-title">How It Works</h2>
-        <p class="section-desc">A layered architecture designed for GPU efficiency and real-time processing</p>
+        <p class="section-desc">A layered architecture designed for GPU efficiency and real-time processing.</p>
 
         <div class="arch-diagram reveal">
+
+          <!-- SVG Overlay for Connectors -->
+          <svg class="svg-overlay" id="diagram-connections">
+            <!-- Paths will be drawn dynamically via JS to match node positions -->
+          </svg>
+
           <div class="diagram-layers">
             <!-- Client Layer -->
-            <div class="diagram-layer">
+            <div class="diagram-layer" id="layer-clients">
               <span class="layer-label">Clients</span>
               <div class="layer-content">
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-frontend">
                   <div class="node-name">Web Frontend</div>
                   <div class="node-desc">20+ pages</div>
                 </div>
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-mobile">
                   <div class="node-name">Flutter Mobile</div>
                   <div class="node-desc">Cross-platform</div>
                 </div>
               </div>
             </div>
 
-            <div class="layer-connector">
-              <div class="connector-line"></div>
-            </div>
-
             <!-- Gateway Layer -->
-            <div class="diagram-layer">
+            <div class="diagram-layer" id="layer-gateway">
               <span class="layer-label">Gateway</span>
               <div class="layer-content">
-                <div class="diagram-node gateway">
+                <div class="diagram-node gateway" id="node-nginx">
+                  <div class="node-name">NGINX</div>
+                  <div class="node-desc">TLS Termination</div>
+                  <span class="node-port">:443</span>
+                </div>
+                <div class="diagram-node gateway" id="node-api">
                   <div class="node-name">API Gateway</div>
-                  <div class="node-desc">JWT Auth + Rate Limiting + WebSocket</div>
+                  <div class="node-desc">Auth / Limits</div>
                   <span class="node-port">:8000</span>
                 </div>
               </div>
             </div>
 
-            <div class="layer-connector">
-              <div class="connector-line"></div>
-            </div>
-
-            <!-- Services Layer -->
-            <div class="diagram-layer">
+            <!-- Services Layer (Grid Layout) -->
+            <div class="diagram-layer" id="layer-services">
               <span class="layer-label">Services</span>
               <div class="layer-content">
-                <div class="diagram-node">
+                <!-- Row 1: Core AI -->
+                <div class="diagram-node" id="node-gemma">
                   <div class="node-name">Gemma</div>
-                  <div class="node-desc">LLM</div>
+                  <div class="node-desc">LLM AI</div>
                   <span class="node-port">:8001</span>
                 </div>
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-transcribe">
                   <div class="node-name">Transcription</div>
                   <div class="node-desc">ASR</div>
                   <span class="node-port">:8003</span>
                 </div>
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-rag">
                   <div class="node-name">RAG</div>
                   <div class="node-desc">Context</div>
                   <span class="node-port">:8004</span>
                 </div>
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-emotion">
                   <div class="node-name">Emotion</div>
                   <div class="node-desc">Analysis</div>
                   <span class="node-port">:8005</span>
                 </div>
-                <div class="diagram-node">
+
+                <!-- Row 2: Integration -->
+                <div class="diagram-node" id="node-ml">
                   <div class="node-name">ML Service</div>
-                  <div class="node-desc">29 Engines</div>
+                  <div class="node-desc">37 Engines</div>
                   <span class="node-port">:8006</span>
                 </div>
-              </div>
-            </div>
-
-            <div class="layer-connector">
-              <div class="connector-line"></div>
-            </div>
-
-            <!-- GPU Layer -->
-            <div class="diagram-layer">
-              <span class="layer-label">GPU</span>
-              <div class="layer-content">
-                <div class="diagram-node">
-                  <div class="node-name">GPU Coordinator</div>
-                  <div class="node-desc">Semaphore Locks + Preemptive Scheduling</div>
-                  <span class="node-port">:8002</span>
+                <div class="diagram-node" id="node-insights">
+                  <div class="node-name">Insights</div>
+                  <div class="node-desc">Analytics</div>
+                  <span class="node-port">:8010</span>
+                </div>
+                <div class="diagram-node" id="node-fiserv">
+                  <div class="node-name">Fiserv</div>
+                  <div class="node-desc">Banking</div>
+                  <span class="node-port">:8015</span>
+                </div>
+                <div class="diagram-node" id="node-n8n">
+                  <div class="node-name">N8N</div>
+                  <div class="node-desc">Automation</div>
+                  <span class="node-port">:8011</span>
                 </div>
               </div>
             </div>
 
-            <div class="layer-connector">
-              <div class="connector-line"></div>
-            </div>
-
-            <!-- Infrastructure Layer -->
-            <div class="diagram-layer">
+            <!-- GPU / Infra Layer -->
+            <div class="diagram-layer" id="layer-infra">
               <span class="layer-label">Infra</span>
               <div class="layer-content">
-                <div class="diagram-node">
+                <div class="diagram-node gpu-node" id="node-gpu">
+                  <div class="node-name">GPU Coordinator</div>
+                  <div class="node-desc">Queue Service</div>
+                  <span class="node-port">:8002</span>
+                </div>
+                <div class="diagram-node" id="node-redis">
                   <div class="node-name">Redis</div>
-                  <div class="node-desc">Cache + Locks</div>
+                  <div class="node-desc">Cache/Locks</div>
                   <span class="node-port">:6379</span>
                 </div>
-                <div class="diagram-node">
+                <div class="diagram-node" id="node-postgres">
                   <div class="node-name">PostgreSQL</div>
-                  <div class="node-desc">Task Queue</div>
+                  <div class="node-desc">Persistence</div>
                   <span class="node-port">:5432</span>
-                </div>
-                <div class="diagram-node">
-                  <div class="node-name">FAISS</div>
-                  <div class="node-desc">Vector Store</div>
-                </div>
-                <div class="diagram-node">
-                  <div class="node-name">SQLCipher</div>
-                  <div class="node-desc">Encrypted DB</div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -546,8 +547,9 @@
       <div class="container">
         <div class="decorative-line"></div>
         <span class="section-label">Core Services</span>
-        <h2 class="section-title">10 Microservices</h2>
-        <p class="section-desc">8 application services + 2 infrastructure services working in concert</p>
+        <h2 class="section-title">12 Microservices</h2>
+        <p class="section-desc">10 application services + 2 infrastructure services working in concert, all Dockerized.
+        </p>
 
         <div class="services-grid">
           <div class="service-card reveal">
@@ -570,11 +572,11 @@
 
           <div class="service-card reveal">
             <div class="service-header">
-              <span class="service-name">gpu-coordinator</span>
+              <span class="service-name">queue-service (GPU Coord)</span>
               <span class="service-port">:8002</span>
             </div>
             <p class="service-desc">VRAM orchestration via Redis semaphores. Manages model loading, memory allocation,
-              and preemptive pausing.</p>
+              and preemptive pausing between Gemma and ASR.</p>
           </div>
 
           <div class="service-card reveal">
@@ -582,7 +584,8 @@
               <span class="service-name">transcription-service</span>
               <span class="service-port">:8003</span>
             </div>
-            <p class="service-desc">Real-time ASR using Parakeet TDT 0.6B. Includes speaker diarization (Sortformer) and
+            <p class="service-desc">Real-time ASR using Parakeet RNNT 0.6b. Includes speaker diarization (Sortformer)
+              and
               streaming audio processing.</p>
           </div>
 
@@ -609,8 +612,8 @@
               <span class="service-name">ml-service</span>
               <span class="service-port">:8006</span>
             </div>
-            <p class="service-desc">"System 2" thinking with 29 specialized engines. Titan AutoML, Oracle Causal, Newton
-              Symbolic, and more.</p>
+            <p class="service-desc">"System 2" thinking with 37 specialized engines. Titan AutoML, Oracle Causal, Newton
+              Symbolic, Salesforce CRM analytics, and more.</p>
           </div>
 
           <div class="service-card reveal">
@@ -619,7 +622,43 @@
               <span class="service-port">:8010</span>
             </div>
             <p class="service-desc">Analytics and AutoML experiments. Revenue forecasting, anomaly detection, and
-              business intelligence.</p>
+              business intelligence visualization.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">nginx</span>
+              <span class="service-port">:443</span>
+            </div>
+            <p class="service-desc">HTTPS reverse proxy with TLS 1.3 termination. Handles SSL certificates, security
+              headers, and load balancing.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">n8n-service</span>
+              <span class="service-port">:8011</span>
+            </div>
+            <p class="service-desc">Voice command integration and smart home automation. Connects to Voice Monkey for
+              Alexa control.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">fiserv-service</span>
+              <span class="service-port">:8015</span>
+            </div>
+            <p class="service-desc">Banking hub integrating with Fiserv API for account data, transactions, and
+              financial analytics.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-header">
+              <span class="service-name">redis + postgres</span>
+              <span class="service-port">Infra</span>
+            </div>
+            <p class="service-desc">Persistence layer. Redis for high-speed caching and locks; PostgreSQL for durable
+              data and task queues.</p>
           </div>
         </div>
       </div>
@@ -629,8 +668,8 @@
       <div class="container">
         <div class="decorative-line"></div>
         <span class="section-label">ML Capabilities</span>
-        <h2 class="section-title">29 ML Engines</h2>
-        <p class="section-desc">Specialized processing engines for analytical thinking</p>
+        <h2 class="section-title">37 Specialized ML Engines</h2>
+        <p class="section-desc">A comprehensive suite of analytical engines powered by the ML Service.</p>
 
         <div class="engine-category reveal">
           <h4 class="category-title">Core AI Models</h4>
@@ -638,14 +677,14 @@
             <div class="engine-item">Gemma 3 4B</div>
             <div class="engine-item">Parakeet ASR</div>
             <div class="engine-item">TitaNet Speaker</div>
-            <div class="engine-item">DistilRoBERTa</div>
+            <div class="engine-item">DistilRoBERTa (Emotion)</div>
             <div class="engine-item">MiniLM Embeddings</div>
-            <div class="engine-item">Sortformer Diar</div>
+            <div class="engine-item">Sortformer Diarization</div>
           </div>
         </div>
 
         <div class="engine-category reveal">
-          <h4 class="category-title">AutoML and Predictive</h4>
+          <h4 class="category-title">AutoML & Predictive (Titan Series)</h4>
           <div class="engines-grid">
             <div class="engine-item">Titan AutoML</div>
             <div class="engine-item">Oracle Causal</div>
@@ -653,6 +692,9 @@
             <div class="engine-item">Chronos Temporal</div>
             <div class="engine-item">Galileo Geometric</div>
             <div class="engine-item">Scout Discovery</div>
+            <div class="engine-item">Predictive Engine</div>
+            <div class="engine-item">Statistical Engine</div>
+            <div class="engine-item">Trend Engine</div>
           </div>
         </div>
 
@@ -665,6 +707,8 @@
             <div class="engine-item">Profit Margin</div>
             <div class="engine-item">Cost Optimization</div>
             <div class="engine-item">Pricing Strategy</div>
+            <div class="engine-item">ROI Prediction</div>
+            <div class="engine-item">Inventory Optimization</div>
           </div>
         </div>
 
@@ -677,11 +721,25 @@
             <div class="engine-item">Customer LTV</div>
             <div class="engine-item">Market Basket</div>
             <div class="engine-item">Spend Pattern</div>
-            <div class="engine-item">FAISS Retrieval</div>
+            <div class="engine-item">Deep Feature</div>
             <div class="engine-item">Universal Graph</div>
             <div class="engine-item">Flash Inference</div>
             <div class="engine-item">Mirror Synthetic</div>
             <div class="engine-item">RAG Evaluation</div>
+            <div class="engine-item">Quality Insights</div>
+          </div>
+        </div>
+
+        <div class="engine-category reveal">
+          <h4 class="category-title">Salesforce CRM Analytics</h4>
+          <div class="engines-grid">
+            <div class="engine-item">Churn Prediction</div>
+            <div class="engine-item">Next Best Action</div>
+            <div class="engine-item">Deal Velocity</div>
+            <div class="engine-item">Competitive Intel</div>
+            <div class="engine-item">Customer 360</div>
+            <div class="engine-item">Lead Scoring</div>
+            <div class="engine-item">Opportunity Score</div>
           </div>
         </div>
       </div>
@@ -728,52 +786,16 @@
               <li>Init containers for setup</li>
             </ul>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="tech-section">
-      <div class="container">
-        <div class="decorative-line"></div>
-        <span class="section-label">Stack</span>
-        <h2 class="section-title">Technology</h2>
-        <p class="section-desc">Production-grade tools and frameworks</p>
-
-        <div class="tech-grid reveal">
-          <div class="tech-category">
-            <h4>AI / ML</h4>
-            <div class="tech-list">
-              <div class="tech-item">PyTorch 2.0</div>
-              <div class="tech-item">NVIDIA NeMo</div>
-              <div class="tech-item">Hugging Face Transformers</div>
-              <div class="tech-item">FAISS</div>
-              <div class="tech-item">llama.cpp (GGUF)</div>
-              <div class="tech-item">scikit-learn</div>
-            </div>
-          </div>
-
-          <div class="tech-category">
-            <h4>Backend</h4>
-            <div class="tech-list">
-              <div class="tech-item">Python 3.11</div>
-              <div class="tech-item">FastAPI + Uvicorn</div>
-              <div class="tech-item">PostgreSQL 15</div>
-              <div class="tech-item">Redis</div>
-              <div class="tech-item">WebSocket</div>
-              <div class="tech-item">SQLCipher (AES-256)</div>
-            </div>
-          </div>
-
-          <div class="tech-category">
-            <h4>Infrastructure</h4>
-            <div class="tech-list">
-              <div class="tech-item">Docker + Compose</div>
-              <div class="tech-item">Kubernetes + Kustomize</div>
-              <div class="tech-item">CUDA 12.1</div>
-              <div class="tech-item">NGINX Ingress</div>
-              <div class="tech-item">Ubuntu 22.04</div>
-              <div class="tech-item">systemd</div>
-            </div>
+          <div class="k8s-card reveal">
+            <h4>Istio Service Mesh</h4>
+            <ul class="k8s-list">
+              <li>VirtualService routing</li>
+              <li>DestinationRule policies</li>
+              <li>Gateway TLS termination</li>
+              <li>mTLS between services</li>
+              <li>Traffic management</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -781,10 +803,133 @@
   </main>
 
   <footer class="footer">
-    <p class="footer-text">2025 Pruitt Colon</p>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-brand">Pruitt Colon</a>
+          <p class="subtitle" style="margin-top: 8px;">Senior Software Engineer</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/pruittcolon" class="footer-social" aria-label="GitHub">GH</a>
+          <a href="https://linkedin.com/in/pruittcolon" class="footer-social" aria-label="LinkedIn">LI</a>
+          <a href="contact.html" class="footer-contact-btn">Get in Touch</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-text">&copy; 2024 Pruitt Colon. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    // Smooth Connector Drawing Script
+    document.addEventListener('DOMContentLoaded', () => {
+      const svg = document.getElementById('diagram-connections');
+
+      const connections = [
+        // Frontend -> Gateway
+        ['node-frontend', 'node-nginx'],
+        ['node-mobile', 'node-nginx'],
+        ['node-nginx', 'node-api'],
+
+        // API -> Core AI (Row 1)
+        ['node-api', 'node-gemma'],
+        ['node-api', 'node-transcribe'],
+        ['node-api', 'node-rag'],
+        ['node-api', 'node-emotion'],
+
+        // API -> Integration (Row 2)
+        ['node-api', 'node-ml'],
+        ['node-api', 'node-insights'],
+        ['node-api', 'node-fiserv'],
+        ['node-api', 'node-n8n'],
+
+        // Dependencies
+        ['node-gemma', 'node-gpu'],     // Gemma -> GPU
+        ['node-transcribe', 'node-gpu'], // Transcribe -> GPU
+        ['node-ml', 'node-gpu'],         // ML -> GPU
+
+        ['node-gemma', 'node-rag'],      // Context
+        ['node-transcribe', 'node-emotion'], // Audio
+
+        // Infra
+        ['node-gpu', 'node-redis'],      // Coordinator -> Redis
+        ['node-ml', 'node-postgres']     // ML -> Postgres
+      ];
+
+      function drawConnections() {
+        svg.innerHTML = ''; // Clear existing
+        const containerRect = document.querySelector('.diagram-layers').getBoundingClientRect();
+
+        // Configure SVG 
+        svg.setAttribute('width', containerRect.width);
+        svg.setAttribute('height', containerRect.height);
+
+        connections.forEach(([startId, endId]) => {
+          const startEl = document.getElementById(startId);
+          const endEl = document.getElementById(endId);
+
+          if (!startEl || !endEl) return;
+
+          const startRect = startEl.getBoundingClientRect();
+          const endRect = endEl.getBoundingClientRect();
+
+          // Calculate relative coordinates
+          const x1 = startRect.left + startRect.width / 2 - containerRect.left;
+          const y1 = startRect.bottom - containerRect.top; // Start from bottom
+          const x2 = endRect.left + endRect.width / 2 - containerRect.left;
+          const y2 = endRect.top - containerRect.top; // End at top
+
+          // For nodes in subsequent layers (Gemma -> GPU), simple top-down
+          // For Row 2 nodes (ML Service), we need to avoid cutting through Row 1 if possible
+          // But strict hierarchy (API -> Row 2) means we just go down.
+          // Since it's a grid, API is centered above. Row 2 is below Row 1.
+
+          // Bezier Control Points
+          // Pull control points vertically to create specific curve shape
+          const dist = Math.abs(y2 - y1);
+          const cpY = dist * 0.5; // Control point strength
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+          // Use M C command for cubic bezier
+          const d = `M ${x1} ${y1} C ${x1} ${y1 + cpY}, ${x2} ${y2 - cpY}, ${x2} ${y2}`;
+
+          path.setAttribute('d', d);
+          path.classList.add('connector-path');
+          path.setAttribute('id', `conn-${startId}-${endId}`);
+
+          svg.appendChild(path);
+
+          // Add hover listeners
+          const nodes = [startEl, endEl];
+          nodes.forEach(node => {
+            node.addEventListener('mouseenter', () => {
+              path.classList.add('active');
+              startEl.classList.add('active-pulse');
+              endEl.classList.add('active-pulse');
+            });
+            node.addEventListener('mouseleave', () => {
+              path.classList.remove('active');
+              startEl.classList.remove('active-pulse');
+              endEl.classList.remove('active-pulse');
+            });
+          });
+        });
+      }
+
+      // Initial draw with small delay to ensure layout stable
+      setTimeout(drawConnections, 100);
+
+      // Redraw on resize
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(drawConnections, 100);
+      });
+    });
+  </script>
 </body>
 
 </html>

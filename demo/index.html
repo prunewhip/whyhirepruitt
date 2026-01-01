@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vox Amelior - Enhancing business through voice intelligence.">
+  <title>Vox Amelior - Your Business, Better</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="assets/js/mock_data.js"></script>
+  <script src="assets/js/api.js?v=2024110101"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/vox-amelior.css">
+  <link rel="stylesheet" href="assets/css/nexus/nav.css">
+
+  <style>
+    /* Floating Accents */
+    .floating-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.4;
+      animation: blobFloat 20s infinite ease-in-out;
+    }
+
+    .blob-1 {
+      top: 10%;
+      left: 10%;
+      width: 400px;
+      height: 400px;
+      /* Using logo's lilac white */
+      background: #eeecf9;
+      animation-delay: 0s;
+    }
+
+    .blob-2 {
+      bottom: 20%;
+      right: 10%;
+      width: 300px;
+      height: 300px;
+      /* Using logo's lavender */
+      background: #bfc2e1;
+      animation-delay: -5s;
+    }
+
+    .blob-3 {
+      top: 40%;
+      left: 60%;
+      width: 200px;
+      height: 200px;
+      /* Using logo's slate blue */
+      background: #9199be;
+      opacity: 0.15;
+      animation-delay: -10s;
+    }
+
+    @keyframes blobFloat {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+    }
+  </style>
+  <script src="assets/js/offline-banner.js"></script>
+</head>
+
+<body>
+  <!-- Navigation (Vox Amelior) -->
+  <div class="demo-mode-banner">
+    ⚠️ DEMO MODE - Static Data Simulation
+  </div>
+  <style>
+    .demo-mode-banner {
+      background: linear-gradient(90deg, #FF6B6B, #FF8E53);
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 99999;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+      margin-top: 40px !important;
+    }
+
+    .vox-nav {
+      top: 40px !important;
+    }
+
+    /* MOBILE MENU - INLINE OVERRIDE */
+    @media (max-width: 768px) {
+      .vox-nav-toggle {
+        display: flex !important;
+        z-index: 99999 !important;
+      }
+
+      .vox-nav-links {
+        display: none !important;
+        position: fixed !important;
+        top: 104px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: calc(100vh - 104px) !important;
+        width: 100vw !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        background: #FFFFFF !important;
+        padding: 2rem !important;
+        gap: 1rem !important;
+        z-index: 99998 !important;
+        overflow-y: auto !important;
+      }
+
+      .vox-nav-links.open {
+        display: flex !important;
+      }
+
+      .vox-nav-link {
+        font-size: 1.25rem !important;
+        padding: 0.75rem 1rem !important;
+        width: 100% !important;
+        display: block !important;
+        color: #334155 !important;
+      }
+
+      .vox-nav-dropdown {
+        width: 100% !important;
+        display: block !important;
+        position: static !important;
+      }
+
+      .vox-nav-dropdown-menu {
+        position: static !important;
+        display: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+        transform: none !important;
+        min-width: auto !important;
+        padding-left: 1rem !important;
+      }
+
+      .vox-nav-inner>div:last-child {
+        display: none !important;
+      }
+    }
+  </style>
+  <nav class="vox-nav">
+    <div class="vox-nav-inner">
+      <a href="index.html" class="vox-logo">
+        <div class="vox-logo-mark">
+          <img src="assets/images/logo.png" alt="Vox Amelior Logo">
+        </div>
+        <span class="vox-logo-text">Vox Amelior</span>
+      </a>
+
+      <button class="vox-nav-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="vox-nav-links">
+        <a href="#features" class="vox-nav-link">Features</a>
+        <a href="gemma.html" class="vox-nav-link">AI Assistant</a>
+        <a href="nexus.html" class="vox-nav-link">Analytics</a>
+
+        <!-- Enterprise Dropdown -->
+        <div class="vox-nav-dropdown" style="position: relative; display: inline-block;">
+          <button class="vox-nav-link"
+            style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-family: inherit; font-size: inherit; font-weight: inherit; padding: 0.5rem 1rem;">
+            Enterprise
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <div class="vox-nav-dropdown-menu"
+            style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); min-width: 200px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 0.75rem; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); padding: 0.5rem 0; z-index: 1000;">
+            <a href="enterprise/index.html"
+              style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease;">
+              <span>&#127970;</span> Overview
+            </a>
+            <a href="enterprise/salesforce/index.html"
+              style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease;">
+              <span>&#9729;</span> Salesforce CRM
+            </a>
+            <a href="enterprise/fiserv/index.html"
+              style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: all 0.15s ease;">
+              <span>&#127974;</span> Fiserv Banking
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <!-- Sign In Removed -->
+        <a href="https://whyhirepruitt.dev" class="vox-btn vox-btn-primary"
+          style="flex-grow: 1; text-align: center; min-width: 200px;">Return to Portfolio Page</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="vox-hero">
+    <!-- 3D Voice Orb Scene -->
+    <div class="scene-shell scene-shell-hero" id="hero-voice-orb" style="position: absolute; inset: 0; z-index: 0;">
+    </div>
+
+    <div class="floating-layer" style="z-index: 1;">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
+    <div style="position: relative; z-index: 2;" class="vox-hero-content">
+      <div class="vox-hero-badge">
+        <span class="vox-hero-badge-dot"></span>
+        Introducing Vox Amelior Intelligence
+      </div>
+
+      <h1 class="vox-hero-title">
+        Intelligence that <br>
+        <span class="vox-hero-accent">Translates to Growth</span>
+      </h1>
+
+      <!-- Slogan Animation Container (Smoothed) -->
+      <!-- Slogan Animation Container (High-Fidelity FLIP) -->
+      <div class="slogan-container">
+        <div class="slogan-track">
+          <span class="slogan-side left">Use your</span>
+          <div class="slogan-core-wrapper">
+            <!-- Two absolute layers for morphing -->
+            <span class="core-text-initial">voice to better</span>
+            <span class="core-text-final">Vox Amelior</span>
+          </div>
+          <span class="slogan-side right">your business</span>
+        </div>
+      </div>
+
+      <p class="vox-hero-subtitle">
+        Turn conversational data into actionable business strategies with our
+        advanced AI transparency engine.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 1rem;">
+        <a href="gemma.html" class="vox-btn vox-btn-accent" style="padding: 1rem 2rem; font-size: 1.1rem;">
+          View Features
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Feature Grid -->
+  <section class="vox-features-grid" id="features">
+    <div class="vox-card">
+      <div
+        style="margin-bottom: 1rem; color: var(--vox-primary); background: var(--vox-primary-subtle); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="mic" style="width: 24px;"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Precision Transcription</h3>
+      <p style="color: var(--vox-grey-500);">99.8% accurate real-time speech-to-text powered by next-gen neural
+        networks.</p>
+    </div>
+
+    <div class="vox-card">
+      <div
+        style="margin-bottom: 1rem; color: var(--vox-secondary-dark); background: var(--vox-secondary-subtle); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="brain" style="width: 24px;"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Cognitive Analysis</h3>
+      <p style="color: var(--vox-grey-500);">Deep semantic understanding of intent, emotion, and context in every
+        interaction.</p>
+    </div>
+
+    <div class="vox-card">
+      <div
+        style="margin-bottom: 1rem; color: var(--vox-info); background: rgba(96, 165, 250, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="bar-chart-3" style="width: 24px;"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Business Impact</h3>
+      <p style="color: var(--vox-grey-500);">Connect conversation metrics directly to KPI growth and revenue outcomes.
+      </p>
+    </div>
+  </section>
+
+  <!-- Products Section and Footer would go here (simplified for this update) -->
+  <footer style="margin-top: 4rem; padding: 2rem; text-align: center; border-top: 1px solid var(--vox-grey-100);">
+    <p style="color: var(--vox-grey-400); font-size: 0.9rem;">&copy; 2024 Vox Amelior. All rights reserved.</p>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Slogan Animation Logic (Simplified & Fixed)
+    function playSloganAnimation() {
+      const container = document.querySelector('.slogan-container');
+      const sideLeft = document.querySelector('.slogan-side.left');
+      const sideRight = document.querySelector('.slogan-side.right');
+      const coreWrapper = document.querySelector('.slogan-core-wrapper');
+
+      if (!container || !sideLeft || !sideRight || !coreWrapper) {
+        console.error('Slogan animation: Missing DOM elements');
+        return;
+      }
+
+      const TIMINGS = {
+        readTime: 5000,       // Time to read full sentence (increased)
+        fadeOutDuration: 1200, // Side text fade out (1.2s)
+        morphDelay: 2000,      // Delay before morphing center (hold "voice to better" longer)
+        holdTime: 6000,        // Time to show final "Vox Amelior"
+        resetDelay: 750        // Small pause before restarting
+      };
+
+      const runCycle = async () => {
+        // === PHASE 1: RESET TO INITIAL STATE ===
+        // Clear any inline styles from previous cycle
+        sideLeft.style.cssText = '';
+        sideRight.style.cssText = '';
+        coreWrapper.style.cssText = '';
+        container.style.cssText = '';
+
+        // Clear animation classes
+        sideLeft.classList.remove('blur-out');
+        sideRight.classList.remove('blur-out');
+        coreWrapper.classList.remove('morph-active');
+
+        // Force a reflow so reset is visible
+        void container.offsetHeight;
+
+        // === PHASE 2: WAIT FOR USER TO READ ===
+        await sleep(TIMINGS.readTime);
+
+        // === PHASE 3: FADE OUT SIDES ===
+        sideLeft.classList.add('blur-out');
+        sideRight.classList.add('blur-out');
+
+        // === PHASE 4: MORPH CENTER TEXT (overlapping with fade) ===
+        await sleep(TIMINGS.morphDelay);
+        coreWrapper.classList.add('morph-active');
+
+        // === PHASE 5: HOLD FINAL STATE ===
+        await sleep(TIMINGS.holdTime);
+
+        // === PHASE 6: LOOP ===
+        await sleep(TIMINGS.resetDelay);
+        runCycle(); // Restart
+      };
+
+      // Helper function
+      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+      // Start the animation
+      runCycle();
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', playSloganAnimation);
+    } else {
+      playSloganAnimation();
+    }
+  </script>
+  <script>
+    // Enterprise Dropdown Hover
+    document.querySelectorAll('.vox-nav-dropdown').forEach(dropdown => {
+      const menu = dropdown.querySelector('.vox-nav-dropdown-menu');
+      dropdown.addEventListener('mouseenter', () => menu.style.display = 'block');
+      dropdown.addEventListener('mouseleave', () => menu.style.display = 'none');
+
+      // Add hover effect to items
+      menu.querySelectorAll('a').forEach(item => {
+        item.addEventListener('mouseenter', () => item.style.background = 'rgba(99, 102, 241, 0.1)');
+        item.addEventListener('mouseleave', () => item.style.background = 'transparent');
+      });
+    });
+  </script>
+  <script>
+    // Verification Update
+    console.log('Antigravity Update Verified');
+  </script>
+  <script>
+    // Mobile Navigation Toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.querySelector('.vox-nav-toggle');
+      const links = document.querySelector('.vox-nav-links');
+
+      toggle?.addEventListener('click', () => {
+        toggle.classList.toggle('active');
+        links?.classList.toggle('open');
+        document.body.style.overflow = links?.classList.contains('open') ? 'hidden' : '';
+      });
+
+      links?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          toggle?.classList.remove('active');
+          links.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+      });
+    });
+  </script>
+
+  <!-- Hero Orb 3D Scene -->
+  <script type="module" src="assets/js/pages/hero-orb.js"></script>
+</body>
+
+</html>

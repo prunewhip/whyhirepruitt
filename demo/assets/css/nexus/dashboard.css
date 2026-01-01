@@ -1,0 +1,273 @@
+/**
+ * NexusAI Dashboard Visualization Styles
+ * Styles for timing gauges, radar charts, success donut, and timeline
+ */
+
+/* ============================================================================
+   Dashboard Section Container
+   ============================================================================ */
+
+.dashboard-section {
+    background: #FFFFFF;
+    border: 1px solid var(--vox-grey-100);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--vox-grey-900);
+    margin: 0;
+}
+
+.dashboard-subtitle {
+    font-size: 0.9rem;
+    color: var(--vox-grey-500);
+}
+
+/* ============================================================================
+   Metrics Grid (Gauges)
+   ============================================================================ */
+
+.dashboard-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.gauge-card {
+    background: var(--vox-grey-50);
+    border: 1px solid var(--vox-grey-100);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.gauge-container {
+    width: 100%;
+    height: 100px;
+    margin: 0 auto;
+}
+
+.gauge-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--vox-grey-600);
+    margin-top: 0.5rem;
+}
+
+/* ============================================================================
+   Performance Dashboard Grid
+   ============================================================================ */
+
+.performance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .performance-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .performance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================================
+   Radar Chart Container
+   ============================================================================ */
+
+.radar-card {
+    background: var(--vox-grey-50);
+    border: 1px solid var(--vox-grey-100);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.radar-card-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.radar-card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--vox-grey-800);
+    margin: 0;
+}
+
+.radar-container {
+    width: 100%;
+    height: 220px;
+}
+
+/* ============================================================================
+   Success Donut Chart Container
+   ============================================================================ */
+
+.donut-card {
+    background: var(--vox-grey-50);
+    border: 1px solid var(--vox-grey-100);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.donut-card-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.donut-card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--vox-grey-800);
+    margin: 0;
+}
+
+.donut-container {
+    width: 100%;
+    height: 180px;
+}
+
+.donut-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.donut-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--vox-grey-600);
+}
+
+.donut-stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.donut-stat-dot.success { background: var(--vox-success); }
+.donut-stat-dot.failed { background: var(--vox-danger); }
+.donut-stat-dot.pending { background: var(--vox-grey-300); }
+
+/* ============================================================================
+   Execution Timeline
+   ============================================================================ */
+
+.timeline-card {
+    background: var(--vox-grey-50);
+    border: 1px solid var(--vox-grey-100);
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.timeline-card-header {
+    margin-bottom: 0.5rem;
+}
+
+.timeline-card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--vox-grey-800);
+    margin: 0;
+}
+
+.timeline-container {
+    width: 100%;
+    height: 320px;
+    min-height: 200px;
+}
+
+/* ============================================================================
+   Quick Stats Bar
+   ============================================================================ */
+
+.quick-stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(34, 211, 238, 0.05) 100%);
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-stat-icon {
+    font-size: 1.25rem;
+}
+
+.quick-stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--vox-grey-900);
+}
+
+.quick-stat-label {
+    font-size: 0.75rem;
+    color: var(--vox-grey-500);
+}
+
+/* ============================================================================
+   Dashboard Animations
+   ============================================================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-section {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.gauge-card,
+.radar-card,
+.donut-card,
+.timeline-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gauge-card:hover,
+.radar-card:hover,
+.donut-card:hover,
+.timeline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}

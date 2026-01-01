@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vox Amelior Enterprise Intelligence Platform - Where Data Meets Decision">
+    <title>Vox Amelior - Enterprise Intelligence Platform</title>
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- DEMO MODE SCRIPTS -->
+    <script src="assets/js/mock_data.js"></script>
+    <script src="assets/js/api.js"></script>
+
+
+    <!-- Icons (Vendored Locally) -->
+    <script src="assets/js/vendor/lucide.min.js"></script>
+
+    <!-- Vox Amelior Design System (Light Theme) -->
+    <link rel="stylesheet" href="assets/css/vox-amelior.css">
+
+    <!-- Engine Results Styles (Light Theme) -->
+    <link rel="stylesheet" href="assets/css/nexus/nexus-engines.css">
+
+    <!-- 3D Quality Dashboard Styles -->
+    <link rel="stylesheet" href="assets/css/nexus/quality-3d.css">
+    <link rel="stylesheet" href="assets/css/nexus/nav.css">
+    <link rel="stylesheet" href="assets/css/motion.css">
+
+    <!-- Dashboard Visualization Styles -->
+    <link rel="stylesheet" href="assets/css/nexus/dashboard.css">
+
+    <!-- Chart Libraries (Vendored Locally for CSP compliance and offline) -->
+    <script src="assets/js/vendor/chart.umd.min.js"></script>
+    <script src="assets/js/vendor/plotly.min.js" defer></script>
+    <script src="assets/js/vendor/echarts.min.js" defer></script>
+
+    <!-- Financial Chart Modules (Vendored Locally) -->
+    <script src="assets/js/financial-charts-core.js" defer></script>
+    <script src="assets/js/nexus/visualizations/financial-theme.js" defer></script>
+    <script src="assets/js/financial-charts-flow.js" defer></script>
+    <script src="assets/js/financial-charts-kpi.js" defer></script>
+    <script src="assets/js/financial-charts-advanced.js" defer></script>
+
+    <!-- Three.js for 3D Visualization (Vendored Locally) -->
+    <script src="assets/js/vendor/three.min.js"></script>
+    <script src="assets/js/vendor/OrbitControls.js"></script>
+
+    <style>
+        /* CSS Variable Mapping */
+        :root {
+            --vox-error: var(--vox-danger, #EF4444);
+            --vox-accent: var(--vox-primary-light, #2B7FD4);
+        }
+
+        /* Progress Bar */
+        .analysis-progress-container {
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .analysis-progress-container.active {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--vox-grey-700);
+        }
+
+        .progress-stats {
+            font-size: 0.875rem;
+            color: var(--vox-grey-500);
+        }
+
+        .progress-bar-wrapper {
+            height: 12px;
+            background: var(--vox-grey-100);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--vox-primary) 0%, var(--vox-accent) 100%);
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar-fill.animated {
+            background: linear-gradient(90deg, var(--vox-primary), var(--vox-accent), var(--vox-primary));
+            background-size: 200% 100%;
+            animation: progressPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes progressPulse {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .progress-engine-name {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--vox-grey-500);
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--vox-grey-200);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--vox-grey-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--vox-primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--vox-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--vox-grey-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtitle {
+            color: var(--vox-grey-500);
+            margin-bottom: 1rem;
+        }
+
+        .upload-formats {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .upload-format {
+            padding: 0.25rem 0.75rem;
+            background: var(--vox-grey-100);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--vox-grey-600);
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: #FFFFFF;
+            border: 1px solid var(--vox-grey-100);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .category-card[data-category="ml"]::before {
+            background: var(--vox-primary);
+        }
+
+        .category-card[data-category="financial"]::before {
+            background: #f59e0b;
+        }
+
+        .category-card[data-category="advanced"]::before {
+            background: #ec4899;
+        }
+
+        .category-card[data-category="studio"]::before {
+            background: var(--vox-secondary);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card[data-category="ml"] .category-icon {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .category-card[data-category="financial"] .category-icon {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .category-card[data-category="advanced"] .category-icon {
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .category-card[data-category="studio"] .category-icon {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--vox-grey-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-description {
+            color: var(--vox-grey-500);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--vox-grey-50);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--vox-grey-600);
+        }
+
+        .category-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--vox-grey-100);
+        }
+
+        .category-count {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--vox-primary);
+        }
+
+        .category-arrow {
+            color: var(--vox-grey-400);
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--vox-primary) 0%, var(--vox-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: var(--vox-grey-500);
+            font-size: 1.1rem;
+        }
+
+        /* Engine Results Light Theme */
+        .engine-result-card {
+            background: #FFFFFF;
+            border: 1px solid var(--vox-grey-100);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .engine-card-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            background: var(--vox-grey-50);
+            border-bottom: 1px solid var(--vox-grey-100);
+        }
+
+        .engine-card-header h3 {
+            flex: 1;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--vox-grey-800);
+        }
+
+        .engine-status.pending {
+            color: var(--vox-grey-400);
+        }
+
+        .engine-status.running {
+            color: var(--vox-primary);
+        }
+
+        .engine-status.success {
+            color: var(--vox-success);
+        }
+
+        .engine-status.error {
+            color: var(--vox-error);
+        }
+
+        .engine-card-body {
+            padding: 1.5rem;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: var(--vox-grey-50);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+        }
+
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--vox-grey-100);
+            color: var(--vox-grey-600);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-success {
+            color: var(--vox-success);
+        }
+
+        .log-error {
+            color: var(--vox-error);
+        }
+
+        .log-warning {
+            color: #f59e0b;
+        }
+    </style>
+    <script src="assets/js/offline-banner.js"></script>
+</head>
+
+<body>
+    <style>
+        .demo-mode-banner {
+            background: linear-gradient(90deg, #FF6B6B, #FF8E53);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-weight: bold;
+            font-family: 'Inter', sans-serif;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            margin-top: 40px !important;
+        }
+
+        .vox-nav {
+            top: 40px !important;
+        }
+    </style>
+    <div class="demo-mode-banner">
+        ⚠️ DEMO MODE - Static Data Simulation
+    </div>
+    <!-- Navigation -->
+    <nav class="vox-nav">
+        <div class="vox-nav-inner">
+            <a href="index.html" class="vox-logo">
+                <div class="vox-logo-mark">
+                    <img src="assets/images/logo.png" alt="Vox Amelior Logo">
+                </div>
+                <span class="vox-logo-text">Vox Amelior</span>
+            </a>
+
+            <button class="vox-nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="vox-nav-links">
+                <a href="index.html#features" class="vox-nav-link">Features</a>
+                <a href="gemma.html" class="vox-nav-link">AI Assistant</a>
+                <a href="nexus.html" class="vox-nav-link active">Analytics</a>
+
+                <!-- Enterprise Dropdown -->
+                <div class="vox-nav-dropdown">
+                    <button class="vox-nav-link">
+                        Enterprise
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </button>
+                    <div class="vox-nav-dropdown-menu">
+                        <a href="enterprise/index.html" class="dropdown-item">
+                            <span class="icon">&#127970;</span>
+                            <div class="text">
+                                <span class="title">Overview</span>
+                                <span class="desc">Enterprise solutions hub</span>
+                            </div>
+                        </a>
+                        <a href="enterprise/salesforce/index.html" class="dropdown-item">
+                            <span class="icon">&#9729;</span>
+                            <div class="text">
+                                <span class="title">Salesforce CRM</span>
+                                <span class="desc">CRM intelligence integration</span>
+                            </div>
+                        </a>
+                        <a href="enterprise/fiserv/index.html" class="dropdown-item">
+                            <span class="icon">&#127974;</span>
+                            <div class="text">
+                                <span class="title">Fiserv Banking</span>
+                                <span class="desc">Financial services platform</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <!-- Sign In Removed -->
+                <a href="https://whyhirepruitt.dev" class="vox-btn vox-btn-primary"
+                    style="flex-grow: 1; text-align: center; min-width: 200px;">Return to Portfolio Page</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="vox-hero">
+        <div id="nexus-hero-canvas" style="position: absolute; inset: 0; z-index: 0; pointer-events: none;"></div>
+        <div style="position: relative; z-index: 1;" class="vox-hero-content">
+            <div class="vox-hero-badge animate-fade-up" style="animation-delay: 0.1s;">
+                <span class="vox-hero-badge-dot"></span>
+                ✨ 22 AI Engines • Enterprise Grade
+            </div>
+
+            <h1 class="vox-hero-title animate-fade-up" style="animation-delay: 0.2s;">
+                Where Data Meets <br>
+                <span class="vox-hero-accent">Decision</span>
+            </h1>
+
+            <p class="vox-hero-subtitle animate-fade-up" style="animation-delay: 0.3s;">
+                Upload any database and let our AI engines automatically discover patterns,
+                predict outcomes, and generate actionable business insights.
+            </p>
+
+            <div style="display: flex; justify-content: center; gap: 1rem;" class="animate-fade-up"
+                style="animation-delay: 0.4s;">
+                <a href="#quick-start" class="vox-btn vox-btn-accent hover-lift"
+                    style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Start Section -->
+    <section style="max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem;" id="quick-start">
+        <div class="vox-card" style="padding: 2rem;">
+            <div class="section-header">
+                <h2 class="section-title">⚡ Quick Start</h2>
+                <p class="section-subtitle">Upload your data and run all 22 AI engines with one click</p>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                <div class="upload-icon">📊</div>
+                <div class="upload-title">Drop your database file here</div>
+                <div class="upload-subtitle">or click to browse • Max 50MB</div>
+                <div class="upload-formats">
+                    <span class="upload-format">.csv</span>
+                    <span class="upload-format">.json</span>
+                    <span class="upload-format">.xlsx</span>
+                    <span class="upload-format">.sqlite</span>
+                    <span class="upload-format">.parquet</span>
+                </div>
+            </div>
+            <input type="file" id="file-input"
+                accept=".csv,.tsv,.txt,.json,.jsonl,.ndjson,.xlsx,.xls,.parquet,.db,.sqlite,.sqlite3"
+                style="display: none;">
+
+            <!-- Progress Bar Container -->
+            <div class="analysis-progress-container" id="progress-container">
+                <div class="progress-header">
+                    <span class="progress-title">🧪 Running Full Analysis</span>
+                    <span class="progress-stats" id="progress-stats">0/22 engines complete</span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill animated" id="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-engine-name" id="progress-engine">Preparing...</div>
+            </div>
+
+            <!-- Analysis Button -->
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="vox-btn vox-btn-accent" style="padding: 1rem 3rem; font-size: 1.1rem;" id="analyze-btn"
+                    disabled>
+                    Start Full Analysis
+                </button>
+                <p style="margin-top: 0.75rem; color: var(--vox-grey-500); font-size: 0.9rem;">
+                    All 22 engines will analyze your data sequentially with AI summaries
+                </p>
+                <label
+                    style="display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; color: var(--vox-grey-600); font-size: 0.85rem; cursor: pointer;">
+                    <input type="checkbox" id="use-vectors" style="accent-color: var(--vox-primary);">
+                    Enable Gemma Vectorization (experimental)
+                </label>
+            </div>
+
+            <!-- 3D Engine Graph Visualization -->
+            <div id="engine-graph-section"
+                style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--vox-grey-200);">
+                <h3
+                    style="text-align: center; font-size: 1.25rem; font-weight: 600; color: var(--vox-grey-800); margin-bottom: 1rem;">
+                    🌐 Engine Network Overview
+                </h3>
+                <p style="text-align: center; color: var(--vox-grey-500); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                    Interactive 3D visualization of all 22 analysis engines and their connections
+                </p>
+                <div class="scene-shell scene-shell-lg" id="nexus-graph"
+                    style="background: linear-gradient(135deg, #f8fafc, #f1f5f9);">
+                </div>
+            </div>
+
+            <!-- Single Engine Test Panel -->
+            <div id="single-engine-panel"
+                style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--vox-grey-200); display: none;">
+                <h3
+                    style="text-align: center; font-size: 1.25rem; font-weight: 600; color: var(--vox-grey-800); margin-bottom: 1rem;">
+                    Test Individual Engines
+                </h3>
+                <p style="text-align: center; color: var(--vox-grey-500); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                    Click any engine below to run it individually. Results will appear in the Engine Results section.
+                </p>
+
+                <!-- ML Engines -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4
+                        style="font-size: 0.9rem; color: var(--vox-grey-600); margin-bottom: 0.75rem; font-weight: 600;">
+                        ML and Analytics (7 engines)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button class="single-engine-btn" data-engine="titan"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Titan
+                            AutoML</button>
+                        <button class="single-engine-btn" data-engine="predictive"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Predictive</button>
+                        <button class="single-engine-btn" data-engine="clustering"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Clustering</button>
+                        <button class="single-engine-btn" data-engine="anomaly"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Anomaly</button>
+                        <button class="single-engine-btn" data-engine="statistical"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Statistical</button>
+                        <button class="single-engine-btn" data-engine="trend"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Trend</button>
+                        <button class="single-engine-btn" data-engine="graphs"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Universal
+                            Graph</button>
+                    </div>
+                </div>
+
+                <!-- Financial Engines -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4
+                        style="font-size: 0.9rem; color: var(--vox-grey-600); margin-bottom: 0.75rem; font-weight: 600;">
+                        Financial Intelligence (12 engines)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button class="single-engine-btn" data-engine="cost"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Cost
+                            Optimization</button>
+                        <button class="single-engine-btn" data-engine="roi"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">ROI
+                            Prediction</button>
+                        <button class="single-engine-btn" data-engine="spend_patterns"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Spend
+                            Patterns</button>
+                        <button class="single-engine-btn" data-engine="budget_variance"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Budget
+                            Variance</button>
+                        <button class="single-engine-btn" data-engine="profit_margins"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Profit
+                            Margins</button>
+                        <button class="single-engine-btn" data-engine="revenue_forecasting"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Revenue
+                            Forecast</button>
+                        <button class="single-engine-btn" data-engine="customer_ltv"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Customer
+                            LTV</button>
+                        <button class="single-engine-btn" data-engine="cash_flow"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Cash
+                            Flow</button>
+                        <button class="single-engine-btn" data-engine="inventory_optimization"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Inventory</button>
+                        <button class="single-engine-btn" data-engine="pricing_strategy"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Pricing
+                            Strategy</button>
+                        <button class="single-engine-btn" data-engine="market_basket"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Market
+                            Basket</button>
+                        <button class="single-engine-btn" data-engine="resource_utilization"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Resource
+                            Util</button>
+                    </div>
+                </div>
+
+                <!-- Advanced Engines -->
+                <div style="margin-bottom: 1rem;">
+                    <h4
+                        style="font-size: 0.9rem; color: var(--vox-grey-600); margin-bottom: 0.75rem; font-weight: 600;">
+                        Advanced AI Lab (3 engines)</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button class="single-engine-btn" data-engine="rag_evaluation"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">RAG
+                            Evaluation</button>
+                        <button class="single-engine-btn" data-engine="chaos"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Chaos
+                            Engine</button>
+                        <button class="single-engine-btn" data-engine="oracle"
+                            style="padding: 0.5rem 1rem; border: 1px solid var(--vox-grey-200); background: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">Oracle
+                            Causality</button>
+                    </div>
+                </div>
+
+                <!-- Status Display -->
+                <div id="single-engine-status"
+                    style="margin-top: 1.5rem; padding: 1rem; background: var(--vox-grey-50); border-radius: 0.5rem; display: none;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div id="single-engine-spinner" class="spinner"
+                            style="width: 20px; height: 20px; border: 2px solid var(--vox-grey-200); border-top-color: var(--vox-primary); border-radius: 50%; animation: spin 1s linear infinite;">
+                        </div>
+                        <span id="single-engine-status-text" style="color: var(--vox-grey-600);">Running
+                            engine...</span>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .single-engine-btn:hover {
+                    border-color: var(--vox-primary) !important;
+                    background: rgba(99, 102, 241, 0.05) !important;
+                }
+
+                .single-engine-btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                .single-engine-btn.running {
+                    border-color: var(--vox-primary) !important;
+                    background: rgba(99, 102, 241, 0.1) !important;
+                }
+
+                .single-engine-btn.success {
+                    border-color: var(--vox-success) !important;
+                    background: rgba(34, 197, 94, 0.1) !important;
+                }
+
+                .single-engine-btn.error {
+                    border-color: var(--vox-danger) !important;
+                    background: rgba(239, 68, 68, 0.1) !important;
+                }
+
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+    </section>
+
+    <!-- Recent Analyses Section (Hidden initially) -->
+    <section style="max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: none;" id="recent-section">
+        <div class="vox-card" style="padding: 1.5rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--vox-grey-800); margin: 0 0 1rem 0;">📂 Resume
+                Previous Analysis</h3>
+            <div id="recent-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
+        </div>
+    </section>
+
+    <!-- Analysis Workspaces Section -->
+    <section style="max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem;">
+        <div class="section-header">
+            <h2 class="section-title">Analysis Workspaces</h2>
+            <p class="section-subtitle">Choose a specialized workspace or <a href="#quick-start"
+                    style="color: var(--vox-primary); text-decoration: underline;">run all engines from the hub</a></p>
+        </div>
+
+        <div class="category-grid">
+            <!-- ML & Analytics -->
+            <div class="category-card" data-category="ml">
+                <div class="category-icon">🤖</div>
+                <h3 class="category-title">ML & Analytics</h3>
+                <p class="category-description">Machine learning models for prediction, clustering, anomaly detection,
+                    and statistical analysis.</p>
+                <div class="category-tags">
+                    <span class="category-tag">Titan AutoML</span>
+                    <span class="category-tag">Clustering</span>
+                    <span class="category-tag">Anomaly</span>
+                    <span class="category-tag">+4 more</span>
+                </div>
+                <div class="category-footer">
+                    <span class="category-count">7 Engines</span>
+                    <span class="category-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Financial Intelligence -->
+            <div class="category-card" data-category="financial">
+                <div class="category-icon">💰</div>
+                <h3 class="category-title">Financial Intelligence</h3>
+                <p class="category-description">Revenue forecasting, ROI prediction, cost optimization, customer LTV,
+                    and market analysis.</p>
+                <div class="category-tags">
+                    <span class="category-tag">Revenue Forecast</span>
+                    <span class="category-tag">ROI</span>
+                    <span class="category-tag">LTV</span>
+                    <span class="category-tag">+9 more</span>
+                </div>
+                <div class="category-footer">
+                    <span class="category-count">12 Engines</span>
+                    <span class="category-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Advanced AI Lab -->
+            <div class="category-card" data-category="advanced">
+                <div class="category-icon">🔬</div>
+                <h3 class="category-title">Advanced AI Lab</h3>
+                <p class="category-description">Cutting-edge research engines: RAG evaluation, chaos analysis, and
+                    causal inference.</p>
+                <div class="category-tags">
+                    <span class="category-tag">RAG Evaluation</span>
+                    <span class="category-tag">Chaos Engine</span>
+                    <span class="category-tag">Oracle Causality</span>
+                </div>
+                <div class="category-footer">
+                    <span class="category-count">3 Engines</span>
+                    <span class="category-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Analysis Studio -->
+            <div class="category-card" data-category="studio">
+                <div class="category-icon">📊</div>
+                <h3 class="category-title">Analysis Studio</h3>
+                <p class="category-description">Compare results across runs, export reports, and dive deep into
+                    cross-engine insights.</p>
+                <div class="category-tags">
+                    <span class="category-tag">Multi-Run Compare</span>
+                    <span class="category-tag">Export PDF</span>
+                    <span class="category-tag">Session History</span>
+                </div>
+                <div class="category-footer">
+                    <span class="category-count">Results Hub</span>
+                    <span class="category-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Quality Intelligence (NEW - Flagship Feature) -->
+            <div class="category-card" data-category="quality" onclick="window.NexusUI?.showQualityDashboard()"
+                style="cursor: pointer;">
+                <div class="category-icon"
+                    style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(99, 102, 241, 0.2));">🏔️
+                </div>
+                <h3 class="category-title">Quality Intelligence</h3>
+                <p class="category-description">3D visualization of data quality. Transform Gemma scores into actionable
+                    business savings and ML-ready assessments.</p>
+                <div class="category-tags">
+                    <span class="category-tag">3D Terrain</span>
+                    <span class="category-tag">Business Savings</span>
+                    <span class="category-tag">ML Readiness</span>
+                    <span class="category-tag">LLM Analysis</span>
+                </div>
+                <div class="category-footer">
+                    <span class="category-count" style="color: #22c55e;">✨ Flagship</span>
+                    <span class="category-arrow">→</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Quality Intelligence Dashboard (Hidden initially) -->
+    <section style="max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: none;"
+        id="quality-dashboard-section">
+        <div class="vox-card" style="padding: 0; overflow: hidden;">
+            <!-- Dashboard Header -->
+            <div
+                style="padding: 1.5rem 2rem; background: linear-gradient(135deg, #0f0f17 0%, #1a1a2e 100%); border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 0 0 0.25rem 0;">🏔️
+                            Quality Intelligence Dashboard</h2>
+                        <p style="color: #888; margin: 0; font-size: 0.9rem;">3D visualization of data quality from
+                            Gemma analysis</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select id="quality-file-select" class="vox-btn vox-btn-ghost"
+                            style="background: rgba(15, 15, 25, 0.9); border: 1px solid rgba(99, 102, 241, 0.3); color: #e0e0e0;">
+                            <option value="">Select insights file...</option>
+                        </select>
+                        <button class="vox-btn vox-btn-primary" onclick="window.NexusUI?.loadQualityData()"
+                            id="load-quality-btn">
+                            🔄 Load 3D View
+                        </button>
+                        <button class="vox-btn vox-btn-ghost" onclick="window.NexusUI?.hideQualityDashboard()"
+                            style="color: #888;">
+                            ✕ Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Viewer Container -->
+            <div class="quality-3d-container" id="quality-3d-viewer">
+                <!-- Three.js renders here -->
+
+                <!-- Savings Panel Overlay -->
+                <div class="savings-panel" id="savings-panel" style="display: none;">
+                    <div class="savings-header">
+                        <div class="savings-icon">💰</div>
+                        <div>
+                            <div class="savings-title">Estimated Annual Savings</div>
+                            <div class="savings-total" id="savings-total">$0</div>
+                        </div>
+                    </div>
+                    <div class="savings-issues" id="savings-issues">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Quality Legend -->
+                <div class="quality-legend">
+                    <div class="legend-title">Quality Score</div>
+                    <div class="legend-item">
+                        <div class="legend-color high"></div>
+                        <span>8-10: High (ML Ready)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color medium"></div>
+                        <span>6-7: Medium (Review)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color low"></div>
+                        <span>1-5: Low (Exclude)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="quality-info-panel"
+                style="position: relative; display: flex; gap: 1rem; padding: 1rem 2rem; background: #0f0f17;">
+                <div class="quality-stat-card">
+                    <div class="quality-stat-label">ML Readiness</div>
+                    <div class="quality-stat-value high" id="stat-ml-readiness">-%</div>
+                </div>
+                <div class="quality-stat-card">
+                    <div class="quality-stat-label">Avg Quality</div>
+                    <div class="quality-stat-value" id="stat-avg-quality">-/10</div>
+                </div>
+                <div class="quality-stat-card">
+                    <div class="quality-stat-label">Problem Rows</div>
+                    <div class="quality-stat-value low" id="stat-problem-rows">-</div>
+                </div>
+                <div class="quality-stat-card">
+                    <div class="quality-stat-label">Data Points</div>
+                    <div class="quality-stat-value" id="stat-data-points">-</div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div style="padding: 1.5rem 2rem; background: var(--vox-grey-50);">
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--vox-grey-800); margin: 0 0 1rem 0;">📋
+                    Recommendations</h3>
+                <div id="quality-recommendations" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <p style="color: var(--vox-grey-500); margin: 0;">Select an insights file to view recommendations...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engine Results Section (Hidden initially) -->
+    <section style="max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; display: none;" id="all-engines-section">
+        <div class="vox-card" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--vox-grey-900); margin: 0;">🧪 Comprehensive
+                    Analysis Results</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="vox-btn vox-btn-ghost" id="stop-btn" onclick="window.NexusUI.stopAnalysis()"
+                        style="display: none;">Pause</button>
+                    <button class="vox-btn vox-btn-ghost" id="resume-btn" onclick="window.NexusUI.resumeAnalysis()"
+                        style="display: none;">Resume</button>
+                    <button class="vox-btn vox-btn-ghost" id="clear-btn" onclick="window.NexusUI.clearAnalysis()"
+                        style="color: var(--vox-error);">Clear/Reset</button>
+                </div>
+            </div>
+
+            <div id="all-engines-summary"
+                style="margin-bottom: 1.5rem; padding: 1rem; background: var(--vox-primary-subtle); border-radius: 0.75rem;">
+                <p style="color: var(--vox-grey-700); margin: 0;"><strong>Sequential Execution:</strong> Each engine
+                    runs one at a time showing full results + Gemma summary.</p>
+                <p style="color: var(--vox-grey-500); margin: 0.5rem 0 0 0; font-size: 0.9rem;">
+                    Database: <span id="engines-database-name">-</span> |
+                    Progress: <span id="engines-progress">0/22</span> |
+                    Status: <span id="engines-status">Ready</span> |
+                    Time: <span id="engines-total-time">0.0s</span>
+                </p>
+            </div>
+
+            <!-- Dashboard Performance Metrics -->
+            <div class="dashboard-section" id="performance-dashboard">
+                <div class="dashboard-header">
+                    <h3 class="dashboard-title">📊 Performance Dashboard</h3>
+                    <span class="dashboard-subtitle">Real-time analysis metrics</span>
+                </div>
+
+                <!-- Timing Gauges -->
+                <div class="dashboard-metrics-grid">
+                    <div class="gauge-card">
+                        <div class="gauge-container" id="gauge-total-time"></div>
+                        <div class="gauge-label">Total Time</div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-container" id="gauge-avg-time"></div>
+                        <div class="gauge-label">Avg per Engine</div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-container" id="gauge-fastest"></div>
+                        <div class="gauge-label">Fastest</div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-container" id="gauge-slowest"></div>
+                        <div class="gauge-label">Slowest</div>
+                    </div>
+                </div>
+
+                <!-- Performance Grid -->
+                <div class="performance-grid">
+                    <!-- Category Radar -->
+                    <div class="radar-card">
+                        <div class="radar-card-header">
+                            <h4 class="radar-card-title">Category Performance</h4>
+                        </div>
+                        <div class="radar-container" id="category-radar"></div>
+                    </div>
+
+                    <!-- Success Donut -->
+                    <div class="donut-card">
+                        <div class="donut-card-header">
+                            <h4 class="donut-card-title">Success Rate</h4>
+                        </div>
+                        <div class="donut-container" id="success-donut"></div>
+                        <div class="donut-stats">
+                            <span class="donut-stat"><span class="donut-stat-dot success"></span> Success</span>
+                            <span class="donut-stat"><span class="donut-stat-dot failed"></span> Failed</span>
+                            <span class="donut-stat"><span class="donut-stat-dot pending"></span> Pending</span>
+                        </div>
+                    </div>
+
+                    <!-- Execution Timeline -->
+                    <div class="timeline-card">
+                        <div class="timeline-card-header">
+                            <h4 class="timeline-card-title">Execution Timeline</h4>
+                        </div>
+                        <div class="timeline-container" id="execution-timeline"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engine Category Tabs -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <button class="vox-btn vox-btn-primary engine-category-btn active" data-category="all"
+                    onclick="window.NexusUI.switchCategory('all')">📊 All Engines
+                    (22)</button>
+                <button class="vox-btn vox-btn-ghost engine-category-btn" data-category="ml"
+                    onclick="window.NexusUI.switchCategory('ml')">🤖 ML & Analytics
+                    (7)</button>
+                <button class="vox-btn vox-btn-ghost engine-category-btn" data-category="financial"
+                    onclick="window.NexusUI.switchCategory('financial')">💰 Financial
+                    (12)</button>
+                <button class="vox-btn vox-btn-ghost engine-category-btn" data-category="advanced"
+                    onclick="window.NexusUI.switchCategory('advanced')">🔬 Advanced
+                    (3)</button>
+            </div>
+
+            <div id="category-all">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: var(--vox-grey-800);">📊 All Engines</h4>
+                    <div style="display: flex; gap: 1rem; font-size: 0.85rem;">
+                        <span id="all-success-count" style="color: var(--vox-success);">✓ 0</span>
+                        <span id="all-error-count" style="color: var(--vox-error);">✗ 0</span>
+                        <span id="all-pending-count" style="color: var(--vox-grey-400);">⏳ 22</span>
+                    </div>
+                </div>
+                <div id="all-engines-results"></div>
+            </div>
+            <div id="category-ml" style="display: none;">
+                <div id="ml-engines-results"></div>
+            </div>
+            <div id="category-financial" style="display: none;">
+                <div id="financial-engines-results"></div>
+            </div>
+            <div id="category-advanced" style="display: none;">
+                <div id="advanced-engines-results"></div>
+            </div>
+        </div>
+
+        <div class="vox-card" style="padding: 1.5rem; margin-top: 1.5rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--vox-grey-800); margin: 0 0 1rem 0;">📋 Activity
+                Log</h3>
+            <div class="activity-log" id="log"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="margin-top: 4rem; padding: 2rem; text-align: center; border-top: 1px solid var(--vox-grey-100);">
+        <p style="color: var(--vox-grey-400); font-size: 0.9rem;">🔮 NexusAI™ Enterprise Intelligence Platform • Powered
+            by 22 AI Engines • © 2024 Vox Amelior</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Enterprise Dropdown Hover
+        document.querySelectorAll('.vox-nav-dropdown').forEach(dropdown => {
+            const menu = dropdown.querySelector('.vox-nav-dropdown-menu');
+            dropdown.addEventListener('mouseenter', () => menu.style.display = 'block');
+            dropdown.addEventListener('mouseleave', () => menu.style.display = 'none');
+            menu.querySelectorAll('a').forEach(item => {
+                item.addEventListener('mouseenter', () => item.style.background = 'rgba(99, 102, 241, 0.1)');
+                item.addEventListener('mouseleave', () => item.style.background = 'transparent');
+            });
+        });
+
+        // ==================================================================
+        // Single Engine Test Functionality
+        // ==================================================================
+        let currentUploadedFilename = null;  // Will store UUID-prefixed filename
+        let targetColumn = 'math';  // Default target column
+
+        // Show panel when file is uploaded
+        window.showSingleEnginePanel = function (filename, defaultTarget) {
+            currentUploadedFilename = filename;
+            targetColumn = defaultTarget || 'math';
+            const panel = document.getElementById('single-engine-panel');
+            if (panel) {
+                panel.style.display = 'block';
+            }
+        };
+
+        // Hide panel
+        window.hideSingleEnginePanel = function () {
+            const panel = document.getElementById('single-engine-panel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+        };
+
+        // Run a single engine
+        // Run a single engine
+        window.runSingleEngine = async function (engineName) {
+            // BYPASS: Titan Engine Mock for Demo
+            if (engineName === 'titan') {
+                const btn = document.querySelector(`[data-engine="${engineName}"]`);
+                const statusEl = document.getElementById('single-engine-status');
+                const statusText = document.getElementById('single-engine-status-text');
+                const allBtns = document.querySelectorAll('.single-engine-btn');
+
+                // Update UI
+                allBtns.forEach(b => b.disabled = true);
+                btn.classList.add('running');
+                btn.classList.remove('success', 'error');
+                statusEl.style.display = 'block';
+                statusText.textContent = `Running ${engineName} engine (Demo Simulation)...`;
+
+                // Simulate network delay
+                setTimeout(() => {
+                    try {
+                        const data = window.MOCK_DATA.nexus.engines.titan;
+
+                        btn.classList.remove('running');
+                        btn.classList.add('success');
+                        statusText.textContent = `${engineName} completed successfully!`;
+
+                        // Scroll to results and show in the engine results section
+                        const resultsSection = document.getElementById('category-all');
+                        if (resultsSection) {
+                            const resultCard = createEngineResultCard(engineName, data);
+                            const enginesResults = document.getElementById('all-engines-results');
+                            if (enginesResults) {
+                                enginesResults.innerHTML = ''; // Clear previous single results
+                                enginesResults.appendChild(resultCard);
+                            }
+                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                        console.log(`[${engineName}] Result:`, data);
+                    } catch (error) {
+                        console.error(`[${engineName}] Error:`, error);
+                        btn.classList.remove('running');
+                        btn.classList.add('error');
+                        statusText.textContent = `Error: ${error.message}`;
+                    } finally {
+                        allBtns.forEach(b => b.disabled = false);
+                    }
+                }, 1500);
+                return; // Exit function, do not trigger fetch
+            }
+
+            if (!currentUploadedFilename) {
+                alert('Please upload a file first');
+                return;
+            }
+
+            const btn = document.querySelector(`[data-engine="${engineName}"]`);
+            const statusEl = document.getElementById('single-engine-status');
+            const statusText = document.getElementById('single-engine-status-text');
+            const allBtns = document.querySelectorAll('.single-engine-btn');
+
+            // Update UI
+            allBtns.forEach(b => b.disabled = true);
+            btn.classList.add('running');
+            btn.classList.remove('success', 'error');
+            statusEl.style.display = 'block';
+            statusText.textContent = `Running ${engineName} engine...`;
+
+            try {
+                const response = await fetch(`/api/analytics/run-engine/${engineName}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        filename: currentUploadedFilename,
+                        target_column: targetColumn,
+                        config: {}
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || data.error || 'Engine failed');
+                }
+
+                btn.classList.remove('running');
+                btn.classList.add('success');
+                statusText.textContent = `${engineName} completed successfully!`;
+
+                // Scroll to results and show in the engine results section
+                const resultsSection = document.getElementById('category-all');
+                if (resultsSection) {
+                    const resultCard = createEngineResultCard(engineName, data);
+                    const enginesResults = document.getElementById('all-engines-results');
+                    if (enginesResults) {
+                        enginesResults.innerHTML = ''; // Clear previous single results
+                        enginesResults.appendChild(resultCard);
+                    }
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                console.log(`[${engineName}] Result:`, data);
+
+            } catch (error) {
+                console.error(`[${engineName}] Error:`, error);
+                btn.classList.remove('running');
+                btn.classList.add('error');
+                statusText.textContent = `Error: ${error.message}`;
+            } finally {
+                allBtns.forEach(b => b.disabled = false);
+            }
+        };
+
+        // Create result card for single engine WITH PLOTLY CHART
+        // Create result card for single engine using Modular NexusViz System
+        function createEngineResultCard(engineName, data) {
+            const card = document.createElement('div');
+            card.className = 'engine-card';
+            card.style.cssText = 'background: white; border: 1px solid var(--vox-grey-200); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem;';
+
+            const engineDisplay = data.engine || data.engine_display_name || engineName;
+            const taskType = data.task_type || 'analysis';
+            const insights = data.insights || [];
+
+            // Use NexusViz modular system for visualization
+            const vizId = 'viz-' + Date.now();
+            let chartHtml = '';
+
+            if (window.NexusViz && typeof window.NexusViz.buildVizSection === 'function') {
+                // Ensure engine name is lowercase for mapping and handle variations
+                const map = {
+                    'titan_automl': 'titan',
+                    'clustering': 'clustering',
+                    'anomaly_detection': 'anomaly',
+                    'statistical_analysis': 'statistical',
+                    'trend_analysis': 'trend',
+                    'predictive_modeling': 'predictive',
+                    'universal_graph': 'graphs'
+                };
+
+                const mappedName = map[engineName.toLowerCase()] || engineName.toLowerCase();
+
+                console.log(`[Nexus] Requesting visualization for: ${mappedName}`);
+                chartHtml = window.NexusViz.buildVizSection(mappedName, data, vizId);
+
+                // Render after card is in DOM
+                if (chartHtml) {
+                    setTimeout(() => {
+                        console.log(`[Nexus] Rendering visualization for: ${mappedName}`);
+                        window.NexusViz.renderEngineVisualizations(mappedName, data, vizId);
+                    }, 150);
+                }
+            } else {
+                console.warn('[Nexus] NexusViz module not loaded, charts will be skipped');
+            }
+
+            let insightsHtml = '';
+            if (insights.length > 0) {
+                insightsHtml = `<div style="margin-top: 1rem; background: var(--vox-grey-50); padding: 1rem; border-radius: 0.5rem;">
+                    <h5 style="margin: 0 0 0.5rem 0; color: var(--vox-grey-800);">Insights</h5>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: var(--vox-grey-600); font-size: 0.9rem;">
+                        ${insights.slice(0, 5).map(i => `<li>${i}</li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+
+            let variantsHtml = '';
+            if (data.variants && data.variants.length > 0) {
+                variantsHtml = `<p style="margin-top: 0.75rem; color: var(--vox-success);">Generated ${data.variants.length} model variants</p>`;
+            }
+
+            let featuresHtml = '';
+            if (data.stable_features && data.stable_features.length > 0) {
+                featuresHtml = `<p style="margin-top: 0.5rem; color: var(--vox-grey-600); font-size: 0.9rem;">
+                    Top Features: ${data.stable_features.slice(0, 5).join(', ')}
+                </p>`;
+            }
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="margin: 0; color: var(--vox-grey-800);">${engineDisplay}</h4>
+                    <span style="padding: 0.25rem 0.75rem; background: var(--vox-success-subtle, #dcfce7); color: var(--vox-success); border-radius: 9999px; font-size: 0.75rem;">Complete</span>
+                </div>
+                <p style="color: var(--vox-grey-600); margin: 0;">Task: ${taskType}</p>
+                ${data.target_column ? `<p style="color: var(--vox-grey-600); margin: 0.25rem 0; font-size: 0.9rem;">Target: ${data.target_column}</p>` : ''}
+                ${data.best_model ? `<p style="color: var(--vox-grey-600); margin: 0.25rem 0; font-size: 0.9rem;">Best Model: ${data.best_model}</p>` : ''}
+                ${variantsHtml}
+                ${featuresHtml}
+                ${chartHtml}
+                ${insightsHtml}
+                <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; color: var(--vox-primary); font-size: 0.9rem;">View Raw JSON</summary>
+                    <pre style="background: var(--vox-grey-50); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.75rem; margin-top: 0.5rem;">${JSON.stringify(data, null, 2).slice(0, 3000)}...</pre>
+                </details>
+            `;
+
+            return card;
+        }
+
+
+
+        // Render Clustering 3D Scatter Plot
+
+        // Add click handlers to all single engine buttons
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.single-engine-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const engineName = this.getAttribute('data-engine');
+                    window.runSingleEngine(engineName);
+                });
+            });
+        });
+    </script>
+
+    <!-- Quality 3D Viewer (must load before quality-dashboard.js) -->
+    <script src="assets/js/nexus/main.js"></script>
+
+    <!-- Quality Dashboard Controller (extracted from inline) -->
+    <script src="assets/js/nexus/quality-dashboard.js"></script>
+
+    <!-- Engine Visualizations (Modular ES6 - Plotly charts for engine results) -->
+    <script type="module" src="assets/js/nexus/visualizations/index.js"></script>
+
+    <!-- NexusAI Modular Application -->
+    <script type="module" src="assets/js/nexus/pages/main.js"></script>
+
+    <!-- Dashboard Visualizations (Gauges, Radar, Timeline) -->
+    <script src="assets/js/nexus/dashboard.js"></script>
+
+    <!-- DEMO INIT (Preloads Results) -->
+    <script src="assets/js/nexus/demo_init.js"></script>
+
+    <!-- 3D Engine Graph Scene -->
+    <script type="module" src="assets/js/pages/nexus-scene.js"></script>
+    <!-- Nexus Main Visualization Script -->
+    <script type="module" src="assets/js/pages/nexus-main.js"></script>
+    <!-- Mobile Navigation -->
+    <script src="assets/js/nav.js"></script>
+</body>
+
+</html>

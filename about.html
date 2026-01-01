@@ -1,46 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About - Pruitt Colon</title>
-  <meta name="description" content="AI Engineer with a Master's in Software Engineering. Building production ML systems.">
-  
+  <meta name="description"
+    content="AI Engineer with a Master's in Software Engineering. Building production ML systems.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <link rel="stylesheet" href="css/design-system.css">
   <style>
     /* About Page - Clean Two-Column Layout */
     /* Background inherited from design-system.css --bg-primary: #faf9f7 */
-    
+
     .about-hero {
       padding: var(--space-32) 0 var(--space-24);
       min-height: 100vh;
-      background: var(--bg-primary); /* Soft cream background */
+      background: var(--bg-primary);
+      /* Soft cream background */
     }
-    
+
     .about-grid {
       display: grid;
       grid-template-columns: 320px 1fr;
       gap: var(--space-12);
       align-items: start;
     }
-    
+
     @media (max-width: 900px) {
       .about-grid {
         grid-template-columns: 1fr;
         gap: var(--space-8);
       }
     }
-    
+
     /* Left Column - Photo & Links */
     .about-photo {
       position: sticky;
       top: var(--space-24);
     }
-    
+
     @media (max-width: 900px) {
       .about-photo {
         position: static;
@@ -48,26 +51,26 @@
         margin: 0 auto;
       }
     }
-    
+
     .photo-wrapper {
       position: relative;
       overflow: hidden;
       background: var(--bg-secondary);
     }
-    
+
     .photo-wrapper img {
       width: 100%;
       height: auto;
       display: block;
       object-fit: cover;
     }
-    
+
     .photo-links {
       display: flex;
       gap: var(--space-3);
       margin-top: var(--space-4);
     }
-    
+
     .photo-link {
       flex: 1;
       padding: var(--space-3);
@@ -79,62 +82,62 @@
       border-radius: var(--radius-lg);
       transition: all var(--duration-fast) var(--ease-out);
     }
-    
+
     .photo-link:hover {
       color: var(--text-primary);
       border-color: var(--border-hover);
       background: var(--surface);
     }
-    
+
     /* Right Column - Content */
     .about-content {
       max-width: 600px;
     }
-    
+
     @media (max-width: 900px) {
       .about-content {
         max-width: 100%;
       }
     }
-    
+
     .about-content h1 {
       font-size: var(--text-4xl);
       font-weight: var(--weight-bold);
       letter-spacing: var(--tracking-tight);
       margin-bottom: var(--space-2);
     }
-    
+
     @media (max-width: 480px) {
       .about-content h1 {
         font-size: var(--text-3xl);
       }
     }
-    
+
     .about-role {
       font-size: var(--text-base);
       color: var(--text-secondary);
       margin-bottom: var(--space-8);
     }
-    
+
     .about-bio {
       font-size: var(--text-base);
       line-height: var(--leading-relaxed);
       color: var(--text-secondary);
       margin-bottom: var(--space-6);
     }
-    
+
     .about-bio strong {
       color: var(--text-primary);
       font-weight: var(--weight-semibold);
     }
-    
+
     /* Experience Section */
     .experience-section {
       margin-top: var(--space-12);
       padding-top: var(--space-10);
       border-top: 1px solid var(--border);
     }
-    
+
     .section-label {
       font-size: var(--text-xs);
       font-weight: var(--weight-medium);
@@ -143,41 +146,41 @@
       letter-spacing: var(--tracking-wider);
       margin-bottom: var(--space-6);
     }
-    
+
     .experience-list {
       display: flex;
       flex-direction: column;
       gap: var(--space-5);
     }
-    
+
     .experience-item {
       display: grid;
       grid-template-columns: 140px 1fr;
       gap: var(--space-4);
     }
-    
+
     @media (max-width: 640px) {
       .experience-item {
         grid-template-columns: 1fr;
         gap: var(--space-1);
       }
     }
-    
+
     .experience-date {
       font-size: var(--text-sm);
       color: var(--text-tertiary);
     }
-    
+
     .experience-title {
       font-weight: var(--weight-medium);
       margin-bottom: 2px;
     }
-    
+
     .experience-company {
       font-size: var(--text-sm);
       color: var(--text-secondary);
     }
-    
+
     /* Education */
     .education-grid {
       display: grid;
@@ -185,49 +188,49 @@
       gap: var(--space-4);
       margin-top: var(--space-8);
     }
-    
+
     @media (max-width: 640px) {
       .education-grid {
         grid-template-columns: 1fr;
       }
     }
-    
+
     .education-card {
       padding: var(--space-5);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
       background: var(--bg-elevated);
     }
-    
+
     .education-degree {
       font-weight: var(--weight-medium);
       margin-bottom: 2px;
     }
-    
+
     .education-school {
       font-size: var(--text-sm);
       color: var(--text-secondary);
     }
-    
+
     /* Skills */
     .skills-section {
       margin-top: var(--space-12);
       padding-top: var(--space-10);
       border-top: 1px solid var(--border);
     }
-    
+
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: var(--space-6);
     }
-    
+
     @media (max-width: 640px) {
       .skills-grid {
         grid-template-columns: 1fr;
       }
     }
-    
+
     .skills-category h4 {
       font-size: var(--text-xs);
       font-weight: var(--weight-medium);
@@ -236,13 +239,13 @@
       letter-spacing: var(--tracking-wider);
       margin-bottom: var(--space-3);
     }
-    
+
     .skills-list {
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-2);
     }
-    
+
     .skill-tag {
       padding: var(--space-1) var(--space-3);
       font-size: var(--text-sm);
@@ -251,8 +254,385 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
     }
+
+    /* Story Section - Expandable Boxes */
+    .story-section {
+      margin-bottom: var(--space-8);
+    }
+
+    .story-tldr {
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      font-weight: var(--weight-medium);
+      margin-bottom: var(--space-6);
+      padding: var(--space-5);
+      background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--surface) 100%);
+      border-radius: var(--radius-xl);
+      border-left: 4px solid var(--accent, #6B5B95);
+    }
+
+    .story-boxes {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .story-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      background: var(--bg-elevated);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .story-box:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .story-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-5);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .story-box-title {
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .story-box-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .story-box.expanded .story-box-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Smooth expand using CSS Grid trick - prevents layout jump */
+    .story-box-content {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .story-box.expanded .story-box-content {
+      grid-template-rows: 1fr;
+    }
+
+    .story-box-inner {
+      overflow: hidden;
+      padding: 0 var(--space-5) var(--space-5);
+      font-size: var(--text-sm);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+    }
+
+    .story-box-inner p {
+      margin-bottom: var(--space-3);
+    }
+
+    .story-box-inner p:last-child {
+      margin-bottom: 0;
+    }
+
+    .story-highlight {
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .story-stat {
+      display: inline-block;
+      padding: var(--space-1) var(--space-2);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono, monospace);
+      font-size: var(--text-xs);
+      color: var(--accent, #6B5B95);
+      margin: 0 2px;
+    }
+
+    /* Resume Section */
+    .resume-section {
+      margin-top: var(--space-8);
+      padding: var(--space-6);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      text-align: center;
+    }
+
+    .resume-title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-4);
+    }
+
+    .resume-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: white;
+      background: var(--text-primary);
+      border: none;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      text-decoration: none;
+    }
+
+    .resume-btn:hover {
+      background: var(--text-secondary);
+      transform: translateY(-2px);
+    }
+
+    .resume-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Contact Row */
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3) var(--space-6);
+      margin-top: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .contact-item svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--text-tertiary);
+    }
+
+    .contact-item a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .contact-item a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Professional Summary Block */
+    .summary-block {
+      padding: var(--space-5);
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--accent, #6B5B95);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+    }
+
+    .summary-block strong {
+      color: var(--text-primary);
+      font-weight: var(--weight-semibold);
+    }
+
+    /* Competencies Section */
+    .competencies-section {
+      margin-top: var(--space-8);
+      padding-top: var(--space-8);
+      border-top: 1px solid var(--border);
+    }
+
+    .competencies-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .competency-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    .competency-label {
+      min-width: 100px;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--accent, #6B5B95);
+      flex-shrink: 0;
+    }
+
+    .competency-skills {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Project Highlight */
+    .project-highlight {
+      margin-top: var(--space-8);
+      padding: var(--space-6);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .project-title {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .project-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-3);
+      background: var(--accent, #6B5B95);
+      color: white;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-medium);
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .project-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .project-bullets li {
+      position: relative;
+      padding-left: var(--space-5);
+      margin-bottom: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    .project-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 6px;
+      height: 6px;
+      background: var(--accent, #6B5B95);
+      border-radius: 50%;
+    }
+
+    .project-bullets li strong {
+      color: var(--text-primary);
+      font-weight: var(--weight-medium);
+    }
+
+    /* Enhanced Experience */
+    .experience-detailed .experience-item {
+      display: block;
+      grid-template-columns: none;
+      padding-left: var(--space-4);
+      border-left: 2px solid var(--border);
+      position: relative;
+      margin-bottom: var(--space-6);
+    }
+
+    .experience-detailed .experience-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 4px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent, #6B5B95);
+      border-radius: 50%;
+    }
+
+    .experience-bullets {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-2) 0 0 0;
+    }
+
+    .experience-bullets li {
+      position: relative;
+      padding-left: var(--space-4);
+      margin-bottom: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .experience-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 4px;
+      height: 4px;
+      background: var(--text-tertiary);
+      border-radius: 50%;
+    }
+
+    .experience-bullets li strong {
+      color: var(--text-primary);
+      font-weight: var(--weight-medium);
+    }
+
+    /* Standout Quote */
+    .standout-quote {
+      margin-top: var(--space-8);
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--surface) 100%);
+      border-left: 4px solid var(--accent, #6B5B95);
+      border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+    }
+
+    .standout-quote strong {
+      color: var(--text-primary);
+      font-weight: var(--weight-semibold);
+    }
   </style>
 </head>
+
 <body>
   <nav class="nav">
     <div class="nav-inner">
@@ -266,7 +646,7 @@
         <a href="index.html" class="nav-link">Home</a>
         <a href="architecture.html" class="nav-link">Architecture</a>
         <a href="about.html" class="nav-link active">About</a>
-        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="demo/index.html" class="nav-link">Demo</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </div>
     </div>
@@ -283,56 +663,247 @@
             </div>
             <div class="photo-links">
               <a href="https://github.com/pruittcolon" target="_blank" class="photo-link">GitHub</a>
-              <a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" target="_blank" class="photo-link">LinkedIn</a>
+              <a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" target="_blank"
+                class="photo-link">LinkedIn</a>
             </div>
           </aside>
-          
+
           <!-- Right Column - Content -->
           <div class="about-content">
             <div class="reveal">
               <h1>Pruitt Colon</h1>
-              <p class="about-role">AI Engineer · Systems Architect</p>
+              <p class="about-role">Full Stack AI Engineer</p>
+
+              <!-- Contact Row -->
+              <div class="contact-row">
+                <span class="contact-item">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                  </svg>
+                  Casa Grande, AZ
+                </span>
+                <span class="contact-item">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                  </svg>
+                  <a href="mailto:PruittColon@gmail.com">PruittColon@gmail.com</a>
+                </span>
+                <span class="contact-item">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                  </svg>
+                  
+                </span>
+              </div>
+
+              <!-- Professional Summary -->
+              <div class="summary-block">
+                Full Stack AI Engineer with Master's in Software Engineering (AI focus). Built a
+                <strong>privacy-first AI platform</strong> running entirely offline - data never leaves your device.
+                Deployed <strong>22 ML engines</strong> on a single GPU via novel semaphore design. I bring a
+                <strong>reliability-first mindset</strong> to ML engineering, creating documented processes that
+                save six figures and automation that becomes the team standard.
+              </div>
             </div>
-            
+
             <div class="reveal">
-              <p class="about-bio">
-                I'm an AI Engineer with a <strong>Master's in Software Engineering (AI Specialization)</strong> from Western Governors University and 8+ years of systems engineering experience.
-              </p>
-              <p class="about-bio">
-                My flagship project, the <strong>NeMo AI Platform</strong>, represents 60,000+ lines of production Python code with 10 services, 29 ML engines, real-time transcription, RAG-powered context and intelligent GPU coordination on a single consumer GPU.
-              </p>
-              <p class="about-bio">
-                I combine deep technical expertise in <strong>PyTorch, NeMo, FastAPI, and Docker</strong> with a security-first mindset. My background in telecommunications provides lean systems thinking and precision engineering.
-              </p>
+              <!-- Story Section with Expandable Boxes -->
+              <section class="story-section">
+                <div class="story-tldr">
+                  10+ years focused on operational efficiency across telecom, tech, and AI. I build systems that reduce
+                  manual work and create repeatable processes.
+                </div>
+
+                <div class="story-boxes">
+                  <!-- Box 1: Focus on Operational Efficiency -->
+                  <div class="story-box" onclick="this.classList.toggle('expanded')">
+                    <div class="story-box-header">
+                      <span class="story-box-title">Focus on Operational Efficiency</span>
+                      <span class="story-box-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <div class="story-box-content">
+                      <div class="story-box-inner">
+                        <p>
+                          Streamlining workflows has been central to every role I've held.
+                        </p>
+                        <p>
+                          At <span class="story-highlight">SubCom</span>, I became the go-to resource for
+                          integration procedures - studying timing data to identify bottlenecks and
+                          training teams on improved methods.
+                        </p>
+                        <p>
+                          At <span class="story-highlight">BTI Solutions</span> working in Samsung's office
+                          on unreleased devices, I identified repetitive tasks and built automation scripts
+                          that saved <span class="story-stat">hours of manual work daily</span>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 2: Why AI? -->
+                  <div class="story-box" onclick="this.classList.toggle('expanded')">
+                    <div class="story-box-header">
+                      <span class="story-box-title">Why AI?</span>
+                      <span class="story-box-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <div class="story-box-content">
+                      <div class="story-box-inner">
+                        <p>
+                          LLMs offered a way to accelerate the process improvements I'd been doing manually.
+                        </p>
+                        <p>
+                          AI is a <span class="story-highlight">tool, not magic</span> - no different from
+                          any other tool in a professional's toolkit. I use it to learn faster, validate
+                          ideas quicker, and automate repetitive tasks.
+                        </p>
+                        <p>
+                          The judgment calls, architecture decisions, and security considerations
+                          remain human responsibilities. The value is in knowing when and how to apply it.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 3: What I Built -->
+                  <div class="story-box" onclick="this.classList.toggle('expanded')">
+                    <div class="story-box-header">
+                      <span class="story-box-title">What I Built</span>
+                      <span class="story-box-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <div class="story-box-content">
+                      <div class="story-box-inner">
+                        <p>
+                          Vox Amelior is a production-grade AI platform I built from scratch.
+                        </p>
+                        <p>
+                          It handles real tasks: transcribing meetings, tracking conversations, analyzing data,
+                          and providing an AI assistant that understands context.
+                        </p>
+                        <p>
+                          The platform grew into <span class="story-stat">12 microservices</span>,
+                          <span class="story-stat">22 ML engines</span>, and
+                          <span class="story-stat">332K+ lines</span> across 7 coding languages - all running
+                          on a single consumer GPU with enterprise-grade security.
+                          <a href="architecture.html"
+                            style="color: var(--accent, #6B5B95); text-decoration: underline;">
+                            See the full architecture
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-            
+
+            <!-- Core Competencies -->
+            <section class="competencies-section reveal">
+              <p class="section-label">Core Competencies</p>
+              <div class="competencies-grid">
+                <div class="competency-row">
+                  <span class="competency-label">AI/ML</span>
+                  <span class="competency-skills">Deep Learning, Neural Networks, NLP, PyTorch, Generative AI, Prompt
+                    Engineering, Real-Time ASR (NVIDIA Parakeet), Speaker Diarization, RAG (FAISS + MiniLM), LLM
+                    Integration, Emotion Analysis, Causal Inference</span>
+                </div>
+                <div class="competency-row">
+                  <span class="competency-label">MLOps & Infra</span>
+                  <span class="competency-skills">GPU Optimization & Semaphores, Docker, Kubernetes, Istio Service Mesh,
+                    CUDA, Redis, PostgreSQL, Prometheus, OpenTelemetry, CI/CD, HPA Autoscaling</span>
+                </div>
+                <div class="competency-row">
+                  <span class="competency-label">Software Eng</span>
+                  <span class="competency-skills">Python, FastAPI, REST APIs, WebSocket, Microservices, RBAC, JWT/mTLS
+                    Authentication, Playwright E2E Testing, Event-Driven Design</span>
+                </div>
+                <div class="competency-row">
+                  <span class="competency-label">Cloud & DevOps</span>
+                  <span class="competency-skills">Linux, AWS (S3, Lambda, EC2), Git, Agile, Infrastructure as Code,
+                    Flutter, Dart, Deepgram STT, n8n Workflow Automation</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Signature Project -->
+            <div class="project-highlight reveal">
+              <div class="project-header">
+                <span class="project-title">Vox Amelior - Cognitive AI Orchestration Platform</span>
+                <span class="project-badge">Featured</span>
+              </div>
+              <ul class="project-bullets">
+                <li>Built <strong>22 specialized ML engines</strong> (AutoML, Monte Carlo, Granger causality,
+                  time-series forecasting, Graph Neural Networks) with System 2 cognitive architecture for mathematical
+                  validation of LLM outputs</li>
+                <li>Solved GPU contention via Redis-backed semaphore design enabling <strong>Gemma 3-4B + NVIDIA
+                    Parakeet ASR</strong> to coexist within 6GB VRAM with preemptive context-switching</li>
+                <li>Architected <strong>zero-trust security</strong>: mTLS authentication, encrypted vector stores
+                  (FAISS + SQLCipher), rotating JWTs, and comprehensive threat modeling</li>
+                <li>Deployed <strong>13 containerized microservices</strong> via Docker/Kubernetes (Istio, HPA
+                  autoscaling, GPU time-slicing) with FastAPI gateway implementing RBAC and OpenTelemetry tracing</li>
+                <li>Built <strong>Flutter mobile app</strong> with Deepgram real-time STT and <strong>Fiserv DNA banking
+                    API</strong> integration for enterprise account/transaction management</li>
+              </ul>
+            </div>
+
             <!-- Experience -->
-            <section class="experience-section reveal">
-              <p class="section-label">Experience</p>
+            <section class="experience-section experience-detailed reveal">
+              <p class="section-label">Professional Experience</p>
               <div class="experience-list">
                 <div class="experience-item">
-                  <span class="experience-date">2024 - 2025</span>
                   <div>
                     <h3 class="experience-title">Network Engineer</h3>
-                    <p class="experience-company">BTI Solutions</p>
+                    <p class="experience-company">BTI Solutions | San Diego, CA | June 2024 - June 2025</p>
+                    <ul class="experience-bullets">
+                      <li>Created <strong>ADB automation scripts</strong> to streamline morning workflows, methodically
+                        deploying across every office workstation and improving testing deadline adherence</li>
+                      <li>Executed Samsung 5G/LTE site validation while maintaining strict uptime SLAs for Tier-1 U.S.
+                        carriers</li>
+                      <li>Authored ISO 9001-compliant SOPs and trained field teams on structured troubleshooting
+                        methodologies</li>
+                    </ul>
                   </div>
                 </div>
                 <div class="experience-item">
-                  <span class="experience-date">2022 - 2024</span>
                   <div>
                     <h3 class="experience-title">Fiber Optic Technician</h3>
-                    <p class="experience-company">GCOMM Tech / Wyyerd Fiber</p>
+                    <p class="experience-company">Wyyerd Fiber | Casa Grande, AZ | 2022 - 2024</p>
+                    <ul class="experience-bullets">
+                      <li>Integrated <strong>Lean engineering principles</strong> into field workflows, developing
+                        probability-ranked troubleshooting knowledge base that delivered <strong>$100K+ annual cost
+                          savings</strong></li>
+                      <li>Trained technicians on root-cause analysis (5 Whys, Fishbone) to consistently exceed SLAs</li>
+                    </ul>
                   </div>
                 </div>
                 <div class="experience-item">
-                  <span class="experience-date">2016 - 2020</span>
                   <div>
                     <h3 class="experience-title">Integration Technician</h3>
-                    <p class="experience-company">SubCom</p>
+                    <p class="experience-company">SubCom | Newington, NH | 2016 - 2020</p>
+                    <ul class="experience-bullets">
+                      <li>Re-engineered fiber inspection workflow reducing inspection time by <strong>50%</strong> and
+                        doubling throughput on subsea cable projects</li>
+                      <li>Designed training methodology minimizing technician errors and protecting multi-million dollar
+                        project timelines</li>
+                    </ul>
                   </div>
                 </div>
               </div>
-              
+
               <!-- Education Cards -->
               <div class="education-grid">
                 <div class="education-card">
@@ -345,11 +916,11 @@
                 </div>
               </div>
             </section>
-            
+
             <!-- Skills -->
             <section class="skills-section reveal">
               <p class="section-label">Technical Stack</p>
-              
+
               <div class="skills-grid">
                 <div class="skills-category">
                   <h4>AI / ML</h4>
@@ -362,7 +933,7 @@
                     <span class="skill-tag">scikit-learn</span>
                   </div>
                 </div>
-                
+
                 <div class="skills-category">
                   <h4>Models</h4>
                   <div class="skills-list">
@@ -373,7 +944,7 @@
                     <span class="skill-tag">MiniLM</span>
                   </div>
                 </div>
-                
+
                 <div class="skills-category">
                   <h4>Backend</h4>
                   <div class="skills-list">
@@ -384,7 +955,7 @@
                     <span class="skill-tag">WebSocket</span>
                   </div>
                 </div>
-                
+
                 <div class="skills-category">
                   <h4>Infrastructure</h4>
                   <div class="skills-list">
@@ -397,6 +968,31 @@
                 </div>
               </div>
             </section>
+
+            <!-- What Stands Out -->
+            <div class="standout-quote reveal">
+              Every role shows the same pattern: <strong>identify inefficiencies, build systematic solutions, document
+                them for the team</strong>.
+              As a <strong>Lean Six Sigma Green Belt</strong>, I combine structured process improvement with modern AI
+              tooling.
+              From re-engineering fiber workflows that doubled throughput to designing GPU semaphores running 22 ML
+              engines
+              on constrained hardware - I ship production-ready solutions and ensure the team never faces the same
+              problem twice.
+            </div>
+
+            <!-- Resume Download -->
+            <section class="resume-section reveal">
+              <p class="resume-title">Download Resume</p>
+              <a href="Pruitt_Colon_Resume.pdf" download class="resume-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download Resume (PDF)
+              </a>
+            </section>
           </div>
         </div>
       </div>
@@ -404,9 +1000,9 @@
   </main>
 
   <footer class="footer">
-    <p class="footer-text">© 2025 Pruitt Colon</p>
   </footer>
 
   <script src="js/main.js"></script>
 </body>
+
 </html>
