@@ -234,6 +234,105 @@
       }
     }
 
+    /* Mobile Architecture Diagram - Progressive Disclosure */
+    @media (max-width: 900px) {
+      .arch-diagram {
+        padding: var(--space-6);
+        overflow-x: visible;
+      }
+
+      .diagram-layers {
+        min-width: unset;
+        gap: 24px;
+      }
+
+      .svg-overlay {
+        display: none;
+        /* Hide connector lines on mobile - visual clarity */
+      }
+
+      .layer-label {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: auto;
+        margin-bottom: var(--space-2);
+        text-align: center;
+        font-size: var(--text-sm);
+        padding: var(--space-1) var(--space-3);
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-sm);
+        display: inline-block;
+      }
+
+      .diagram-layer {
+        flex-direction: column;
+        align-items: center;
+        padding: var(--space-4);
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+      }
+
+      .layer-content {
+        width: 100%;
+        justify-content: center;
+      }
+
+      #layer-services .layer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-3);
+      }
+
+      .diagram-node {
+        min-width: unset;
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+      }
+
+      .node-name {
+        font-size: var(--text-xs);
+      }
+
+      .node-desc {
+        font-size: 10px;
+      }
+
+      .node-port {
+        font-size: 9px;
+        margin-top: var(--space-1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .arch-diagram {
+        padding: var(--space-4);
+      }
+
+      .diagram-layers {
+        gap: 16px;
+      }
+
+      #layer-services .layer-content {
+        grid-template-columns: 1fr;
+        /* Single column on phone */
+      }
+
+      .diagram-layer {
+        padding: var(--space-3);
+      }
+
+      .layer-content {
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+
+      .diagram-node {
+        padding: var(--space-2) var(--space-3);
+      }
+    }
+
     .service-card {
       padding: var(--space-6);
       background: var(--bg-elevated);

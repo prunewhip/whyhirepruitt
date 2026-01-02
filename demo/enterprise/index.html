@@ -56,6 +56,40 @@
         .vox-nav {
             top: 40px !important;
         }
+
+        /* Mobile responsive for Enterprise Overview */
+        @media (max-width: 768px) {
+            .vox-nav-toggle {
+                display: flex !important;
+            }
+
+            .vox-nav-links {
+                display: none;
+                position: fixed;
+                top: 104px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: calc(100vh - 104px);
+                flex-direction: column;
+                background: #ffffff;
+                padding: 2rem;
+                gap: 1rem;
+                z-index: 100;
+            }
+
+            .vox-nav-links.open {
+                display: flex;
+            }
+
+            .vox-nav-inner>div:last-child {
+                display: none;
+            }
+
+            .ent-feature-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
     <div class="demo-mode-banner">
         ⚠️ DEMO MODE - Static Data Simulation
@@ -70,6 +104,12 @@
                 </div>
                 <span class="vox-logo-text">Vox Amelior</span>
             </a>
+
+            <button class="vox-nav-toggle" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
             <div class="vox-nav-links">
                 <a href="../index.html#features" class="vox-nav-link">Features</a>
@@ -109,9 +149,12 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Portfolio Link (visible in mobile menu) -->
+                <a href="https://whyhirepruitt.dev" class="vox-nav-link mobile-portfolio-link">Return to Portfolio</a>
             </div>
 
-            <div style="display: flex; gap: 0.75rem;">
+            <div class="nav-cta-container">
                 <!-- Sign In Removed -->
                 <a href="https://whyhirepruitt.dev" class="vox-btn vox-btn-primary"
                     style="flex-grow: 1; text-align: center; min-width: 200px;">Return to Portfolio Page</a>
@@ -272,6 +315,15 @@
 
     <script>
         lucide.createIcons();
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const toggle = document.querySelector('.vox-nav-toggle');
+            const links = document.querySelector('.vox-nav-links');
+            toggle.classList.toggle('active');
+            links.classList.toggle('open');
+            document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+        }
     </script>
 </body>
 

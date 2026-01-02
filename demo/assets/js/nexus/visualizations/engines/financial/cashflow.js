@@ -104,8 +104,8 @@ export function render(data, vizId) {
 
     const { scene, camera, renderer } = sceneCore;
 
-    // Camera setup
-    camera.position.set(0, 5, 10);
+    // Camera setup - pulled back for cleaner overview
+    camera.position.set(0, 6, 15);
     camera.lookAt(0, 0, 0);
 
     // Controls
@@ -173,16 +173,16 @@ function extractFlows(data) {
 function createFlowPipe(flow, index, total) {
     // Generate a curvy path
     const pathPoints = [];
-    const zOffset = (index - (total - 1) / 2) * 2.5; // Spread on Z
+    const zOffset = (index - (total - 1) / 2) * 1.5; // Tighter spread on Z for cleaner look
 
     for (let i = 0; i <= 10; i++) {
-        const x = (i - 5) * 2;
-        const y = Math.sin(i * 0.5 + index) * 1.5; // Wavy
+        const x = (i - 5) * 1.8;
+        const y = Math.sin(i * 0.4 + index) * 0.8; // Gentler waves for refined appearance
         pathPoints.push(new THREE.Vector3(x, y, zOffset));
     }
 
     const path = new THREE.CatmullRomCurve3(pathPoints);
-    const radius = Math.max(0.2, (flow.value / 200000) * 0.8); // Normalize scale roughly
+    const radius = Math.max(0.15, Math.min(0.35, (flow.value / 500000) * 0.5)); // Thinner, more elegant tubes
 
     const geometry = new THREE.TubeGeometry(path, 64, radius, 12, false);
 
