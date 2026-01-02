@@ -70,12 +70,51 @@
                 padding: 0 1rem !important;
             }
 
-            /* Make sidebar a collapsible section at the top */
+            /* Collapsible sidebar - collapsed by default */
             .main-layout>nav.glass-card {
                 width: 100% !important;
-                max-height: none;
-                padding: 1rem;
+                padding: 0;
                 margin-bottom: 1rem;
+                overflow: hidden;
+            }
+
+            /* Sidebar toggle header - always visible */
+            .sidebar-toggle-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+                color: white;
+                cursor: pointer;
+                border-radius: 12px;
+                font-weight: 600;
+                transition: background 0.2s ease;
+            }
+
+            .sidebar-toggle-header:hover {
+                background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            }
+
+            .sidebar-toggle-header .chevron {
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar-toggle-header.open .chevron {
+                transform: rotate(180deg);
+            }
+
+            /* Sidebar content - hidden by default, animated */
+            .sidebar-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease, padding 0.3s ease;
+                padding: 0 1rem;
+            }
+
+            .sidebar-content.open {
+                max-height: 600px;
+                padding: 1rem;
             }
 
             /* Main content takes full width */
@@ -106,6 +145,19 @@
             /* Hide portfolio button on mobile */
             .vox-nav-inner>div:last-child {
                 display: none;
+            }
+        }
+
+        /* Desktop - hide toggle header */
+        .sidebar-toggle-header {
+            display: none;
+        }
+
+        /* Desktop - sidebar content always visible */
+        @media (min-width: 769px) {
+            .sidebar-content {
+                max-height: none !important;
+                padding: 0 !important;
             }
         }
     </style>
@@ -210,54 +262,75 @@
         style="display: flex; min-height: calc(100vh - 160px); gap: 1.5rem; padding: 0 1.5rem; padding-bottom: 2rem;">
 
         <!-- Animated Floating Dock (Sidebar Replacement) -->
-        <nav class="glass-card"
+        <nav class="glass-card" id="sidebar-nav"
             style="width: 260px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto;">
-            <div class="sidebar-section">
-                <div class="sidebar-title"
-                    style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-weight: 600;">
-                    Core Banking</div>
-                <div class="nav-item active btn btn-secondary btn-glow" onclick="showSection('party', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
-                    <span style="margin-right: 8px;">👤</span> Member Search
-                </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('account', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
-                    <span style="margin-right: 8px;">🏦</span> Account Lookup
-                </div>
-                <!-- ... other items ... -->
-                <div class="nav-item btn btn-secondary" onclick="showSection('transactions', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
-                    <span style="margin-right: 8px;">💳</span> Transactions
-                </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('transfers', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
-                    <span style="margin-right: 8px;">💸</span> Transfers
-                </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('cases', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
-                    <span style="margin-right: 8px;">⚖️</span> Case Management
-                </div>
+
+            <!-- Mobile Toggle Header -->
+            <div class="sidebar-toggle-header" onclick="toggleSidebarMenu()">
+                <span>Navigation Menu</span>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
             </div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-title"
-                    style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; margin-top: 1.5rem; font-weight: 600;">
-                    AI Intelligence</div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('anomaly', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-rose);">
-                    <span style="margin-right: 8px;">🛡️</span> Fraud Workstation
+            <!-- Collapsible Content Wrapper -->
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <div class="sidebar-title"
+                        style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-weight: 600;">
+                        Core Banking</div>
+                    <div class="nav-item active btn btn-secondary btn-glow"
+                        onclick="showSection('party', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
+                        <span style="margin-right: 8px;">Member Search</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('account', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
+                        <span style="margin-right: 8px;">Account Lookup</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('transactions', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
+                        <span style="margin-right: 8px;">Transactions</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('transfers', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
+                        <span style="margin-right: 8px;">Transfers</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('cases', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none;">
+                        <span style="margin-right: 8px;">Case Management</span>
+                    </div>
                 </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('ml-profit', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-violet);">
-                    <span style="margin-right: 8px;">🏦</span> Underwriting AI
-                </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('realtime', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-cyan);">
-                    <span style="margin-right: 8px;">⚡</span> Real-Time Stream
-                </div>
-                <div class="nav-item btn btn-secondary" onclick="showSection('executive-dashboard', event)"
-                    style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-amber);">
-                    <span style="margin-right: 8px;">📈</span> Executive View
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title"
+                        style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; margin-top: 1.5rem; font-weight: 600;">
+                        AI Intelligence</div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('anomaly', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-rose);">
+                        <span style="margin-right: 8px;">Fraud Workstation</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('ml-profit', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-violet);">
+                        <span style="margin-right: 8px;">Underwriting AI</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('realtime', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-cyan);">
+                        <span style="margin-right: 8px;">Real-Time Stream</span>
+                    </div>
+                    <div class="nav-item btn btn-secondary"
+                        onclick="showSection('executive-dashboard', event); closeSidebarOnMobile();"
+                        style="width: 100%; justify-content: flex-start; margin-bottom: 0.5rem; border: none; color: var(--neon-amber);">
+                        <span style="margin-right: 8px;">Executive View</span>
+                    </div>
                 </div>
             </div>
 
@@ -266,7 +339,6 @@
                 <div onclick="showSection('stopcheck', event)"></div>
                 <div onclick="showSection('cards', event)"></div>
                 <div onclick="showSection('alerts', event)"></div>
-                <!-- <div onclick="showSection('cases', event)"></div> Replaced by real section -->
                 <div onclick="showSection('reports', event)"></div>
                 <div onclick="showSection('status', event)"></div>
                 <div onclick="showSection('role-insights', event)"></div>
@@ -885,6 +957,7 @@
 
     <!-- Mobile Nav Toggle -->
     <script>
+        // Top nav hamburger menu toggle
         function toggleMobileNav() {
             const toggle = document.querySelector('.vox-nav-toggle');
             const links = document.querySelector('.vox-nav-links');
@@ -892,6 +965,28 @@
                 toggle.classList.toggle('active');
                 links.classList.toggle('open');
                 document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+            }
+        }
+
+        // Sidebar menu toggle (animated accordion)
+        function toggleSidebarMenu() {
+            const header = document.querySelector('.sidebar-toggle-header');
+            const content = document.querySelector('.sidebar-content');
+            if (header && content) {
+                header.classList.toggle('open');
+                content.classList.toggle('open');
+            }
+        }
+
+        // Close sidebar on mobile after selecting an item
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 768) {
+                const header = document.querySelector('.sidebar-toggle-header');
+                const content = document.querySelector('.sidebar-content');
+                if (header && content) {
+                    header.classList.remove('open');
+                    content.classList.remove('open');
+                }
             }
         }
 
