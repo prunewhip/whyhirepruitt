@@ -78,18 +78,20 @@
                 overflow: hidden;
             }
 
-            /* Sidebar toggle header - always visible */
+            /* Sidebar toggle header - always visible on mobile */
             .sidebar-toggle-header {
                 display: flex !important;
                 justify-content: space-between;
                 align-items: center;
-                padding: 1rem;
+                padding: 1rem 1.25rem;
                 background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
                 color: white;
                 cursor: pointer;
                 border-radius: 12px;
                 font-weight: 600;
+                font-size: 1rem;
                 transition: background 0.2s ease;
+                margin-bottom: 0.5rem;
             }
 
             .sidebar-toggle-header:hover {
@@ -100,21 +102,21 @@
                 transition: transform 0.3s ease;
             }
 
-            .sidebar-toggle-header.open .chevron {
-                transform: rotate(180deg);
+            .sidebar-toggle-header.collapsed .chevron {
+                transform: rotate(-90deg);
             }
 
-            /* Sidebar content - hidden by default, animated */
+            /* Sidebar content - OPEN by default on mobile, can be collapsed */
             .sidebar-content {
-                max-height: 0;
+                max-height: 600px;
                 overflow: hidden;
                 transition: max-height 0.4s ease, padding 0.3s ease;
-                padding: 0 1rem;
+                padding: 1rem 0;
             }
 
-            .sidebar-content.open {
-                max-height: 600px;
-                padding: 1rem;
+            .sidebar-content.collapsed {
+                max-height: 0;
+                padding: 0;
             }
 
             /* Main content takes full width */
@@ -973,8 +975,8 @@
             const header = document.querySelector('.sidebar-toggle-header');
             const content = document.querySelector('.sidebar-content');
             if (header && content) {
-                header.classList.toggle('open');
-                content.classList.toggle('open');
+                header.classList.toggle('collapsed');
+                content.classList.toggle('collapsed');
             }
         }
 
@@ -984,8 +986,8 @@
                 const header = document.querySelector('.sidebar-toggle-header');
                 const content = document.querySelector('.sidebar-content');
                 if (header && content) {
-                    header.classList.remove('open');
-                    content.classList.remove('open');
+                    header.classList.add('collapsed');
+                    content.classList.add('collapsed');
                 }
             }
         }
