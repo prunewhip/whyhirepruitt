@@ -102,8 +102,26 @@
                 transition: transform 0.3s ease;
             }
 
+            /* When collapsed, chevron points right to indicate "expand" */
             .sidebar-toggle-header.collapsed .chevron {
                 transform: rotate(-90deg);
+            }
+
+            /* Toggle hint text */
+            .sidebar-toggle-header .hint-collapse {
+                display: inline;
+            }
+
+            .sidebar-toggle-header .hint-expand {
+                display: none;
+            }
+
+            .sidebar-toggle-header.collapsed .hint-collapse {
+                display: none;
+            }
+
+            .sidebar-toggle-header.collapsed .hint-expand {
+                display: inline;
             }
 
             /* Sidebar content - OPEN by default on mobile, can be collapsed */
@@ -147,6 +165,32 @@
             /* Hide portfolio button on mobile */
             .vox-nav-inner>div:last-child {
                 display: none;
+            }
+
+            /* Dashboard grid mobile - stack columns */
+            .dashboard-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem;
+            }
+
+            .dashboard-grid .col-span-8,
+            .dashboard-grid .col-span-4,
+            .dashboard-grid .col-span-3,
+            .dashboard-grid .col-span-12 {
+                width: 100% !important;
+            }
+
+            /* Risk viz container - reduce height on mobile */
+            #risk-viz-container {
+                height: 250px !important;
+            }
+
+            /* Form row mobile - stack inputs */
+            .form-row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem;
             }
         }
 
@@ -278,7 +322,8 @@
                     <span>Navigation Menu</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; opacity: 0.8;">
-                    <span>Tap to collapse</span>
+                    <span class="hint-collapse">Tap to collapse</span>
+                    <span class="hint-expand">Tap to expand</span>
                     <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="m6 9 6 6 6-6" />
