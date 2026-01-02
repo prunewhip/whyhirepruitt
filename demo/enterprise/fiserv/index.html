@@ -51,6 +51,52 @@
         .vox-nav {
             top: 40px !important;
         }
+
+        /* Mobile responsive for Fiserv */
+        @media (max-width: 768px) {
+            .vox-nav-toggle {
+                display: flex !important;
+            }
+
+            .vox-nav-links {
+                display: none;
+                position: fixed;
+                top: 104px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: calc(100vh - 104px);
+                flex-direction: column;
+                background: #ffffff;
+                padding: 2rem;
+                gap: 1rem;
+                z-index: 100;
+            }
+
+            .vox-nav-links.open {
+                display: flex;
+            }
+
+            .vox-nav-inner>div:last-child {
+                display: none;
+            }
+
+            section[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .ent-feature-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            section[style*="grid-template-columns: repeat(2"]>div {
+                grid-template-columns: 1fr !important;
+            }
+
+            .ent-card[style*="grid-template-columns: repeat(4"] {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
     </style>
     <div class="demo-mode-banner">
         ⚠️ DEMO MODE - Static Data Simulation
@@ -66,6 +112,12 @@
                 </div>
                 <span class="vox-logo-text">Vox Amelior</span>
             </a>
+
+            <button class="vox-nav-toggle" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
             <div class="vox-nav-links">
                 <a href="../../index.html#features" class="vox-nav-link">Features</a>
@@ -165,7 +217,13 @@
 
                 <!-- 3D Banking Globe Visualization -->
                 <div class="scene-shell" id="banking-viz"
-                    style="grid-column: 1 / -1; height: 250px; margin-bottom: 2rem; border-radius: 1rem; overflow: hidden; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);">
+                    style="grid-column: 1 / -1; height: 250px; margin-bottom: 2rem; border-radius: 1rem; overflow: hidden; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center;">
+                    <!-- Fallback content when 3D doesn't load -->
+                    <div style="text-align: center; color: rgba(255,255,255,0.7);">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏦</div>
+                        <div style="font-size: 1rem; font-weight: 600;">Fiserv Core Banking</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7;">Real-time Financial Data Pipeline</div>
+                    </div>
                 </div>
 
                 <!-- Right: Bubble Summary Card -->
@@ -666,6 +724,15 @@
             loadTransactionGraph();
             setInterval(checkStatus, 30000);
         });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const toggle = document.querySelector('.vox-nav-toggle');
+            const links = document.querySelector('.vox-nav-links');
+            toggle.classList.toggle('active');
+            links.classList.toggle('open');
+            document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+        }
     </script>
 </body>
 
