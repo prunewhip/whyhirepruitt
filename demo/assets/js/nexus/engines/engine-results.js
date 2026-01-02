@@ -172,8 +172,8 @@ export function displayEngineResults(card, result) {
   // Render visualizations after DOM update
   setTimeout(() => {
     window.NexusViz?.renderEngineVisualizations?.(engineName, result.data, vizId);
-    // Smooth scroll into view (nearest to avoid jarring jumps)
-    cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // NOTE: Auto-scroll removed - it was distracting when multiple results load
+    // Users can scroll manually to see individual engine results
   }, 150);
 }
 

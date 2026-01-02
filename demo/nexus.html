@@ -428,6 +428,127 @@
         .vox-nav {
             top: 40px !important;
         }
+
+        /* ============================================
+           MOBILE RESPONSIVE - Page Layout Fixes
+           ============================================ */
+        @media (max-width: 768px) {
+
+            /* Section padding reduction */
+            section {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            /* Hero adjustments */
+            .vox-hero {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .vox-hero-title {
+                font-size: clamp(1.75rem, 6vw, 2.5rem);
+            }
+
+            .vox-hero-subtitle {
+                font-size: 1rem;
+            }
+
+            /* Section headers */
+            .section-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-subtitle {
+                font-size: 0.95rem;
+            }
+
+            /* Category grid - single column */
+            .category-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .category-card {
+                padding: 1.25rem;
+            }
+
+            .category-title {
+                font-size: 1.1rem;
+            }
+
+            .category-description {
+                font-size: 0.85rem;
+            }
+
+            /* Upload area compact */
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .upload-title {
+                font-size: 1.1rem;
+            }
+
+            .upload-subtitle {
+                font-size: 0.85rem;
+            }
+
+            /* Engine category tab buttons */
+            .engine-category-btn {
+                flex: 1 1 100%;
+                min-height: 44px;
+                justify-content: center;
+            }
+
+            /* Vox card padding */
+            .vox-card {
+                padding: 1rem !important;
+            }
+
+            /* Buttons full width on mobile */
+            .vox-btn-accent {
+                width: 100%;
+                min-height: 48px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .category-card {
+                padding: 1rem;
+            }
+
+            .category-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .category-tags {
+                gap: 0.35rem;
+            }
+
+            .category-tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+
+            .upload-area {
+                padding: 1.5rem 0.75rem;
+            }
+
+            .upload-icon {
+                font-size: 2rem;
+            }
+        }
     </style>
     <div class="demo-mode-banner">
         ⚠️ DEMO MODE - Static Data Simulation
@@ -1164,7 +1285,7 @@
                                 enginesResults.innerHTML = ''; // Clear previous single results
                                 enginesResults.appendChild(resultCard);
                             }
-                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            // NOTE: Auto-scroll removed - let users scroll manually
                         }
                         console.log(`[${engineName}] Result:`, data);
                     } catch (error) {
@@ -1227,7 +1348,7 @@
                         enginesResults.innerHTML = ''; // Clear previous single results
                         enginesResults.appendChild(resultCard);
                     }
-                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // NOTE: Auto-scroll removed - let users scroll manually
                 }
 
                 console.log(`[${engineName}] Result:`, data);

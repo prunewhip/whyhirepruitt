@@ -788,36 +788,276 @@
 /* ============================================================================
    Responsive Design
    ============================================================================ */
+/* ============================================================================
+   MOBILE RESPONSIVE - Comprehensive Fixes (768px and below)
+   ============================================================================ */
 @media (max-width: 768px) {
+
+    /* Engine Card Header - Prevent crowding */
     .engine-card-header {
-        padding: 14px 16px;
+        padding: 12px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     .engine-card-header h3 {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        flex: 1 1 100%;
+        order: 1;
+    }
+
+    .engine-icon {
+        font-size: 1.5rem;
+        min-width: 32px;
+        order: 0;
     }
 
     .engine-status {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         padding: 4px 10px;
+        order: 2;
+        margin-left: auto;
     }
 
+    /* Gemma Summary - FIX TEXT OVERFLOW */
     .gemma-summary {
         flex-direction: column;
         gap: 10px;
         max-width: 100%;
+        padding: 0.875rem 1rem;
+        margin-bottom: 1rem;
     }
 
+    .gemma-text {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+
+    .gemma-text p,
+    .gemma-text li {
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .gemma-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .gemma-icon {
+        font-size: 1.25rem;
+    }
+
+    /* Engine Category Tabs - Stack vertically */
     .engine-category-tabs {
         flex-direction: column;
+        gap: 6px;
     }
 
     .engine-category-btn {
         justify-content: center;
+        min-height: 44px;
+        font-size: 0.85rem;
     }
 
+    /* Engine Card Body - Better spacing */
+    .engine-result-card.expanded .engine-card-body {
+        padding: 16px 14px;
+    }
+
+    /* Key Findings - Mobile friendly */
+    .key-findings {
+        padding: 12px 14px;
+    }
+
+    .key-findings li {
+        font-size: 0.85rem;
+        padding: 6px 0;
+    }
+
+    /* Engine Meta - Wrap properly */
     .engine-meta {
-        gap: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        font-size: 0.8rem;
+    }
+
+    /* Follow-up Section - Mobile layout */
+    .followup-input {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .followup-input input {
+        width: 100%;
+    }
+
+    .followup-input button {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .followup-msg.user,
+    .followup-msg.assistant {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Chart Containers - Horizontal scroll */
+    .engine-viz-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .waterfall-container,
+    .cluster-3d-container,
+    .anomaly-chart-container,
+    .boxplot-container,
+    .fin-chart-container {
+        min-width: 320px;
+        height: 260px;
+    }
+
+    .scatter-3d-container,
+    .anomaly-dist-container,
+    .correlation-heatmap-container,
+    .line-chart-container,
+    .heatmap-container {
+        min-width: 320px;
+        height: 280px;
+    }
+
+    .fin-chart-container-lg,
+    .fin-chart-container-xl {
+        min-width: 360px;
+        height: 320px;
+    }
+
+    .viz-container {
+        min-width: 300px;
+        height: 220px;
+    }
+
+    /* Visualization Grid - Stack on mobile */
+    .engine-viz-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .engine-viz-card {
+        min-height: 200px;
+    }
+
+    /* Metric Cards - 2 column on mobile */
+    .metric-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .metric-card {
+        padding: 0.6rem;
+    }
+
+    .metric-card .metric-value {
+        font-size: 1.2rem;
+    }
+
+    .metric-card .metric-label {
+        font-size: 0.65rem;
+    }
+
+    /* Clustering Layout - Stack */
+    .clustering-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .clustering-sidebar {
+        max-height: 300px;
+    }
+
+    /* Raw Data Section */
+    .raw-data {
+        font-size: 0.7rem;
+        max-height: 200px;
+    }
+
+    .toggle-raw-btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+    }
+}
+
+/* ============================================================================
+   SMALL MOBILE - Extra small screens (480px and below)
+   ============================================================================ */
+@media (max-width: 480px) {
+    .engine-card-header {
+        padding: 10px 12px;
+    }
+
+    .engine-card-header h3 {
+        font-size: 0.9rem;
+    }
+
+    .engine-status {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .gemma-summary {
+        padding: 0.75rem;
+    }
+
+    .gemma-text {
+        font-size: 0.8rem;
+        line-height: 1.55;
+    }
+
+    .engine-result-card.expanded .engine-card-body {
+        padding: 12px 10px;
+    }
+
+    .key-findings {
+        padding: 10px 12px;
+    }
+
+    .key-findings h4 {
+        font-size: 0.85rem;
+    }
+
+    .key-findings li {
+        font-size: 0.8rem;
+    }
+
+    /* Single column for metric cards */
+    .metric-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .metric-card .metric-value {
+        font-size: 1rem;
+    }
+
+    /* Chart containers smaller but scrollable */
+    .waterfall-container,
+    .cluster-3d-container,
+    .anomaly-chart-container,
+    .boxplot-container,
+    .fin-chart-container {
+        min-width: 280px;
+        height: 220px;
+    }
+
+    .viz-container {
+        min-width: 260px;
+        height: 180px;
     }
 }
 
