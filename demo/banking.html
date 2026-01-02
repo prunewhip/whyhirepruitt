@@ -269,11 +269,21 @@
 
             <!-- Mobile Toggle Header -->
             <div class="sidebar-toggle-header" onclick="toggleSidebarMenu()">
-                <span>Navigation Menu</span>
-                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="m6 9 6 6 6-6" />
-                </svg>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                    <span>Navigation Menu</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; opacity: 0.8;">
+                    <span>Tap to collapse</span>
+                    <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </div>
             </div>
 
             <!-- Collapsible Content Wrapper -->
