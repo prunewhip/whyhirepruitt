@@ -173,19 +173,30 @@
 
     @media (max-width: 900px) {
       .hero-title {
-        height: 180px;
+        min-height: 200px;
+        height: auto;
       }
     }
 
     @media (max-width: 768px) {
       .hero-title {
-        height: 200px;
+        min-height: 240px;
+        height: auto;
+      }
+
+      /* Add background to hamburger menu for visibility when scrolling */
+      .nav-toggle {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 6px;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
       }
     }
 
     @media (max-width: 480px) {
       .hero-title {
-        height: 180px;
+        min-height: 280px;
+        height: auto;
       }
     }
 

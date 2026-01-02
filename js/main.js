@@ -6,47 +6,48 @@
 // Navigation scroll behavior
 class Navigation {
   constructor() {
-    this.nav = document.querySelector('.nav');
-    this.toggle = document.querySelector('.nav-toggle');
-    this.links = document.querySelector('.nav-links');
+    // Support both legacy .nav and new .vox-nav selectors
+    this.nav = document.querySelector('.vox-nav') || document.querySelector('.nav');
+    this.toggle = document.querySelector('.vox-nav-toggle') || document.querySelector('.nav-toggle');
+    this.links = document.querySelector('.vox-nav-links') || document.querySelector('.nav-links');
     this.lastScroll = 0;
-    
+
     this.init();
   }
-  
+
   init() {
     // Scroll effect
     window.addEventListener('scroll', () => this.onScroll(), { passive: true });
-    
+
     // Mobile toggle
     if (this.toggle) {
       this.toggle.addEventListener('click', () => this.toggleMenu());
     }
-    
+
     // Close menu on link click
     this.links?.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => this.closeMenu());
     });
   }
-  
+
   onScroll() {
     const scroll = window.scrollY;
-    
+
     if (scroll > 50) {
       this.nav?.classList.add('scrolled');
     } else {
       this.nav?.classList.remove('scrolled');
     }
-    
+
     this.lastScroll = scroll;
   }
-  
+
   toggleMenu() {
     this.toggle?.classList.toggle('active');
     this.links?.classList.toggle('open');
     document.body.style.overflow = this.links?.classList.contains('open') ? 'hidden' : '';
   }
-  
+
   closeMenu() {
     this.toggle?.classList.remove('active');
     this.links?.classList.remove('open');
@@ -60,7 +61,7 @@ class RevealOnScroll {
     this.elements = document.querySelectorAll('.reveal, .reveal-stagger');
     this.init();
   }
-  
+
   init() {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -70,12 +71,12 @@ class RevealOnScroll {
           }
         });
       },
-      { 
+      {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
       }
     );
-    
+
     this.elements.forEach(el => observer.observe(el));
   }
 }
@@ -86,7 +87,7 @@ class CursorGlow {
     this.glow = document.querySelector('.glow-effect');
     if (this.glow) this.init();
   }
-  
+
   init() {
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth) * 100;
@@ -105,31 +106,31 @@ class Counter {
     this.duration = duration;
     this.hasAnimated = false;
   }
-  
+
   animate() {
     if (this.hasAnimated) return;
     this.hasAnimated = true;
-    
+
     const start = 0;
     const startTime = performance.now();
-    
+
     const update = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / this.duration, 1);
-      
+
       // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.floor(start + (this.target - start) * eased);
-      
+
       this.element.textContent = current.toLocaleString();
-      
+
       if (progress < 1) {
         requestAnimationFrame(update);
       } else {
         this.element.textContent = this.target.toLocaleString();
       }
     };
-    
+
     requestAnimationFrame(update);
   }
 }
@@ -140,14 +141,14 @@ class CounterObserver {
     this.counters = [];
     this.init();
   }
-  
+
   init() {
     document.querySelectorAll('[data-count]').forEach(el => {
       const target = parseInt(el.dataset.count, 10);
       const counter = new Counter(el, target);
       this.counters.push({ element: el, counter });
     });
-    
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -159,7 +160,7 @@ class CounterObserver {
       },
       { threshold: 0.5 }
     );
-    
+
     this.counters.forEach(({ element }) => observer.observe(element));
   }
 }

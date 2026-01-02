@@ -231,11 +231,28 @@ body {
     .vox-nav-toggle {
         display: flex;
         z-index: 10001;
+        position: relative;
+        /* Increase size to be more visible and tappable */
+        width: 40px;
+        height: 40px;
+        /* Add background/padding so hamburger is visible over content */
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px;
+        border-radius: var(--vox-radius-md);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--vox-grey-200);
+    }
+
+    .vox-nav-toggle span {
+        width: 100%;
+        height: 2px;
+        background: var(--vox-grey-700);
     }
 
     .vox-nav {
         overflow: visible !important;
         z-index: 99998 !important;
+        background: rgba(255, 255, 255, 0.98);
     }
 
     .vox-nav-inner {
@@ -253,7 +270,8 @@ body {
         left: 0;
         right: 0;
         bottom: 0;
-        height: auto !important;
+        height: calc(100vh - 104px) !important;
+        max-height: calc(100vh - 104px);
         flex-direction: column;
         align-items: flex-start;
         background: #FFFFFF;
@@ -261,6 +279,7 @@ body {
         gap: 0.5rem;
         z-index: 10000;
         overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .vox-nav-links.open {
