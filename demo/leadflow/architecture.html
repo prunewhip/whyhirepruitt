@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Technical documentation and architecture overview for LeadFlow Pro automated quote system.">
+    <title>How It Works | LeadFlow Pro Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .docs-page {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .docs-hero {
+            text-align: center;
+            padding: var(--space-3xl) 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: var(--space-3xl);
+        }
+
+        .docs-hero h1 {
+            margin-bottom: var(--space-md);
+        }
+
+        .docs-hero p {
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .section-header h2 {
+            margin-bottom: var(--space-sm);
+        }
+
+        .section-header p {
+            color: var(--color-text-secondary);
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-3xl);
+        }
+
+        @media (min-width: 768px) {
+            .flow-diagram {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+            }
+        }
+
+        .flow-step {
+            flex: 1;
+            max-width: 280px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto var(--space-md);
+            position: relative;
+        }
+
+        .flow-icon.customer {
+            background: linear-gradient(135deg, hsl(220, 90%, 56%) 0%, hsl(280, 85%, 55%) 100%);
+        }
+
+        .flow-icon.system {
+            background: linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(20, 90%, 50%) 100%);
+        }
+
+        .flow-icon.provider {
+            background: linear-gradient(135deg, hsl(160, 84%, 44%) 0%, hsl(190, 80%, 50%) 100%);
+        }
+
+        .flow-step h4 {
+            margin-bottom: var(--space-sm);
+        }
+
+        .flow-step p {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .flow-arrow {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-muted);
+            font-size: 1.5rem;
+            padding: 0 var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .flow-arrow {
+                display: flex;
+            }
+        }
+
+        /* Architecture Grid */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-3xl);
+        }
+
+        @media (min-width: 768px) {
+            .arch-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .arch-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .arch-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            transition: all var(--transition-base);
+        }
+
+        .arch-card:hover {
+            border-color: var(--glass-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .arch-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--space-md);
+            background: var(--gradient-primary);
+        }
+
+        .arch-card h4 {
+            margin-bottom: var(--space-sm);
+        }
+
+        .arch-card p {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .tech-tag {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            color: var(--color-primary-light);
+            margin-right: var(--space-xs);
+            margin-bottom: var(--space-xs);
+        }
+
+        /* Sequence Diagram */
+        .sequence-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            overflow-x: auto;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .sequence-diagram {
+            display: flex;
+            flex-direction: column;
+            min-width: 700px;
+        }
+
+        .sequence-actors {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-xl);
+            padding: 0 var(--space-xl);
+        }
+
+        .actor {
+            text-align: center;
+            flex: 1;
+        }
+
+        .actor-box {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--color-bg-elevated);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-md);
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+        }
+
+        .sequence-row {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm) var(--space-xl);
+            position: relative;
+        }
+
+        .sequence-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: calc(12.5% + var(--space-xl));
+            width: 2px;
+            background: var(--glass-border);
+        }
+
+        .sequence-row::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: calc(12.5% + var(--space-xl));
+            width: 2px;
+            background: var(--glass-border);
+        }
+
+        .seq-arrow {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: var(--space-sm) 0;
+        }
+
+        .seq-arrow-line {
+            height: 2px;
+            flex: 1;
+            background: var(--color-accent);
+            position: relative;
+        }
+
+        .seq-arrow-line.reverse {
+            background: var(--color-primary);
+        }
+
+        .seq-arrow-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-left-color: var(--color-accent);
+        }
+
+        .seq-arrow-line.reverse::after {
+            left: 0;
+            right: auto;
+            border-left-color: transparent;
+            border-right-color: var(--color-primary);
+        }
+
+        .seq-label {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            background: var(--color-bg-primary);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Data Flow */
+        .data-flow {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-3xl);
+        }
+
+        @media (min-width: 768px) {
+            .data-flow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .data-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+        }
+
+        .data-card h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .data-card pre {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            overflow-x: auto;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .data-card code {
+            color: var(--color-accent-light);
+        }
+
+        /* Security Section */
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-3xl);
+        }
+
+        @media (min-width: 768px) {
+            .security-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .security-card {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+        }
+
+        .security-card.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .security-card h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+            color: var(--color-success);
+        }
+
+        .security-card.warning h4 {
+            color: var(--color-warning);
+        }
+
+        .security-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .security-card li {
+            padding: var(--space-sm) 0;
+            padding-left: var(--space-lg);
+            position: relative;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .security-card li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--color-success);
+        }
+
+        .security-card.warning li::before {
+            background: var(--color-warning);
+        }
+
+        /* CTA */
+        .docs-cta {
+            text-align: center;
+            padding: var(--space-3xl) 0;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .docs-cta h3 {
+            margin-bottom: var(--space-md);
+        }
+
+        .docs-cta p {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">LeadFlow<span class="text-gradient">Pro</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="architecture.html" class="nav-link">Architecture</a>
+                <a href="plumbing.html" class="nav-link">Try Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="docs-page">
+        <div class="container">
+            <!-- Hero -->
+            <div class="docs-hero">
+                <h1>System <span class="text-gradient">Architecture</span></h1>
+                <p>A comprehensive look at how LeadFlow Pro connects customers with service professionals through
+                    automated email workflows and real-time quote management.</p>
+            </div>
+
+            <!-- High-Level Flow -->
+            <section>
+                <div class="section-header">
+                    <h2>The Quote Journey</h2>
+                    <p>From customer request to accepted quote in 4 simple steps</p>
+                </div>
+
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="flow-icon customer">&#128100;</div>
+                        <h4>1. Customer Request</h4>
+                        <p>Customer fills out intake form with service details, location, and urgency level.</p>
+                    </div>
+                    <div class="flow-arrow">&#8594;</div>
+                    <div class="flow-step">
+                        <div class="flow-icon system">&#9993;</div>
+                        <h4>2. Email Automation</h4>
+                        <p>Web3Forms sends to hub. Outlook Rules auto-forward to relevant service providers.</p>
+                    </div>
+                    <div class="flow-arrow">&#8594;</div>
+                    <div class="flow-step">
+                        <div class="flow-icon provider">&#128736;</div>
+                        <h4>3. Provider Quote</h4>
+                        <p>Provider clicks unique link, views lead details, submits competitive quote.</p>
+                    </div>
+                    <div class="flow-arrow">&#8594;</div>
+                    <div class="flow-step">
+                        <div class="flow-icon customer">&#9989;</div>
+                        <h4>4. Accept & Pay</h4>
+                        <p>Customer reviews quotes on dashboard, accepts preferred one, unlocks provider contact.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Architecture -->
+            <section>
+                <div class="section-header">
+                    <h2>Technical Components</h2>
+                    <p>The building blocks that power the platform</p>
+                </div>
+
+                <div class="arch-grid">
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#127760;</div>
+                        <h4>Frontend Shell</h4>
+                        <p>Pure HTML/CSS/JS application with glassmorphism design, responsive layouts, and premium
+                            aesthetics.</p>
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">Vanilla CSS</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#128230;</div>
+                        <h4>LocalStorage DB</h4>
+                        <p>Client-side data persistence for users, leads, and quotes. Perfect for demo without backend
+                            complexity.</p>
+                        <span class="tech-tag">LocalStorage API</span>
+                        <span class="tech-tag">JSON</span>
+                    </div>
+
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#9993;</div>
+                        <h4>Web3Forms API</h4>
+                        <p>Serverless form submission that sends structured emails without needing a backend server.</p>
+                        <span class="tech-tag">REST API</span>
+                        <span class="tech-tag">SMTP Proxy</span>
+                    </div>
+
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#128231;</div>
+                        <h4>Outlook Automation</h4>
+                        <p>Native email rules that auto-forward leads to appropriate providers based on subject
+                            keywords.</p>
+                        <span class="tech-tag">Outlook Rules</span>
+                        <span class="tech-tag">Email Routing</span>
+                    </div>
+
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#128273;</div>
+                        <h4>Auth Service</h4>
+                        <p>Mock authentication system for customer registration and login using localStorage session
+                            tokens.</p>
+                        <span class="tech-tag">Session Tokens</span>
+                        <span class="tech-tag">Mock Auth</span>
+                    </div>
+
+                    <div class="arch-card">
+                        <div class="arch-card-icon">&#128202;</div>
+                        <h4>Leads Manager</h4>
+                        <p>Complete CRUD operations for leads and quotes with status tracking and real-time updates.</p>
+                        <span class="tech-tag">State Management</span>
+                        <span class="tech-tag">Event Listeners</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Structures -->
+            <section>
+                <div class="section-header">
+                    <h2>Data Models</h2>
+                    <p>How information is structured and persisted</p>
+                </div>
+
+                <div class="data-flow">
+                    <div class="data-card">
+                        <h4>&#128196; Lead Object</h4>
+                        <pre><code>{
+  "lead_id": "LEAD-1767470254826-RCBE",
+  "customer_email": "user@example.com",
+  "service_type": "Water Heater Repair",
+  "description": "No hot water...",
+  "zip_code": "90210",
+  "urgency": "Today",
+  "status": "quote_received",
+  "quotes": [...]
+}</code></pre>
+                    </div>
+
+                    <div class="data-card">
+                        <h4>&#128176; Quote Object</h4>
+                        <pre><code>{
+  "quote_id": "QUOTE-1767470300123-XYZ",
+  "lead_id": "LEAD-1767470254826-RCBE",
+  "provider_name": "ABC Plumbing",
+  "provider_email": "pro@example.com",
+  "amount": 450.00,
+  "estimated_date": "2026-01-05",
+  "status": "pending"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security -->
+            <section>
+                <div class="section-header">
+                    <h2>Security Considerations</h2>
+                    <p>Understanding the demo vs. production security model</p>
+                </div>
+
+                <div class="security-grid">
+                    <div class="security-card">
+                        <h4>&#128274; What's Protected</h4>
+                        <ul>
+                            <li>API keys use Origin Whitelisting (domain-locked)</li>
+                            <li>No sensitive PII stored in localStorage for demo</li>
+                            <li>Form submissions validate required fields client-side</li>
+                            <li>Email addresses are controlled (hub receives all)</li>
+                        </ul>
+                    </div>
+
+                    <div class="security-card warning">
+                        <h4>&#9888; Demo Limitations</h4>
+                        <ul>
+                            <li>LocalStorage is per-browser (no cross-device sync)</li>
+                            <li>No server-side validation or sanitization</li>
+                            <li>Auth is mock-only (not production-ready)</li>
+                            <li>Payment flow is simulated (no real transactions)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <div class="docs-cta">
+                <h3>Ready to See It In Action?</h3>
+                <p>Experience the full flow yourself - from request to quote to acceptance.</p>
+                <div class="cta-buttons">
+                    <a href="plumbing.html" class="btn btn-primary">Try the Demo</a>
+                    <a href="https://github.com/pruittcolon/whyhirepruitt/tree/main/demo/leadflow"
+                        class="btn btn-secondary" target="_blank">View Source Code</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
