@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your service requests and quotes on LeadFlow Pro.">
+    <title>My Dashboard | LeadFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .dashboard {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            margin-bottom: var(--space-2xl);
+        }
+
+        .user-greeting {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .dashboard-title {
+            font-size: var(--font-size-2xl);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-light);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-xs);
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .leads-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .lead-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            transition: all var(--transition-base);
+        }
+
+        .lead-card:hover {
+            border-color: var(--glass-border-hover);
+            background: var(--glass-bg-hover);
+        }
+
+        .lead-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-md);
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .lead-id {
+            font-family: monospace;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+        }
+
+        .lead-service {
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-xs);
+        }
+
+        .lead-description {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .lead-meta {
+            display: flex;
+            gap: var(--space-lg);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            flex-wrap: wrap;
+        }
+
+        .lead-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: hsl(38, 92%, 50%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.15);
+            color: hsl(217, 91%, 60%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: hsl(160, 84%, 39%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .quote-section {
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .quote-card {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-top: var(--space-md);
+        }
+
+        .quote-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .quote-provider {
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .quote-amount {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-success);
+        }
+
+        .quote-message {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .quote-date {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+        }
+
+        .quote-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-3xl);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">LeadFlow<span class="text-gradient">Pro</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Services</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link" onclick="logout()">Sign Out</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="nav-mobile" id="mobileNav">
+        <a href="index.html" class="nav-link">Services</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Sign Out</a>
+    </div>
+
+    <main class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <p class="user-greeting">Welcome back, <span id="userName">User</span></p>
+                <h1 class="dashboard-title">My Dashboard</h1>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRequests">0</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pendingCount">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="quotesReceived">0</div>
+                    <div class="stat-label">Quotes Received</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="acceptedCount">0</div>
+                    <div class="stat-label">Accepted</div>
+                </div>
+            </div>
+
+            <!-- Service Requests -->
+            <div class="section-title">
+                <span>My Service Requests</span>
+                <a href="index.html#categories" class="btn btn-secondary">New Request</a>
+            </div>
+
+            <div class="leads-list" id="leadsList">
+                <!-- Leads will be populated here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+            <div class="modal-header">
+                <h2>Secure Payment</h2>
+                <p>Complete payment to unlock provider details and schedule service.</p>
+            </div>
+            <div class="modal-body">
+                <div class="payment-summary">
+                    <div class="payment-row">
+                        <span>Service Quote</span>
+                        <span id="paymentAmount">$0.00</span>
+                    </div>
+                    <div class="payment-row">
+                        <span>Service Fee</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="payment-total">
+                        <span>Total to Pay</span>
+                        <span id="paymentTotal">$0.00</span>
+                    </div>
+                </div>
+
+                <form id="paymentForm" onsubmit="handlePayment(event)">
+                    <div class="form-group">
+                        <label class="form-label">Card Information</label>
+                        <div class="card-input-container">
+                            <input type="text" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19"
+                                required>
+                            <div class="card-icons">
+                                <span>&#128179;</span>
+                            </div>
+                        </div>
+                        <div class="expiry-cvc-grid">
+                            <input type="text" class="form-input" placeholder="MM/YY" maxlength="5" required>
+                            <input type="text" class="form-input" placeholder="CVC" maxlength="3" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-accent btn-lg btn-full" id="payButton">
+                        Pay & Unlock Provider
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/leads.js"></script>
+    <script>
+        // Require authentication
+        if (!AuthService.isLoggedIn()) {
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+        }
+
+        const user = AuthService.getCurrentUser();
+        let currentLeadId = null;
+        let currentQuoteId = null;
+
+        // Mobile nav toggle
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
+
+        // Logout
+        function logout() {
+            AuthService.logout();
+            window.location.href = 'login.html';
+        }
+
+        // Load dashboard
+        function loadDashboard() {
+            // Set user name
+            document.getElementById('userName').textContent = user.name || user.email;
+
+            // Get user's leads
+            const leads = LeadsService.getLeadsByCustomer(user.email);
+
+            // Update stats
+            document.getElementById('totalRequests').textContent = leads.length;
+            document.getElementById('pendingCount').textContent = leads.filter(l => l.status === 'pending').length;
+            document.getElementById('quotesReceived').textContent = leads.filter(l => l.quotes && l.quotes.length > 0).length;
+            document.getElementById('acceptedCount').textContent = leads.filter(l => l.status === 'accepted').length;
+
+            // Render leads
+            const listEl = document.getElementById('leadsList');
+
+            if (leads.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state glass-card-static">
+                        <div class="empty-state-icon">&#128269;</div>
+                        <h3>No service requests yet</h3>
+                        <p>Submit your first request to get quotes from exclusive professionals.</p>
+                        <a href="index.html#categories" class="btn btn-primary mt-lg">Browse Services</a>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = leads.map(lead => {
+                let quotesHtml = '';
+                if (lead.quotes && lead.quotes.length > 0) {
+                    quotesHtml = `
+                        <div class="quote-section">
+                            <strong>Quotes Received (${lead.quotes.length})</strong>
+                            ${lead.quotes.map(quote => `
+                                <div class="quote-card">
+                                    <div class="quote-header">
+                                        <span class="quote-provider">${quote.status === 'accepted' ? (quote.provider_name || 'Service Provider') : 'Available Pro (Unlock to View)'}</span>
+                                        <span class="quote-amount">${LeadsService.formatCurrency(quote.amount)}</span>
+                                    </div>
+                                    <div class="quote-message">${quote.message || 'No message provided'}</div>
+                                    <div class="quote-date">Est. completion: ${quote.estimated_date || 'TBD'}</div>
+                                    ${quote.status !== 'accepted' ? `
+                                        <div class="quote-actions">
+                                            <button class="btn btn-accent" onclick="openPaymentModal('${lead.lead_id}', '${quote.quote_id}', '${quote.amount}')">Accept & Pay</button>
+                                        </div>
+                                    ` : `
+                                        <div class="mt-md">
+                                            <div class="badge badge-success mb-sm">Accepted & Paid</div>
+                                            <div class="text-xs text-muted"><strong>Provider Contact:</strong> ${quote.provider_email || 'contact@provider.com'}</div>
+                                        </div>
+                                    `}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="lead-card">
+                        <div class="lead-header">
+                            <div>
+                                <div class="lead-id">${lead.lead_id}</div>
+                                <div class="lead-service">${lead.service_type || lead.category}</div>
+                            </div>
+                            ${LeadsService.getStatusBadge(lead.status)}
+                        </div>
+                        <div class="lead-description">${lead.description}</div>
+                        <div class="lead-meta">
+                            <span>&#128205; ${lead.zip_code}</span>
+                            <span>&#128197; ${LeadsService.formatDate(lead.created_at)}</span>
+                            <span>&#9200; ${lead.urgency}</span>
+                        </div>
+                        ${quotesHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Payment Modal Logic
+        function openPaymentModal(leadId, quoteId, amount) {
+            currentLeadId = leadId;
+            currentQuoteId = quoteId;
+            document.getElementById('paymentAmount').textContent = LeadsService.formatCurrency(amount);
+            document.getElementById('paymentTotal').textContent = LeadsService.formatCurrency(amount);
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            currentLeadId = null;
+            currentQuoteId = null;
+        }
+
+        function handlePayment(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('payButton');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="status-dot" style="background:#fff"></span> Processing...';
+
+            // Simulate payment delay
+            setTimeout(() => {
+                LeadsService.acceptQuote(currentLeadId, currentQuoteId);
+                closePaymentModal();
+                loadDashboard(); // Refresh to show unlocked details
+
+                // Show success toast (simulated)
+                alert('Payment Successful! Provider contact details unlocked.');
+
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }, 1500);
+        }
+
+        // Initial load
+        loadDashboard();
+
+        // Listen for storage changes
+        window.addEventListener('storage', loadDashboard);
+    </script>
+</body>
+
+</html>

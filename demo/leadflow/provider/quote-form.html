@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Submit your quote for this service request.">
+    <title>Submit Quote | LeadFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/design-system.css">
+    <style>
+        .quote-page {
+            min-height: 100vh;
+            padding: 100px var(--space-lg) var(--space-2xl);
+        }
+
+        .quote-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quote-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .lead-summary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .lead-summary-title {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-md);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .lead-summary-id {
+            font-family: monospace;
+            background: var(--color-bg-primary);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .lead-detail {
+            margin-bottom: var(--space-md);
+        }
+
+        .lead-detail-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-xs);
+        }
+
+        .lead-detail-value {
+            font-size: var(--font-size-base);
+        }
+
+        .quote-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+        }
+
+        .quote-form-title {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .price-input-group {
+            position: relative;
+        }
+
+        .price-input-group .currency-symbol {
+            position: absolute;
+            left: var(--space-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+            font-size: var(--font-size-lg);
+        }
+
+        .price-input-group .form-input {
+            padding-left: 2.5rem;
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .error-state {
+            text-align: center;
+            padding: var(--space-3xl);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .success-state {
+            text-align: center;
+            padding: var(--space-3xl);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-accent);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-xl);
+            font-size: 2.5rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">LeadFlow<span class="text-gradient">Pro</span></a>
+            <div class="nav-links">
+                <span class="nav-link">Provider Portal</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="quote-page">
+        <div class="quote-container">
+            <!-- Error State (no lead ID) -->
+            <div id="errorState" class="quote-form error-state hidden">
+                <div class="error-icon">&#9888;</div>
+                <h2>Invalid Quote Link</h2>
+                <p class="text-muted">This quote form requires a valid lead ID.</p>
+                <a href="../index.html" class="btn btn-secondary mt-lg">Go to Home</a>
+            </div>
+
+            <!-- Quote Form -->
+            <div id="quoteFormContainer">
+                <div class="quote-header">
+                    <h1>Submit Your <span class="text-gradient">Quote</span></h1>
+                    <p class="text-muted">Provide your pricing for this service request</p>
+                </div>
+
+                <!-- Lead Summary -->
+                <div class="lead-summary" id="leadSummary">
+                    <div class="lead-summary-title">Service Request Details</div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Lead ID</div>
+                        <div class="lead-detail-value"><span class="lead-summary-id" id="displayLeadId">-</span></div>
+                    </div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Service Type</div>
+                        <div class="lead-detail-value" id="displayServiceType">-</div>
+                    </div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Description</div>
+                        <div class="lead-detail-value" id="displayDescription">-</div>
+                    </div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Location</div>
+                        <div class="lead-detail-value" id="displayLocation">-</div>
+                    </div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Urgency</div>
+                        <div class="lead-detail-value" id="displayUrgency">-</div>
+                    </div>
+                    <div class="lead-detail">
+                        <div class="lead-detail-label">Customer</div>
+                        <div class="lead-detail-value" id="displayCustomer">-</div>
+                    </div>
+                </div>
+
+                <!-- Quote Form -->
+                <form id="quoteForm" class="quote-form" action="https://api.web3forms.com/submit" method="POST">
+                    <!-- Web3Forms -->
+                    <!-- Web3Forms (Config Injected via JS) -->
+                    <input type="hidden" name="access_key" value="">
+                    <input type="hidden" name="subject" id="quoteSubject" value="QUOTE RESPONSE">
+                    <input type="hidden" name="from_name" value="LeadFlow Pro - Provider Quote">
+                    <input type="hidden" name="to" value="">
+                    <input type="hidden" name="lead_id" id="leadIdField" value="">
+                    <input type="hidden" name="customer_email" id="customerEmailField" value="">
+
+                    <h2 class="quote-form-title">Your Quote</h2>
+
+                    <div class="form-group">
+                        <label class="form-label" for="providerName">Your Business Name</label>
+                        <input type="text" class="form-input" id="providerName" name="provider_name"
+                            placeholder="ABC Plumbing Services" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="providerEmail">Your Email</label>
+                        <input type="email" class="form-input" id="providerEmail" name="provider_email"
+                            placeholder="you@yourcompany.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="quoteAmount">Quote Amount (USD)</label>
+                        <div class="price-input-group">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" class="form-input" id="quoteAmount" name="amount" placeholder="0.00"
+                                min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="estimatedDate">Estimated Completion Date</label>
+                        <input type="date" class="form-input" id="estimatedDate" name="estimated_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="quoteMessage">Message to Customer</label>
+                        <textarea class="form-textarea" id="quoteMessage" name="message"
+                            placeholder="Describe what's included in your quote, your approach, and any additional information..."
+                            required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg btn-full" id="submitBtn">
+                        Submit Quote
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" class="quote-form success-state hidden">
+                <div class="success-icon">&#10004;</div>
+                <h2>Quote Submitted!</h2>
+                <p class="text-muted">Your quote has been sent to the customer. They will be notified and can view it on
+                    their dashboard.</p>
+                <p class="mt-lg"><strong>Lead ID:</strong> <span id="successLeadId">-</span></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/leads.js"></script>
+    <script src="../js/config.js"></script>
+    <script>
+        // Inject Configuration
+        document.querySelector('input[name="access_key"]').value = APP_CONFIG.WEB3FORMS_ACCESS_KEY;
+        document.querySelector('input[name="to"]').value = APP_CONFIG.EMAIL_TO;
+
+        // Get lead ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const leadId = params.get('lead_id');
+
+        // Load lead data
+        function loadLeadData() {
+            if (!leadId) {
+                showError();
+                return;
+            }
+
+            // Try to get lead from localStorage (demo mode)
+            const lead = LeadsService.getLeadById(leadId);
+
+            if (lead) {
+                // Populate form with lead data
+                document.getElementById('displayLeadId').textContent = leadId;
+                document.getElementById('displayServiceType').textContent = lead.service_type || 'Plumbing';
+                document.getElementById('displayDescription').textContent = lead.description || '-';
+                document.getElementById('displayLocation').textContent = lead.zip_code || '-';
+                document.getElementById('displayUrgency').textContent = lead.urgency || '-';
+                document.getElementById('displayCustomer').textContent = lead.customer_name || lead.customer_email || '-';
+
+                // Set hidden fields
+                document.getElementById('leadIdField').value = leadId;
+                document.getElementById('customerEmailField').value = lead.customer_email || '';
+                document.getElementById('quoteSubject').value = `QUOTE RESPONSE - ${leadId}`;
+            } else {
+                // Lead not found in localStorage, but still allow form submission
+                // (in production, this would fetch from API)
+                document.getElementById('displayLeadId').textContent = leadId;
+                document.getElementById('displayServiceType').textContent = 'Plumbing Service';
+                document.getElementById('displayDescription').textContent = 'Details provided in email';
+                document.getElementById('displayLocation').textContent = 'See email for address';
+                document.getElementById('displayUrgency').textContent = '-';
+                document.getElementById('displayCustomer').textContent = '-';
+
+                document.getElementById('leadIdField').value = leadId;
+                document.getElementById('quoteSubject').value = `QUOTE RESPONSE - ${leadId}`;
+            }
+
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('estimatedDate').min = today;
+            document.getElementById('estimatedDate').value = today;
+        }
+
+        function showError() {
+            document.getElementById('quoteFormContainer').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        // Form submission
+        document.getElementById('quoteForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;margin-right:8px;"></span> Submitting...';
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Also save quote to localStorage for demo
+                    try {
+                        LeadsService.addQuoteToLead(leadId, {
+                            provider_id: 'provider_' + Date.now(),
+                            provider_name: formData.get('provider_name'),
+                            provider_email: formData.get('provider_email'),
+                            amount: formData.get('amount'),
+                            estimated_date: formData.get('estimated_date'),
+                            message: formData.get('message')
+                        });
+                    } catch (e) {
+                        console.log('Could not save to localStorage:', e);
+                    }
+
+                    // Show success
+                    document.getElementById('quoteFormContainer').classList.add('hidden');
+                    document.getElementById('successState').classList.remove('hidden');
+                    document.getElementById('successLeadId').textContent = leadId;
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Quote';
+                alert('There was an error submitting your quote. Please try again.');
+            }
+        });
+
+        // Initialize
+        loadLeadData();
+    </script>
+</body>
+
+</html>

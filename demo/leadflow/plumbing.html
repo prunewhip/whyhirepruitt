@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Get exclusive quotes from top-rated plumbers in your area. Fast response, quality service guaranteed.">
+    <title>Plumbing Services | LeadFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        /* Plumbing-specific accent color */
+        :root {
+            --color-category: hsl(200, 90%, 50%);
+            --color-category-glow: rgba(14, 165, 233, 0.3);
+        }
+
+        .page-header {
+            padding-top: 100px;
+            padding-bottom: var(--space-2xl);
+            text-align: center;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--color-category-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-lg);
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-category);
+            margin-bottom: var(--space-lg);
+        }
+
+        .category-badge svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+        }
+
+        .intake-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+        }
+
+        .form-section {
+            margin-bottom: var(--space-2xl);
+            padding-bottom: var(--space-2xl);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: var(--space-lg);
+            padding-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .form-section-title .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .service-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 480px) {
+            .service-type-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .service-type-option {
+            position: relative;
+        }
+
+        .service-type-option input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .service-type-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-align: center;
+        }
+
+        .service-type-option label:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+        }
+
+        .service-type-option input:checked+label {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: var(--color-category);
+            box-shadow: 0 0 20px var(--color-category-glow);
+        }
+
+        .service-type-option .icon {
+            font-size: 1.5rem;
+        }
+
+        .service-type-option .text {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .urgency-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .urgency-option {
+            position: relative;
+        }
+
+        .urgency-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .urgency-option label {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .urgency-option label:hover {
+            background: var(--glass-bg-hover);
+        }
+
+        .urgency-option input:checked+label {
+            background: var(--gradient-primary);
+            border-color: transparent;
+        }
+
+        .urgency-option.emergency label {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+
+        .urgency-option.emergency input:checked+label {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .file-upload:hover {
+            border-color: var(--color-category);
+            background: var(--glass-bg-hover);
+        }
+
+        .file-upload-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.6;
+        }
+
+        .file-upload-text {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .file-upload-text span {
+            color: var(--color-category);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .file-preview-item {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .file-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .submit-section {
+            text-align: center;
+        }
+
+        .privacy-note {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            margin-top: var(--space-md);
+        }
+
+        .privacy-note a {
+            color: var(--color-text-secondary);
+            text-decoration: underline;
+        }
+
+        /* Success state */
+        .success-message {
+            text-align: center;
+            padding: var(--space-3xl);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-accent);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-xl);
+            font-size: 2.5rem;
+        }
+
+        .success-message h2 {
+            margin-bottom: var(--space-md);
+        }
+
+        .success-message p {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Back button */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-lg);
+            transition: color var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--color-text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">LeadFlow<span class="text-gradient">Pro</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Services</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="../provider/index.html" class="nav-link">For Pros</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="nav-mobile" id="mobileNav">
+        <a href="index.html" class="nav-link">Services</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="../provider/index.html" class="nav-link">For Pros</a>
+    </div>
+
+    <main>
+        <div class="page-header">
+            <div class="container">
+                <a href="index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Services
+                </a>
+                <div class="category-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 2v6m0 12v2M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24" />
+                    </svg>
+                    Plumbing Services
+                </div>
+                <h1>Get a Quote from<br><span class="text-gradient">Top-Rated Plumbers</span></h1>
+                <p class="hero-subtitle" style="max-width: 500px; margin: var(--space-lg) auto 0;">
+                    Fill out the form below and we will connect you with an exclusive, verified plumber in your area.
+                </p>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Intake Form -->
+            <form id="intakeForm" class="intake-form" action="https://api.web3forms.com/submit" method="POST">
+                <!-- Web3Forms Access Key -->
+                <!-- Web3Forms Config (Injected via JS) -->
+                <input type="hidden" name="access_key" value="">
+                <input type="hidden" name="subject" id="formSubject" value="New Plumbing Lead - LeadFlow Pro">
+                <input type="hidden" name="from_name" value="LeadFlow Pro">
+                <input type="hidden" name="redirect" value="">
+                <input type="hidden" name="to" value="">
+                <input type="hidden" name="lead_id" id="leadIdField" value="">
+                <input type="hidden" name="customer_id" id="customerIdField" value="">
+                <input type="hidden" name="quote_form_link" id="quoteFormLink" value="">
+
+                <!-- Section 1: Service Type -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <span class="step-number">1</span>
+                        What type of plumbing service do you need?
+                    </h3>
+                    <div class="service-type-grid">
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="leak" value="Leak Repair" required>
+                            <label for="leak">
+                                <span class="icon">&#128167;</span>
+                                <span class="text">Leak Repair</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="drain" value="Drain Cleaning">
+                            <label for="drain">
+                                <span class="icon">&#128704;</span>
+                                <span class="text">Drain Cleaning</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="water-heater" value="Water Heater">
+                            <label for="water-heater">
+                                <span class="icon">&#128293;</span>
+                                <span class="text">Water Heater</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="toilet" value="Toilet Repair">
+                            <label for="toilet">
+                                <span class="icon">&#128701;</span>
+                                <span class="text">Toilet Repair</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="pipe" value="Pipe Installation">
+                            <label for="pipe">
+                                <span class="icon">&#128295;</span>
+                                <span class="text">Pipe Work</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="service_type" id="other" value="Other">
+                            <label for="other">
+                                <span class="icon">&#10067;</span>
+                                <span class="text">Other</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Details -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <span class="step-number">2</span>
+                        Tell us more about the issue
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label" for="description">
+                            Describe the problem (the more detail, the more accurate your quote)
+                        </label>
+                        <textarea class="form-textarea" id="description" name="description"
+                            placeholder="Example: My kitchen faucet is leaking from the base. It started yesterday and gets worse when the water is running..."
+                            required minlength="20"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Add photos (optional but recommended)</label>
+                        <div class="file-upload" onclick="document.getElementById('photos').click()">
+                            <div class="file-upload-icon">&#128247;</div>
+                            <div class="file-upload-text">
+                                <span>Click to upload</span> or drag and drop<br>
+                                PNG, JPG up to 10MB
+                            </div>
+                        </div>
+                        <input type="file" id="photos" name="photos" accept="image/*" multiple style="display:none"
+                            onchange="handleFileSelect(event)">
+                        <div class="file-preview" id="filePreview"></div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Urgency -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <span class="step-number">3</span>
+                        How urgent is this?
+                    </h3>
+                    <div class="urgency-options">
+                        <div class="urgency-option emergency">
+                            <input type="radio" name="urgency" id="emergency" value="Emergency (Now)" required>
+                            <label for="emergency">Emergency (Now)</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" name="urgency" id="today" value="Today">
+                            <label for="today">Today</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" name="urgency" id="this-week" value="This Week">
+                            <label for="this-week">This Week</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" name="urgency" id="flexible" value="Flexible">
+                            <label for="flexible">Flexible</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Location -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <span class="step-number">4</span>
+                        Where is the service needed?
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label" for="zip">ZIP Code</label>
+                        <input type="text" class="form-input" id="zip" name="zip_code" placeholder="19901"
+                            pattern="[0-9]{5}" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="address">Street Address (optional)</label>
+                        <input type="text" class="form-input" id="address" name="address" placeholder="123 Main Street">
+                    </div>
+                </div>
+
+                <!-- Section 5: Contact -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <span class="step-number">5</span>
+                        How can the plumber reach you?
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label" for="name">Your Name</label>
+                        <input type="text" class="form-input" id="name" name="name" placeholder="John Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone Number</label>
+                        <input type="tel" class="form-input" id="phone" name="phone" placeholder="(555) 123-4567"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" class="form-input" id="email" name="email" placeholder="john@example.com"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="contact-pref">Preferred Contact Method</label>
+                        <select class="form-select" id="contact-pref" name="contact_preference">
+                            <option value="phone">Phone Call</option>
+                            <option value="text">Text Message</option>
+                            <option value="email">Email</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-section">
+                    <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBtn">
+                        Get My Free Quote
+                    </button>
+                    <p class="privacy-note">
+                        By submitting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy
+                            Policy</a>.
+                        Your information will only be shared with verified plumbers in your area.
+                    </p>
+                </div>
+            </form>
+
+            <!-- Success Message (hidden initially) -->
+            <div id="successMessage" class="intake-form success-message hidden">
+                <div class="success-icon">&#10004;</div>
+                <h2>Request Submitted!</h2>
+                <p>A verified plumber in your area will contact you shortly.<br>Average response time: <strong>under 15
+                        minutes</strong></p>
+                <a href="index.html" class="btn btn-secondary">Browse More Services</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/leads.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        // Inject Configuration
+        document.querySelector('input[name="access_key"]').value = APP_CONFIG.WEB3FORMS_ACCESS_KEY;
+        document.querySelector('input[name="to"]').value = APP_CONFIG.EMAIL_TO;
+
+        // Check if user is logged in
+        const user = AuthService.getCurrentUser();
+
+        // Generate lead ID on page load
+        const leadId = LeadsService.generateLeadId();
+        document.getElementById('leadIdField').value = leadId;
+        document.getElementById('formSubject').value = `New Plumbing Lead - ${leadId}`;
+
+        // Set quote form link (will be in the email for providers)
+        const quoteFormUrl = `${APP_CONFIG.BASE_URL}/provider/quote-form.html?lead_id=${leadId}`;
+        document.getElementById('quoteFormLink').value = quoteFormUrl;
+
+        // Pre-fill form if user is logged in
+        if (user) {
+            document.getElementById('customerIdField').value = user.id;
+            if (user.name) document.getElementById('name').value = user.name;
+            if (user.email) document.getElementById('email').value = user.email;
+        }
+
+        // Mobile navigation toggle
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
+
+        // File upload preview
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('filePreview');
+            preview.innerHTML = '';
+
+            for (let i = 0; i < files.length && i < 4; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const div = document.createElement('div');
+                        div.className = 'file-preview-item';
+                        div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Form submission handling
+        document.getElementById('intakeForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;margin-right:8px;"></span> Submitting...';
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Create lead in localStorage using LeadsService
+                    const lead = LeadsService.createLead({
+                        customer_id: user ? user.id : null,
+                        customer_email: formData.get('email'),
+                        customer_name: formData.get('name'),
+                        customer_phone: formData.get('phone'),
+                        category: 'plumbing',
+                        service_type: formData.get('service_type'),
+                        description: formData.get('description'),
+                        zip_code: formData.get('zip_code'),
+                        address: formData.get('address'),
+                        urgency: formData.get('urgency'),
+                        contact_preference: formData.get('contact_preference')
+                    });
+
+                    // Override the auto-generated ID with our pre-generated one
+                    const leads = LeadsService.getAllLeads();
+                    const idx = leads.findIndex(l => l.lead_id === lead.lead_id);
+                    if (idx !== -1) {
+                        leads[idx].lead_id = leadId;
+                        localStorage.setItem('leadflow_leads', JSON.stringify(leads));
+                    }
+
+                    // Show success message
+                    document.getElementById('intakeForm').classList.add('hidden');
+                    const successEl = document.getElementById('successMessage');
+                    successEl.classList.remove('hidden');
+
+                    // Update success message with lead ID
+                    successEl.innerHTML = `
+                        <div class="success-icon">&#10004;</div>
+                        <h2>Request Submitted!</h2>
+                        <p>Your request ID: <strong>${leadId}</strong></p>
+                        <p>A verified plumber in your area will contact you shortly.<br>Average response time: <strong>under 15 minutes</strong></p>
+                        ${user ? '<a href="dashboard.html" class="btn btn-primary">View My Dashboard</a>' : '<a href="register.html" class="btn btn-primary">Create Account to Track</a>'}
+                        <a href="index.html" class="btn btn-secondary mt-md">Browse More Services</a>
+                    `;
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get My Free Quote';
+                alert('There was an error submitting your request. Please try again.');
+            }
+        });
+
+        // Phone number formatting
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = '(' + value.substring(0, 3) + ') ' + value.substring(3, 6) + '-' + value.substring(6, 10);
+            } else if (value.length >= 3) {
+                value = '(' + value.substring(0, 3) + ') ' + value.substring(3);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+
+</html>

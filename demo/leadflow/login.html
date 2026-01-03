@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign in to LeadFlow Pro to manage your service requests and quotes.">
+    <title>Sign In | LeadFlow Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .auth-logo {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-md);
+        }
+
+        .auth-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+        }
+
+        .auth-title {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-xl);
+            text-align: center;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin: var(--space-xl) 0;
+            color: var(--color-text-muted);
+            font-size: var(--font-size-sm);
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: var(--space-xl);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .auth-footer a {
+            color: var(--color-primary-light);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-error);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-size-sm);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-logo">LeadFlow<span class="text-gradient">Pro</span></div>
+                <p class="text-muted">Find exclusive service professionals</p>
+            </div>
+
+            <div class="auth-card">
+                <h1 class="auth-title">Sign In</h1>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" class="form-input" id="email" name="email" placeholder="you@example.com"
+                            required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" class="form-input" id="password" name="password"
+                            placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="register.html">Create one</a>
+                </div>
+            </div>
+
+            <div class="auth-footer mt-xl">
+                <a href="index.html">Back to Home</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if already logged in
+        if (AuthService.isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+            errorEl.classList.remove('show');
+
+            // Simulate network delay
+            setTimeout(() => {
+                const result = AuthService.login(email, password);
+
+                if (result.success) {
+                    // Check for redirect URL
+                    const params = new URLSearchParams(window.location.search);
+                    const redirect = params.get('redirect') || 'dashboard.html';
+                    window.location.href = redirect;
+                } else {
+                    errorEl.textContent = result.message;
+                    errorEl.classList.add('show');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign In';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
