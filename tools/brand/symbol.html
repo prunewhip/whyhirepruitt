@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Interface symbol still</title>
+  <meta name="robots" content="noindex">
+  <!-- Renders the hero's interface symbol alone on a transparent square (see bake-symbol.mjs). ?t=4.2 -->
+  <style>
+    html,
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .wrap {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap"><canvas id="c"></canvas></div>
+  <script type="module">
+    import { createStage } from '../../js/3d/stage.js';
+    import { createSymbol } from '../../js/3d/symbol.js';
+
+    const t = Number(new URLSearchParams(location.search).get('t') || 4.2);
+    window.ready = (async () => {
+      const stage = createStage(document.getElementById('c'), { fov: 28 });
+      stage.camera.position.set(0, 0, 12);
+      const symbol = createSymbol({ quality: "high" });
+      stage.scene.add(symbol.group);
+      // The frame is about 6 units tall at the symbol; the symbol is about 4.6 across
+      symbol.group.scale.setScalar(1.2);
+      stage.onFrame((time) => {
+        symbol.update(time);
+        symbol.group.rotation.set(0.38, time * 0.16, -0.12);
+      });
+      stage.renderOnce(t);
+      return 'ok';
+    })().catch((error) => String(error));
+  </script>
+</body>
+
+</html>

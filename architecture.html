@@ -1,1034 +1,455 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architecture - Pruitt Colon</title>
-  <meta name="description" content="Technical deep-dive into the NeMo AI Platform architecture.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>How it’s built · Pruitt Colon</title>
+  <meta name="description"
+    content="The engineering behind Vox Amelior, Narrator Studio and Even Suite: how speech, voice and language models fit on a phone and on smart glasses, and how they are tested.">
+  <link rel="canonical" href="https://whyhirepruitt.dev/architecture.html">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <meta name="theme-color" content="#fcfcfa">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Pruitt Colon">
+  <meta property="og:title" content="How it’s built · Pruitt Colon">
+  <meta property="og:description" content="Pipelines, model ports and test rigs behind three on-device AI apps.">
+  <meta property="og:url" content="https://whyhirepruitt.dev/architecture.html">
+  <meta property="og:image" content="https://whyhirepruitt.dev/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
 
+  <link rel="icon" href="assets/favicon-192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preload" href="assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/design-system.css">
-  <style>
-    /* Architecture Hero */
-    .arch-hero {
-      padding: var(--space-40) 0 var(--space-16);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .arch-intro {
-      max-width: 640px;
-    }
-
-    .arch-intro h1 {
-      font-size: clamp(2.5rem, 5vw, 3.5rem);
-      font-weight: var(--weight-bold);
-      letter-spacing: var(--tracking-tight);
-      margin-bottom: var(--space-4);
-    }
-
-    .arch-intro p {
-      font-size: var(--text-lg);
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-    }
-
-    /* Visual Architecture Diagram - SVG Overlay Based */
-    .arch-visual-section {
-      padding: var(--space-16) 0 var(--space-24);
-    }
-
-    .section-label {
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin-bottom: var(--space-4);
-    }
-
-    .section-title {
-      font-size: var(--text-2xl);
-      font-weight: var(--weight-semibold);
-      margin-bottom: var(--space-3);
-    }
-
-    .section-desc {
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin-bottom: var(--space-10);
-    }
-
-    /* New Diagram Styles */
-    .arch-diagram {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-2xl);
-      padding: var(--space-10);
-      box-shadow: var(--shadow-sm);
-      overflow-x: auto;
-      /* Allow scrolling if it gets too wide */
-      position: relative;
-    }
-
-    .diagram-layers {
-      display: flex;
-      flex-direction: column;
-      gap: 100px;
-      /* Increased gap for clear lines */
-      min-width: 1000px;
-      /* Ensure enough width */
-      position: relative;
-      z-index: 2;
-      align-items: center;
-      /* Center everything */
-    }
-
-    .diagram-layer {
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-      position: relative;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .layer-label {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 80px;
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-    }
-
-    .layer-content {
-      display: flex;
-      /* Default flex */
-      gap: var(--space-6);
-      justify-content: center;
-      position: relative;
-    }
-
-    /* Grid for Services to prevent messy wrapping */
-    #layer-services .layer-content {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-8);
-      /* wider gap */
-    }
-
-    .diagram-node {
-      padding: var(--space-4) var(--space-6);
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      text-align: center;
-      transition: all var(--duration-fast) var(--ease-out);
-      position: relative;
-      z-index: 2;
-      min-width: 160px;
-      background-clip: padding-box;
-      /* Cleaner borders */
-    }
-
-    .diagram-node:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      background: var(--bg-elevated);
-    }
-
-    /* Node States */
-    .diagram-node.active-pulse {
-      animation: pulse 2s infinite;
-      border-color: var(--success);
-      color: var(--text-primary);
-    }
-
-    .diagram-node.gateway {
-      border-color: rgba(22, 163, 74, 0.3);
-      background: rgba(22, 163, 74, 0.05);
-    }
-
-    .diagram-node.gpu-node {
-      border-color: rgba(139, 92, 246, 0.3);
-      background: rgba(139, 92, 246, 0.05);
-    }
-
-    .node-name {
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-      margin-bottom: var(--space-1);
-    }
-
-    .node-desc {
-      font-size: var(--text-xs);
-      color: var(--text-tertiary);
-    }
-
-    .node-port {
-      display: inline-block;
-      margin-top: var(--space-2);
-      padding: 2px 8px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-tertiary);
-      background: var(--bg-tertiary);
-      border-radius: var(--radius-sm);
-    }
-
-    /* SVG Overlay */
-    .svg-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .connector-path {
-      fill: none;
-      stroke: var(--border);
-      stroke-width: 1.5;
-      opacity: 0.6;
-      transition: stroke 0.3s ease, opacity 0.3s ease, stroke-width 0.3s ease;
-    }
-
-    .connector-path.active {
-      stroke: var(--success);
-      stroke-width: 2.5;
-      opacity: 1;
-      stroke-dasharray: 10;
-      animation: flow 1s linear infinite;
-    }
-
-    /* Services Grid */
-    .services-section {
-      padding: var(--space-16) 0;
-      background: var(--bg-secondary);
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-5);
-    }
-
-    @media (max-width: 768px) {
-      .services-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Mobile Architecture Diagram - Progressive Disclosure */
-    @media (max-width: 900px) {
-      .arch-diagram {
-        padding: var(--space-6);
-        overflow-x: visible;
-      }
-
-      .diagram-layers {
-        min-width: unset;
-        gap: 24px;
-      }
-
-      .svg-overlay {
-        display: none;
-        /* Hide connector lines on mobile - visual clarity */
-      }
-
-      .layer-label {
-        position: relative;
-        left: auto;
-        top: auto;
-        transform: none;
-        width: auto;
-        margin-bottom: var(--space-2);
-        text-align: center;
-        font-size: var(--text-sm);
-        padding: var(--space-1) var(--space-3);
-        background: var(--bg-tertiary);
-        border-radius: var(--radius-sm);
-        display: inline-block;
-      }
-
-      .diagram-layer {
-        flex-direction: column;
-        align-items: center;
-        padding: var(--space-4);
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-      }
-
-      .layer-content {
-        width: 100%;
-        justify-content: center;
-      }
-
-      #layer-services .layer-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-3);
-      }
-
-      .diagram-node {
-        min-width: unset;
-        width: 100%;
-        padding: var(--space-3) var(--space-4);
-      }
-
-      .node-name {
-        font-size: var(--text-xs);
-      }
-
-      .node-desc {
-        font-size: 10px;
-      }
-
-      .node-port {
-        font-size: 9px;
-        margin-top: var(--space-1);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .arch-diagram {
-        padding: var(--space-4);
-      }
-
-      .diagram-layers {
-        gap: 16px;
-      }
-
-      #layer-services .layer-content {
-        grid-template-columns: 1fr;
-        /* Single column on phone */
-      }
-
-      .diagram-layer {
-        padding: var(--space-3);
-      }
-
-      .layer-content {
-        flex-direction: column;
-        gap: var(--space-2);
-      }
-
-      .diagram-node {
-        padding: var(--space-2) var(--space-3);
-      }
-    }
-
-    .service-card {
-      padding: var(--space-6);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      transition: all var(--duration-fast) var(--ease-out);
-    }
-
-    .service-card:hover {
-      border-color: var(--border-hover);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-
-    .service-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--space-3);
-    }
-
-    .service-name {
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-    }
-
-    .service-port {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      color: var(--text-tertiary);
-      padding: var(--space-1) var(--space-2);
-      background: var(--bg-tertiary);
-      border-radius: var(--radius-sm);
-    }
-
-    .service-desc {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-    }
-
-    /* ML Engines Section */
-    .engines-section {
-      padding: var(--space-16) 0;
-    }
-
-    .engine-category {
-      margin-bottom: var(--space-10);
-    }
-
-    .engine-category:last-child {
-      margin-bottom: 0;
-    }
-
-    .category-title {
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      margin-bottom: var(--space-4);
-      padding-bottom: var(--space-2);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .engines-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: var(--space-3);
-    }
-
-    .engine-item {
-      padding: var(--space-3) var(--space-4);
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      color: var(--text-secondary);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      text-align: center;
-      transition: all var(--duration-fast) var(--ease-out);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .engine-item:hover {
-      border-color: var(--border-hover);
-      background: var(--bg-secondary);
-      transform: translateY(-2px);
-    }
-
-    /* K8s Section - Keeping original styling */
-    .k8s-section {
-      padding: var(--space-16) 0;
-      background: var(--bg-secondary);
-    }
-
-    .k8s-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-6);
-    }
-
-    @media (max-width: 900px) {
-      .k8s-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .k8s-card {
-      padding: var(--space-6);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-    }
-
-    .k8s-card h4 {
-      font-size: var(--text-base);
-      font-weight: var(--weight-medium);
-      margin-bottom: var(--space-4);
-    }
-
-    .k8s-list {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-    }
-
-    .k8s-list li {
-      padding: var(--space-2) 0;
-      padding-left: var(--space-4);
-      position: relative;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .k8s-list li::before {
-      content: ">";
-      position: absolute;
-      left: 0;
-      color: var(--text-tertiary);
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-    }
-
-    /* Decorative */
-    .decorative-line {
-      width: 60px;
-      height: 1px;
-      background: var(--border-hover);
-      margin-bottom: var(--space-6);
-    }
-  </style>
+  <link rel="stylesheet" href="css/pages/architecture.css">
+  <link rel="stylesheet" href="css/components/explorer.css">
+  <link rel="stylesheet" href="css/components/player.css">
+
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="js/main.js" defer></script>
+  <script src="js/architecture.js" defer></script>
+  <script src="js/keyword-data.js" defer></script>
+  <script src="js/explorer.js" defer></script>
+  <script src="js/player.js" defer></script>
 </head>
 
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Pruitt Colon</a>
-      <button class="nav-toggle" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" /></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" /></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 8-4 4 4 4M15 8l4 4-4 4" /></symbol>
+    <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z" /></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.98-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14Z" /></symbol>
+  </svg>
+
+  <header class="site-nav">
+    <div class="container site-nav__inner">
+      <a class="brand" href="index.html">
+        <span class="brand__mark" aria-hidden="true">PC</span>
+        <span>Pruitt Colon</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
       </button>
-      <div class="nav-links">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="architecture.html" class="nav-link active">Architecture</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="demo/index.html" class="nav-link">Demo</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </div>
+      <nav id="nav-links" class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link" href="apps.html">Other apps</a>
+        <a class="nav-link" href="architecture.html" aria-current="page">How it’s built</a>
+        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="contact.html">Contact</a>
+        <a class="btn btn--primary btn--sm nav-cta" href="Pruitt_Colon_Resume.pdf">
+          Resume
+          <svg aria-hidden="true"><use href="#i-download" /></svg>
+        </a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <main>
-    <section class="arch-hero">
+  <main id="main">
+    <!-- ══════════ Hero ══════════ -->
+    <section class="arch-hero" aria-labelledby="arch-title">
       <div class="container">
-        <div class="arch-intro reveal">
-          <h1>Architecture</h1>
-          <p>A technical deep-dive into the NeMo AI Platform architecture: 12 distributed services, 37 specialized ML
-            engines, full Kubernetes
-            deployment with Istio service mesh,
-            all orchestrated on a single consumer GPU.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="arch-visual-section">
-      <div class="container">
-        <div class="decorative-line"></div>
-        <span class="section-label">System Overview</span>
-        <h2 class="section-title">How It Works</h2>
-        <p class="section-desc">A layered architecture designed for GPU efficiency and real-time processing.</p>
-
-        <div class="arch-diagram reveal">
-
-          <!-- SVG Overlay for Connectors -->
-          <svg class="svg-overlay" id="diagram-connections">
-            <!-- Paths will be drawn dynamically via JS to match node positions -->
-          </svg>
-
-          <div class="diagram-layers">
-            <!-- Client Layer -->
-            <div class="diagram-layer" id="layer-clients">
-              <span class="layer-label">Clients</span>
-              <div class="layer-content">
-                <div class="diagram-node" id="node-frontend">
-                  <div class="node-name">Web Frontend</div>
-                  <div class="node-desc">20+ pages</div>
-                </div>
-                <div class="diagram-node" id="node-mobile">
-                  <div class="node-name">Flutter Mobile</div>
-                  <div class="node-desc">Cross-platform</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Gateway Layer -->
-            <div class="diagram-layer" id="layer-gateway">
-              <span class="layer-label">Gateway</span>
-              <div class="layer-content">
-                <div class="diagram-node gateway" id="node-nginx">
-                  <div class="node-name">NGINX</div>
-                  <div class="node-desc">TLS Termination</div>
-                  <span class="node-port">:443</span>
-                </div>
-                <div class="diagram-node gateway" id="node-api">
-                  <div class="node-name">API Gateway</div>
-                  <div class="node-desc">Auth / Limits</div>
-                  <span class="node-port">:8000</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Services Layer (Grid Layout) -->
-            <div class="diagram-layer" id="layer-services">
-              <span class="layer-label">Services</span>
-              <div class="layer-content">
-                <!-- Row 1: Core AI -->
-                <div class="diagram-node" id="node-gemma">
-                  <div class="node-name">Gemma</div>
-                  <div class="node-desc">LLM AI</div>
-                  <span class="node-port">:8001</span>
-                </div>
-                <div class="diagram-node" id="node-transcribe">
-                  <div class="node-name">Transcription</div>
-                  <div class="node-desc">ASR</div>
-                  <span class="node-port">:8003</span>
-                </div>
-                <div class="diagram-node" id="node-rag">
-                  <div class="node-name">RAG</div>
-                  <div class="node-desc">Context</div>
-                  <span class="node-port">:8004</span>
-                </div>
-                <div class="diagram-node" id="node-emotion">
-                  <div class="node-name">Emotion</div>
-                  <div class="node-desc">Analysis</div>
-                  <span class="node-port">:8005</span>
-                </div>
-
-                <!-- Row 2: Integration -->
-                <div class="diagram-node" id="node-ml">
-                  <div class="node-name">ML Service</div>
-                  <div class="node-desc">37 Engines</div>
-                  <span class="node-port">:8006</span>
-                </div>
-                <div class="diagram-node" id="node-insights">
-                  <div class="node-name">Insights</div>
-                  <div class="node-desc">Analytics</div>
-                  <span class="node-port">:8010</span>
-                </div>
-                <div class="diagram-node" id="node-fiserv">
-                  <div class="node-name">Fiserv</div>
-                  <div class="node-desc">Banking</div>
-                  <span class="node-port">:8015</span>
-                </div>
-                <div class="diagram-node" id="node-n8n">
-                  <div class="node-name">N8N</div>
-                  <div class="node-desc">Automation</div>
-                  <span class="node-port">:8011</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- GPU / Infra Layer -->
-            <div class="diagram-layer" id="layer-infra">
-              <span class="layer-label">Infra</span>
-              <div class="layer-content">
-                <div class="diagram-node gpu-node" id="node-gpu">
-                  <div class="node-name">GPU Coordinator</div>
-                  <div class="node-desc">Queue Service</div>
-                  <span class="node-port">:8002</span>
-                </div>
-                <div class="diagram-node" id="node-redis">
-                  <div class="node-name">Redis</div>
-                  <div class="node-desc">Cache/Locks</div>
-                  <span class="node-port">:6379</span>
-                </div>
-                <div class="diagram-node" id="node-postgres">
-                  <div class="node-name">PostgreSQL</div>
-                  <div class="node-desc">Persistence</div>
-                  <span class="node-port">:5432</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="services-section">
-      <div class="container">
-        <div class="decorative-line"></div>
-        <span class="section-label">Core Services</span>
-        <h2 class="section-title">12 Microservices</h2>
-        <p class="section-desc">10 application services + 2 infrastructure services working in concert, all Dockerized.
+        <p class="eyebrow">How it’s built</p>
+        <h1 class="h1 arch-hero__title" id="arch-title">Under the <em>hood.</em></h1>
+        <p class="lead arch-hero__lead">
+          How speech, voice and language models fit on a phone, and how each app is tested.
         </p>
+        <nav class="toc" aria-label="On this page">
+          <a href="#tour"><span class="mono">00</span>See them run</a>
+          <a href="#vox"><span class="mono">01</span>Vox Amelior</a>
+          <a href="#narrator"><span class="mono">02</span>Narrator Studio</a>
+          <a href="#even-suite"><span class="mono">03</span>Even Suite</a>
+          <a href="#server"><span class="mono">04</span>Vox Server prototype</a>
+          <a href="#code"><span class="mono">05</span>Read the code</a>
+        </nav>
+      </div>
+    </section>
 
-        <div class="services-grid">
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">api-gateway</span>
-              <span class="service-port">:8000</span>
-            </div>
-            <p class="service-desc">Central entry point handling JWT auth, request routing, rate limiting, and WebSocket
-              connections for real-time updates.</p>
+    <!-- ══════════ Product tour (video) ══════════ -->
+    <section class="tour" id="tour" aria-labelledby="tour-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">Product tour · 0:48</p>
+            <h2 class="h2" id="tour-title">See them <em>run.</em></h2>
           </div>
+          <p class="lead">Real screens from each app’s test builds.</p>
+        </div>
 
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">gemma-service</span>
-              <span class="service-port">:8001</span>
+        <!-- The tour is landscape only, so phones play it full screen (js/player.js) -->
+        <div class="player player--fullscreen-on-phones reveal" data-player>
+          <div class="player__frame">
+            <div class="player__stage">
+              <video class="player__video" playsinline preload="none" width="1920" height="1080"
+                poster="assets/video/vox-tour-poster.webp" aria-describedby="tour-video-desc">
+                <source src="assets/video/vox-tour.mp4" type='video/mp4; codecs="avc1.640028"'>
+                <track kind="chapters" src="assets/video/vox-tour-chapters.vtt" srclang="en" label="Chapters" default>
+                Your browser can’t play this video. <a href="assets/video/vox-tour.mp4">Download the MP4</a>.
+              </video>
+              <p class="sr-only" id="tour-video-desc">Product tour of Vox Amelior, Narrator Studio and Even Suite, 48
+                seconds, no audio. A transcript is available below the video.</p>
+              <button class="player__play" type="button" data-player-play>
+                <span class="player__play-icon"><svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                <span class="player__play-label">Play the tour <span class="mono">0:48</span></span>
+              </button>
             </div>
-            <p class="service-desc">Conversational AI powered by Gemma 3 4B (Q4 quantized). Integrates RAG context,
-              emotional awareness, and business analysis.</p>
           </div>
+          <p class="player__hint">On a phone, the tour opens full screen. Turn your phone sideways.</p>
 
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">queue-service (GPU Coord)</span>
-              <span class="service-port">:8002</span>
-            </div>
-            <p class="service-desc">VRAM orchestration via Redis semaphores. Manages model loading, memory allocation,
-              and preemptive pausing between Gemma and ASR.</p>
+          <ol class="chapters chapters--3" role="list" aria-label="Video chapters">
+            <li><button class="chapter" type="button" data-start="5" data-end="20"><span class="chapter__num mono">01</span><span class="chapter__title">Vox Amelior</span><span class="chapter__desc">Listen, recognize, ask</span><span class="chapter__time mono">0:05</span><span class="chapter__bar" aria-hidden="true"></span></button></li>
+            <li><button class="chapter" type="button" data-start="20" data-end="32"><span class="chapter__num mono">02</span><span class="chapter__title">Narrator Studio</span><span class="chapter__desc">Text to podcast</span><span class="chapter__time mono">0:20</span><span class="chapter__bar" aria-hidden="true"></span></button></li>
+            <li><button class="chapter" type="button" data-start="32" data-end="41"><span class="chapter__num mono">03</span><span class="chapter__title">Even Suite</span><span class="chapter__desc">Claude on your glasses</span><span class="chapter__time mono">0:32</span><span class="chapter__bar" aria-hidden="true"></span></button></li>
+          </ol>
+        </div>
+
+        <details class="transcript reveal">
+          <summary>Read the transcript</summary>
+          <div class="transcript__body prose">
+            <p><strong>0:05 Vox Amelior.</strong> Writes down what’s said nearby, learns who is speaking after you name a
+              voice once, and finds what was said by meaning. It runs on the phone.</p>
+            <p><strong>0:20 Narrator Studio.</strong> Any text becomes a podcast with natural on-device voices and
+              chapters. Each build’s sample episode is checked with Whisper.</p>
+            <p><strong>0:32 Even Suite.</strong> Say “Claude” and talk; the answer appears on Even Realities G1 glasses.</p>
           </div>
+        </details>
+      </div>
+    </section>
 
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">transcription-service</span>
-              <span class="service-port">:8003</span>
-            </div>
-            <p class="service-desc">Real-time ASR using Parakeet RNNT 0.6b. Includes speaker diarization (Sortformer)
-              and
-              streaming audio processing.</p>
+    <!-- ══════════ Vox Amelior ══════════ -->
+    <section class="section" id="vox" aria-labelledby="vox-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">01 · Vox Amelior</p>
+            <h2 class="h2" id="vox-title">One phone. <em>One work queue.</em></h2>
           </div>
+          <p class="lead">Everything heavy runs in one background service with a single work queue, so speech
+            recognition and the language model never compete for the phone’s memory.</p>
+        </div>
 
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">rag-service</span>
-              <span class="service-port">:8004</span>
+        <ol class="pipeline reveal" role="list">
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">01</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Capture</h3>
+              <p class="pipeline__text">An always-on service holds the microphone. A speech detector keeps only voice, with
+                adjustable mic boost, sensitivity and sentence pause, and a live level meter.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Silero VAD</li></ul>
             </div>
-            <p class="service-desc">Retrieval-augmented generation with FAISS vector storage. Handles conversation
-              memory and knowledge bases.</p>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">02</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Queue on disk</h3>
+              <p class="pipeline__text">Speech is written to a queue on disk before anything else happens, so it survives
+                the service restarting. A chunk that fails is retried once, then set aside instead of lost.</p>
+            </div>
+          </li>
+          <li class="pipeline__stage pipeline__stage--accent">
+            <span class="pipeline__num mono">03</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">One job at a time</h3>
+              <p class="pipeline__text">A single scheduler decides what runs: a question someone is waiting for, then
+                transcription, then background reviews one small step at a time.</p>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">04</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Transcribe and attribute</h3>
+              <p class="pipeline__text">Each sentence is written down with punctuation, split by speaker, matched to a
+                voiceprint and tagged with its tone of voice.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Parakeet TDT 0.6B</li><li class="chip chip--mono">Sortformer</li><li class="chip chip--mono">TitaNet</li><li class="chip chip--mono">SenseVoice</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">05</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Store and index</h3>
+              <p class="pipeline__text">Lines land in SQLite with full-text search, grouped into days and conversations.
+                EmbeddingGemma adds compact vectors for search by meaning.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">SQLite FTS5</li><li class="chip chip--mono">EmbeddingGemma</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">06</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Answer and act</h3>
+              <p class="pipeline__text">Gemma 4 reads the lines that search picks for a question and can use tools: search
+                conversations, read a week’s timeline, save notes, set reminders or run automations.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Gemma 4 · LiteRT-LM</li></ul>
+            </div>
+          </li>
+        </ol>
+
+        <div class="grid grid--3 notes">
+          <div class="card reveal">
+            <h3 class="card__title">Measured, not guessed</h3>
+            <p class="card__text">“Test this phone” fills Gemma’s context from 2,048 up to 32,768 tokens and checks it can
+              still repeat a code word. Prompts and review steps are sized from that result.</p>
           </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">emotion-service</span>
-              <span class="service-port">:8005</span>
-            </div>
-            <p class="service-desc">Multi-dimensional emotion analysis using fine-tuned DistilRoBERTa. Provides
-              sentiment scoring and temporal tracking.</p>
+          <div class="card reveal">
+            <h3 class="card__title">Search tuned on real scores</h3>
+            <p class="card__text">Related lines scored 0.44 to 0.62 and unrelated ones up to 0.43, so a fixed cut-off
+              couldn’t separate them. Search keeps lines close to the best match instead.</p>
           </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">ml-service</span>
-              <span class="service-port">:8006</span>
-            </div>
-            <p class="service-desc">"System 2" thinking with 37 specialized engines. Titan AutoML, Oracle Causal, Newton
-              Symbolic, Salesforce CRM analytics, and more.</p>
-          </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">insights-service</span>
-              <span class="service-port">:8010</span>
-            </div>
-            <p class="service-desc">Analytics and AutoML experiments. Revenue forecasting, anomaly detection, and
-              business intelligence visualization.</p>
-          </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">nginx</span>
-              <span class="service-port">:443</span>
-            </div>
-            <p class="service-desc">HTTPS reverse proxy with TLS 1.3 termination. Handles SSL certificates, security
-              headers, and load balancing.</p>
-          </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">n8n-service</span>
-              <span class="service-port">:8011</span>
-            </div>
-            <p class="service-desc">Voice command integration and smart home automation. Connects to Voice Monkey for
-              Alexa control.</p>
-          </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">fiserv-service</span>
-              <span class="service-port">:8015</span>
-            </div>
-            <p class="service-desc">Banking hub integrating with Fiserv API for account data, transactions, and
-              financial analytics.</p>
-          </div>
-
-          <div class="service-card reveal">
-            <div class="service-header">
-              <span class="service-name">redis + postgres</span>
-              <span class="service-port">Infra</span>
-            </div>
-            <p class="service-desc">Persistence layer. Redis for high-speed caching and locks; PostgreSQL for durable
-              data and task queues.</p>
+          <div class="card reveal">
+            <h3 class="card__title">Tested like a product</h3>
+            <p class="card__text">400+ automated tests, plus a CI emulator tour that installs the release build, plays
+              synthetic voices into it and drives every screen with the real models.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="engines-section">
+    <!-- ══════════ Narrator Studio ══════════ -->
+    <section class="section section--alt" id="narrator" aria-labelledby="narrator-title">
       <div class="container">
-        <div class="decorative-line"></div>
-        <span class="section-label">ML Capabilities</span>
-        <h2 class="section-title">37 Specialized ML Engines</h2>
-        <p class="section-desc">A comprehensive suite of analytical engines powered by the ML Service.</p>
-
-        <div class="engine-category reveal">
-          <h4 class="category-title">Core AI Models</h4>
-          <div class="engines-grid">
-            <div class="engine-item">Gemma 3 4B</div>
-            <div class="engine-item">Parakeet ASR</div>
-            <div class="engine-item">TitaNet Speaker</div>
-            <div class="engine-item">DistilRoBERTa (Emotion)</div>
-            <div class="engine-item">MiniLM Embeddings</div>
-            <div class="engine-item">Sortformer Diarization</div>
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">02 · Narrator Studio</p>
+            <h2 class="h2" id="narrator-title">From script <em>to episode.</em></h2>
           </div>
+          <p class="lead">Text goes through a plan, a cast of voices and a mixer, then plays live or exports as a
+            chaptered M4A. The voices run in a separate worker so the app stays responsive.</p>
         </div>
 
-        <div class="engine-category reveal">
-          <h4 class="category-title">AutoML & Predictive (Titan Series)</h4>
-          <div class="engines-grid">
-            <div class="engine-item">Titan AutoML</div>
-            <div class="engine-item">Oracle Causal</div>
-            <div class="engine-item">Newton Symbolic</div>
-            <div class="engine-item">Chronos Temporal</div>
-            <div class="engine-item">Galileo Geometric</div>
-            <div class="engine-item">Scout Discovery</div>
-            <div class="engine-item">Predictive Engine</div>
-            <div class="engine-item">Statistical Engine</div>
-            <div class="engine-item">Trend Engine</div>
-          </div>
-        </div>
+        <ol class="flowline reveal" role="list">
+          <li><span class="mono">01</span><b>Script</b><span>Text, Markdown or PDF, cleaned and split into sentences</span></li>
+          <li><span class="mono">02</span><b>Plan</b><span>Style, speakers, pauses, sound and music cues</span></li>
+          <li class="is-accent"><span class="mono">03</span><b>Voices</b><span>Four on-device engines in a worker isolate</span></li>
+          <li><span class="mono">04</span><b>Mix</b><span>Original music ducked under speech, 48 kHz</span></li>
+          <li><span class="mono">05</span><b>Play or export</b><span>Read-along player, M4A with chapters</span></li>
+        </ol>
 
-        <div class="engine-category reveal">
-          <h4 class="category-title">Financial Analysis</h4>
-          <div class="engines-grid">
-            <div class="engine-item">Revenue Forecast</div>
-            <div class="engine-item">Cash Flow</div>
-            <div class="engine-item">Budget Variance</div>
-            <div class="engine-item">Profit Margin</div>
-            <div class="engine-item">Cost Optimization</div>
-            <div class="engine-item">Pricing Strategy</div>
-            <div class="engine-item">ROI Prediction</div>
-            <div class="engine-item">Inventory Optimization</div>
+        <div class="grid grid--3 notes">
+          <div class="card reveal">
+            <h3 class="card__title">A model ported by hand</h3>
+            <p class="card__text">VibeVoice had no phone runtime, so CI converts it to ONNX and I rewrote its inference loop
+              and tokenizer in Dart. The port was checked against the Python reference before it shipped.</p>
           </div>
-        </div>
-
-        <div class="engine-category reveal">
-          <h4 class="category-title">Advanced Analytics</h4>
-          <div class="engines-grid">
-            <div class="engine-item">Chaos Non-Linear</div>
-            <div class="engine-item">Anomaly Detector</div>
-            <div class="engine-item">Clustering Engine</div>
-            <div class="engine-item">Customer LTV</div>
-            <div class="engine-item">Market Basket</div>
-            <div class="engine-item">Spend Pattern</div>
-            <div class="engine-item">Deep Feature</div>
-            <div class="engine-item">Universal Graph</div>
-            <div class="engine-item">Flash Inference</div>
-            <div class="engine-item">Mirror Synthetic</div>
-            <div class="engine-item">RAG Evaluation</div>
-            <div class="engine-item">Quality Insights</div>
+          <div class="card reveal">
+            <h3 class="card__title">Quality checked on every build</h3>
+            <p class="card__text">CI renders a sample episode with the real voices and Whisper transcribes it: 2.6% word
+              error rate. A separate voice lab scores clarity, and the device CI benchmarks speed.</p>
           </div>
-        </div>
-
-        <div class="engine-category reveal">
-          <h4 class="category-title">Salesforce CRM Analytics</h4>
-          <div class="engines-grid">
-            <div class="engine-item">Churn Prediction</div>
-            <div class="engine-item">Next Best Action</div>
-            <div class="engine-item">Deal Velocity</div>
-            <div class="engine-item">Competitive Intel</div>
-            <div class="engine-item">Customer 360</div>
-            <div class="engine-item">Lead Scoring</div>
-            <div class="engine-item">Opportunity Score</div>
+          <div class="card reveal">
+            <h3 class="card__title">Ears over metrics</h3>
+            <p class="card__text">Automatic quality scores ranked some robotic voices highest. After listening tests I put
+              the characters back on the more natural voices and kept the others as an option.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="k8s-section">
+    <!-- ══════════ Even Suite ══════════ -->
+    <section class="section" id="even-suite" aria-labelledby="even-title">
       <div class="container">
-        <div class="decorative-line"></div>
-        <span class="section-label">Deployment</span>
-        <h2 class="section-title">Kubernetes Ready</h2>
-        <p class="section-desc">Production-ready K8s manifests with NVIDIA GPU passthrough</p>
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">03 · Even Suite</p>
+            <h2 class="h2" id="even-title">Voice in, answer <em>in view.</em></h2>
+          </div>
+          <p class="lead">The glasses have a microphone, a small green display and a Bluetooth link. The phone does the
+            listening, talks to Claude Code running in Termux, and pages the reply back to the glasses.</p>
+        </div>
 
-        <div class="k8s-grid">
-          <div class="k8s-card reveal">
-            <h4>Manifests</h4>
-            <ul class="k8s-list">
-              <li>namespace.yaml</li>
-              <li>secrets.yaml (12 keys)</li>
-              <li>services.yaml (ClusterIP)</li>
-              <li>deployments.yaml (842 lines)</li>
-              <li>ingress.yaml (NGINX)</li>
-              <li>nvidia-device-plugin.yaml</li>
-            </ul>
+        <ol class="flowline reveal" role="list">
+          <li><span class="mono">01</span><b>Glasses mic</b><span>LC3 audio over Bluetooth, decoded in native code</span></li>
+          <li><span class="mono">02</span><b>Speech</b><span>Android’s recognizer, with a “Claude” wake word and “send”</span></li>
+          <li class="is-accent"><span class="mono">03</span><b>Bridge</b><span>Agent Hub in Termux passes it to Claude Code</span></li>
+          <li><span class="mono">04</span><b>Reply</b><span>Measured to fit five lines a page</span></li>
+          <li><span class="mono">05</span><b>Display</b><span>Text sent to both arms of the glasses</span></li>
+        </ol>
+
+        <div class="grid grid--2 notes">
+          <div class="card reveal">
+            <h3 class="card__title">Tested without the glasses</h3>
+            <p class="card__text">87 automated tests run against simulated glasses and a live test bridge, and CI renders
+              every screen at normal and large text before building the release.</p>
+          </div>
+          <div class="card reveal">
+            <h3 class="card__title">Nothing extra installed</h3>
+            <p class="card__text">Built only on the maker’s open-source demo app: speech, settings and networking come from
+              Android and Dart, with no extra SDKs or API keys.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ Vox Server prototype ══════════ -->
+    <section class="section section--alt" id="server" aria-labelledby="server-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">04 · Earlier work</p>
+            <h2 class="h2" id="server-title">Vox Server, <em>the prototype.</em></h2>
+          </div>
+          <p class="lead">Before the phone app, I built a self-hosted, multi-user version: FastAPI services behind a
+            gateway, run with Docker. It’s where the queue idea started, as a Redis lock that lets speech and the
+            language model take turns on one GPU. Hover a node to trace its connections.</p>
+        </div>
+
+        <figure class="diagram reveal" data-diagram aria-labelledby="diagram-caption">
+          <svg class="diagram__wires" aria-hidden="true"></svg>
+
+          <div class="diagram__layer">
+            <span class="diagram__label">Clients</span>
+            <div class="diagram__nodes">
+              <div class="node" id="node-frontend"><span class="node__name">Web app</span><span class="node__meta">Browser</span></div>
+              <div class="node" id="node-mobile"><span class="node__name">Flutter app</span><span class="node__meta">Phone</span></div>
+            </div>
           </div>
 
-          <div class="k8s-card reveal">
-            <h4>GPU Passthrough</h4>
-            <ul class="k8s-list">
-              <li>NVIDIA Device Plugin DaemonSet</li>
-              <li>Direct device mounts (/dev/nvidia*)</li>
-              <li>CUDA runtime in containers</li>
-              <li>Resource limits: nvidia.com/gpu: 1</li>
-              <li>Shared GPU across pods</li>
-            </ul>
+          <div class="diagram__layer">
+            <span class="diagram__label">Gateway</span>
+            <div class="diagram__nodes">
+              <div class="node node--gateway" id="node-nginx"><span class="node__name">NGINX</span><span class="node__meta">TLS</span></div>
+              <div class="node node--gateway" id="node-api"><span class="node__name">API gateway</span><span class="node__meta">Sign-in, routing</span></div>
+            </div>
           </div>
 
-          <div class="k8s-card reveal">
-            <h4>Kustomize Overlays</h4>
-            <ul class="k8s-list">
-              <li>base/ (common resources)</li>
-              <li>overlays/local/ (dev)</li>
-              <li>overlays/install/ (prod)</li>
-              <li>Health check probes</li>
-              <li>Init containers for setup</li>
-            </ul>
+          <div class="diagram__layer">
+            <span class="diagram__label">Services</span>
+            <div class="diagram__nodes diagram__nodes--grid diagram__nodes--four">
+              <div class="node" id="node-transcribe"><span class="node__name">Transcription</span><span class="node__meta">Speech to text</span></div>
+              <div class="node" id="node-gemma"><span class="node__name">Assistant</span><span class="node__meta">Gemma LLM</span></div>
+              <div class="node" id="node-rag"><span class="node__name">Memory</span><span class="node__meta">Search, RAG</span></div>
+              <div class="node" id="node-emotion"><span class="node__name">Emotion</span><span class="node__meta">Tone</span></div>
+            </div>
           </div>
 
-          <div class="k8s-card reveal">
-            <h4>Istio Service Mesh</h4>
-            <ul class="k8s-list">
-              <li>VirtualService routing</li>
-              <li>DestinationRule policies</li>
-              <li>Gateway TLS termination</li>
-              <li>mTLS between services</li>
-              <li>Traffic management</li>
-            </ul>
+          <div class="diagram__layer">
+            <span class="diagram__label">Infra</span>
+            <div class="diagram__nodes">
+              <div class="node node--gpu" id="node-gpu"><span class="node__name">GPU queue</span><span class="node__meta">Takes turns</span></div>
+              <div class="node" id="node-redis"><span class="node__name">Redis</span><span class="node__meta">Locks, cache</span></div>
+              <div class="node" id="node-postgres"><span class="node__name">PostgreSQL</span><span class="node__meta">Storage</span></div>
+            </div>
+          </div>
+
+          <figcaption class="diagram__caption" id="diagram-caption">
+            Requests come in through NGINX and the gateway. The transcription and assistant services ask the GPU queue for
+            a turn before they run, so they never load the GPU at the same time.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ══════════ Code explorer ══════════ -->
+    <section class="section" id="code" aria-labelledby="code-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">05 · Read the code</p>
+            <h2 class="h2" id="code-title">Click a topic. <em>Read the source.</em></h2>
+          </div>
+          <p class="lead">Each topic opens the files that implement it, with an excerpt and a link to the exact file on
+            GitHub.</p>
+        </div>
+
+        <div class="explorer reveal" data-explorer>
+          <div class="explorer__group" data-category="voice-app">
+            <h3 class="explorer__label">Vox Amelior <span class="explorer__tag">Android</span></h3>
+            <div class="explorer__keywords"></div>
+            <div class="explorer__details"></div>
+          </div>
+          <div class="explorer__group" data-category="server" data-keywords="FastAPI|GPU Semaphore|RAG (Retrieval-Augmented Generation)|JWT Authentication|Docker">
+            <h3 class="explorer__label">Vox Server <span class="explorer__tag">Prototype</span></h3>
+            <div class="explorer__keywords"></div>
+            <div class="explorer__details"></div>
+          </div>
+          <noscript>
+            <p class="muted">The explorer needs JavaScript. Browse the source directly on
+              <a class="link" href="https://github.com/prunewhip/Vox_Amelior">GitHub</a>.</p>
+          </noscript>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-band reveal">
+          <p class="eyebrow">See it running</p>
+          <h2 class="h2" id="cta-title">Engineering is nice. <em>Watch it work.</em></h2>
+          <p class="cta-band__text">The product tour shows all three apps with real screens from the builds.</p>
+          <div class="cta-band__actions">
+            <a class="btn btn--primary btn--lg" href="index.html#tour">Watch the tour</a>
+            <a class="btn btn--secondary btn--lg" href="https://github.com/prunewhip/Vox_Amelior" rel="noopener">
+              <svg aria-hidden="true"><use href="#i-github" /></svg>
+              Browse the repository
+            </a>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="site-footer">
     <div class="container">
-      <div class="footer-content">
-        <div class="footer-brand">
-          <a href="index.html" class="nav-brand">Pruitt Colon</a>
-          <p class="subtitle" style="margin-top: 8px;">Senior Software Engineer</p>
+      <div class="site-footer__grid">
+        <div>
+          <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true">PC</span><span>Pruitt Colon</span></a>
+          <p class="site-footer__blurb">AI engineer building the first steps toward a human–AI interface.
+            Casa Grande, Arizona.</p>
         </div>
-        <div class="footer-links">
-          <a href="https://github.com/pruittcolon" class="footer-social" aria-label="GitHub">GH</a>
-          <a href="https://linkedin.com/in/pruittcolon" class="footer-social" aria-label="LinkedIn">LI</a>
-          <a href="contact.html" class="footer-contact-btn">Get in Touch</a>
+        <nav aria-label="Footer">
+          <p class="site-footer__heading">Site</p>
+          <ul class="site-footer__list" role="list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="apps.html">Other apps</a></li>
+            <li><a href="architecture.html">How it’s built</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+        <div>
+          <p class="site-footer__heading">Elsewhere</p>
+          <ul class="site-footer__list" role="list">
+            <li><a href="https://github.com/prunewhip" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" rel="noopener">LinkedIn</a></li>
+            <li><a href="mailto:PruittColon@gmail.com">Email</a></li>
+            <li><a href="Pruitt_Colon_Resume.pdf">Resume (PDF)</a></li>
+          </ul>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p class="footer-text">&copy; 2024 Pruitt Colon. All rights reserved.</p>
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Pruitt Colon</p>
+        <p>Hand-built HTML, CSS, JavaScript and Three.js. No trackers.</p>
       </div>
     </div>
   </footer>
-
-  <script src="js/main.js"></script>
-  <script>
-    // Smooth Connector Drawing Script
-    document.addEventListener('DOMContentLoaded', () => {
-      const svg = document.getElementById('diagram-connections');
-
-      const connections = [
-        // Frontend -> Gateway
-        ['node-frontend', 'node-nginx'],
-        ['node-mobile', 'node-nginx'],
-        ['node-nginx', 'node-api'],
-
-        // API -> Core AI (Row 1)
-        ['node-api', 'node-gemma'],
-        ['node-api', 'node-transcribe'],
-        ['node-api', 'node-rag'],
-        ['node-api', 'node-emotion'],
-
-        // API -> Integration (Row 2)
-        ['node-api', 'node-ml'],
-        ['node-api', 'node-insights'],
-        ['node-api', 'node-fiserv'],
-        ['node-api', 'node-n8n'],
-
-        // Dependencies
-        ['node-gemma', 'node-gpu'],     // Gemma -> GPU
-        ['node-transcribe', 'node-gpu'], // Transcribe -> GPU
-        ['node-ml', 'node-gpu'],         // ML -> GPU
-
-        ['node-gemma', 'node-rag'],      // Context
-        ['node-transcribe', 'node-emotion'], // Audio
-
-        // Infra
-        ['node-gpu', 'node-redis'],      // Coordinator -> Redis
-        ['node-ml', 'node-postgres']     // ML -> Postgres
-      ];
-
-      function drawConnections() {
-        svg.innerHTML = ''; // Clear existing
-        const containerRect = document.querySelector('.diagram-layers').getBoundingClientRect();
-
-        // Configure SVG 
-        svg.setAttribute('width', containerRect.width);
-        svg.setAttribute('height', containerRect.height);
-
-        connections.forEach(([startId, endId]) => {
-          const startEl = document.getElementById(startId);
-          const endEl = document.getElementById(endId);
-
-          if (!startEl || !endEl) return;
-
-          const startRect = startEl.getBoundingClientRect();
-          const endRect = endEl.getBoundingClientRect();
-
-          // Calculate relative coordinates
-          const x1 = startRect.left + startRect.width / 2 - containerRect.left;
-          const y1 = startRect.bottom - containerRect.top; // Start from bottom
-          const x2 = endRect.left + endRect.width / 2 - containerRect.left;
-          const y2 = endRect.top - containerRect.top; // End at top
-
-          // For nodes in subsequent layers (Gemma -> GPU), simple top-down
-          // For Row 2 nodes (ML Service), we need to avoid cutting through Row 1 if possible
-          // But strict hierarchy (API -> Row 2) means we just go down.
-          // Since it's a grid, API is centered above. Row 2 is below Row 1.
-
-          // Bezier Control Points
-          // Pull control points vertically to create specific curve shape
-          const dist = Math.abs(y2 - y1);
-          const cpY = dist * 0.5; // Control point strength
-
-          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-
-          // Use M C command for cubic bezier
-          const d = `M ${x1} ${y1} C ${x1} ${y1 + cpY}, ${x2} ${y2 - cpY}, ${x2} ${y2}`;
-
-          path.setAttribute('d', d);
-          path.classList.add('connector-path');
-          path.setAttribute('id', `conn-${startId}-${endId}`);
-
-          svg.appendChild(path);
-
-          // Add hover listeners
-          const nodes = [startEl, endEl];
-          nodes.forEach(node => {
-            node.addEventListener('mouseenter', () => {
-              path.classList.add('active');
-              startEl.classList.add('active-pulse');
-              endEl.classList.add('active-pulse');
-            });
-            node.addEventListener('mouseleave', () => {
-              path.classList.remove('active');
-              startEl.classList.remove('active-pulse');
-              endEl.classList.remove('active-pulse');
-            });
-          });
-        });
-      }
-
-      // Initial draw with small delay to ensure layout stable
-      setTimeout(drawConnections, 100);
-
-      // Redraw on resize
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(drawConnections, 100);
-      });
-    });
-  </script>
 </body>
 
 </html>

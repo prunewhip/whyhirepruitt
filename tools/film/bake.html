@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Film 3D stills</title>
+<meta name="robots" content="noindex">
+<!--
+  Bakes the concept film's Three.js shots into transparent 1920×1080 PNGs (see bake.mjs).
+  ?shot=field-a | field-b | phone-now | phone-conversation | phone-ask | glasses | hud-1 | hud-2 | hud-3
+  (glasses has no HUD text; hud-N is the HUD text alone, so the film can reveal it as if typed live)
+  The film moves these stills in CSS 3D, so its render needs no WebGL.
+-->
+<style>
+  @font-face { font-family: "Geist"; src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+  .stage { width: 1920px; height: 1080px; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="stage"><canvas id="c"></canvas></div>
+  <script type="module">
+    import { THREE, createStage, loadTexture } from '../../js/3d/stage.js';
+    import { createPhone, createGlasses, hudTexture } from '../../js/3d/devices.js';
+    import { createVoiceField } from '../../js/3d/voice-field.js';
+
+    const HUD = {
+      'hud-1': ['Quick check:', 'the dentist moved to', 'Thursday, 2:30.'],
+      'hud-2': ['Maya started her new', 'job on Monday.', 'Ask how it’s going.'],
+      'hud-3': ['You told Mom you’d', 'call her after the', 'interview.']
+    };
+    const SCREENS = {
+      'phone-now': '../../assets/app/hd/vox-now.webp',
+      'phone-conversation': '../../assets/app/hd/vox-conversation.webp',
+      'phone-ask': '../../assets/app/hd/vox-ask.webp'
+    };
+
+    const shot = new URLSearchParams(location.search).get('shot') || 'phone-now';
+    window.ready = (async () => {
+      const stage = createStage(document.getElementById('c'), { fov: 28 });
+      const { scene, camera, renderer } = stage;
+      camera.position.set(0, 0, 12);
+      await document.fonts.load('500 34px Geist');
+
+      if (shot.startsWith('field')) {
+        // Wide, low field that fills the frame: the "voice of a day"
+        const field = createVoiceField({ rows: 96, cols: 320, width: 30, depth: 14 });
+        field.uniforms.uTime.value = shot === 'field-a' ? 1.6 : 3.4;
+        field.uniforms.uAmp.value = 1.35;
+        const group = new THREE.Group();
+        group.add(field.mesh);
+        group.rotation.x = 0.36;
+        group.position.set(0, -2.1, -1);
+        scene.add(group);
+      } else if (shot.startsWith('phone')) {
+        const phone = createPhone();
+        phone.show(await loadTexture(SCREENS[shot], renderer), { instant: true });
+        phone.group.scale.setScalar(2.05);
+        phone.group.rotation.set(0.06, -0.32, 0.02);
+        phone.group.position.set(0, -0.05, 0);
+        scene.add(phone.group);
+      } else {
+        // Product-shot framing: a long lens keeps the temples tucked behind the hinges
+        camera.fov = 11;
+        camera.position.set(0, 0.6, 31);
+        camera.lookAt(0, 0, 0);
+        camera.updateProjectionMatrix();
+        const isHud = shot.startsWith('hud');
+        const glasses = createGlasses({ hud: hudTexture(HUD[shot] || ['']) });
+        glasses.group.traverse((obj) => {
+          if (!obj.isMesh) return;
+          const hudPlane = obj.material.map != null;
+          // Front-on, the temples would only show through the clear lenses, so leave them out
+          obj.geometry.computeBoundingBox();
+          const behindFrame = obj.geometry.boundingBox.min.z + obj.position.z < -0.3;
+          obj.visible = !behindFrame && (isHud ? hudPlane : !hudPlane);
+        });
+        glasses.group.scale.setScalar(2.35);
+        glasses.group.rotation.set(0.04, 0.1, -0.02);
+        scene.add(glasses.group);
+      }
+
+      stage.renderOnce(0);
+      return 'ok';
+    })().catch((e) => 'ERR ' + e.message);
+  </script>
+</body>
+</html>

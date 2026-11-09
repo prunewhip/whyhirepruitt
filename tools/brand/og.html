@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Open Graph image source</title>
+<meta name="robots" content="noindex">
+<!-- Rendered by render-brand.mjs to assets/og-image.jpg (1200×630). The devices are the site's live hero scene. -->
+<style>
+  @font-face { font-family: "Geist"; src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Geist Mono"; src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2"); font-weight: 100 900; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative; font-family: "Geist", sans-serif; color: #18201c; background: #fcfcfa;
+    -webkit-font-smoothing: antialiased;
+  }
+  .bg { position: absolute; inset: 0;
+    background:
+      none; }
+  .three { position: absolute; inset: 0; }
+  .three canvas { display: block; width: 100%; height: 100%;
+    -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.14) 0%, rgba(0,0,0,.26) 40%, #000 62%);
+    mask-image: linear-gradient(90deg, rgba(0,0,0,.14) 0%, rgba(0,0,0,.26) 40%, #000 62%); }
+  #phoneAnchor { position: absolute; right: 120px; top: 56px; height: 500px; aspect-ratio: 1 / 2.16; }
+  #glassesAnchor { position: absolute; right: 250px; top: 410px; width: 300px; aspect-ratio: 2 / 1; }
+  .copy { position: absolute; left: 72px; top: 76px; width: 660px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 12px; padding: 8px 16px; border: 1px solid #e2e6e0;
+    border-radius: 999px; background: #ffffff; font-size: 18px; color: #4a544e; }
+  .eyebrow i { width: 9px; height: 9px; border-radius: 50%; background: #1e6b57; }
+  h1 { margin-top: 30px; font-weight: 620; font-size: 80px; line-height: 1; letter-spacing: -0.045em; color: #18201c; }
+  h1 span { color: #1e6b57; }
+  p.sub { margin-top: 24px; max-width: 520px; font-size: 23px; color: #4a544e; line-height: 1.4; }
+  .who { position: absolute; left: 72px; bottom: 56px; display: flex; align-items: center; gap: 16px; }
+  .mark { width: 52px; height: 52px; border-radius: 13px; background: #18201c; color: #ffffff; display: grid; place-items: center; font-family: "Geist Mono", monospace; font-weight: 700; font-size: 20px; }
+  .who b { display: block; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
+  .who div span { display: block; margin-top: 2px; font-size: 18px; color: #5f6963; font-family: "Geist Mono", monospace; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="three"><canvas id="three"></canvas></div>
+  <div id="phoneAnchor"></div>
+  <div id="glassesAnchor"></div>
+  <div class="copy">
+    <p class="eyebrow"><i></i>Pruitt Colon · AI engineer</p>
+    <h1>I build AI that runs<br><span>on your phone.</span></h1>
+    <p class="sub">Speech recognition, natural voices and language models, in three open-source Android apps.</p>
+  </div>
+  <div class="who">
+    <span class="mark">PC</span>
+    <div><b>Pruitt Colon</b><span>whyhirepruitt.dev</span></div>
+  </div>
+  <script type="module">
+    import { mountHero } from '../../js/3d/devices-hero.js';
+    window.ready = mountHero({
+      canvas: document.getElementById('three'),
+      phoneAnchor: document.getElementById('phoneAnchor'),
+      glassesAnchor: document.getElementById('glassesAnchor'),
+      screens: ['../../assets/app/hd/vox-now.webp'],
+      still: 2.4
+    }).then((stage) => {
+      stage.renderOnce(2.4);
+      return true;
+    });
+  </script>
+</body>
+</html>

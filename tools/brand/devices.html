@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Device still</title>
+  <meta name="robots" content="noindex">
+  <!-- Renders one of the turntable showcases (js/3d/showcase.js) on a transparent canvas (see bake-devices.mjs).
+       ?kind=hero&t=1.2 -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    html,
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .wrap {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap"><canvas id="c"></canvas></div>
+  <script type="module">
+    import { mountShowcase } from '../../js/3d/showcase.js';
+
+    const SCREENS = {
+      hero: ['assets/app/hd/vox-now.webp', 'assets/app/hd/narr-reader.webp', 'assets/app/hd/even-chat.webp'],
+      vox: ['assets/app/hd/vox-ask.webp'],
+      glasses: ['assets/app/hd/even-chat.webp'],
+      narrator: ['assets/app/hd/narr-reader.webp']
+    };
+    const params = new URLSearchParams(location.search);
+    const kind = params.get('kind') || 'hero';
+    window.ready = mountShowcase({
+      canvas: document.getElementById('c'),
+      kind,
+      screens: SCREENS[kind].map((u) => `../../${u}`),
+      still: Number(params.get('t') || 0.6)
+    }).then(() => 'ok', (error) => String(error));
+  </script>
+</body>
+
+</html>

@@ -1,1644 +1,427 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pruitt Colon - AI Engineer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pruitt Colon · AI engineer</title>
   <meta name="description"
-    content="Full-stack AI Engineer. 332K+ lines across 7 languages, 36 ML engines, 12 microservices.">
+    content="Pruitt Colon is building the first steps toward a human–AI interface: AI that hears you, shows you and speaks to you, on your phone and in your glasses.">
+  <link rel="canonical" href="https://whyhirepruitt.dev/">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#fcfcfa">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pruitt Colon">
+  <meta property="og:title" content="Pruitt Colon · AI engineer">
+  <meta property="og:description"
+    content="The first steps toward a human–AI interface. Three open-source Android apps: a private conversation memory, Claude in smart glasses, and a podcast studio.">
+  <meta property="og:url" content="https://whyhirepruitt.dev/">
+  <meta property="og:image" content="https://whyhirepruitt.dev/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Pruitt Colon, AI engineer. I build AI that runs on your phone.">
+  <meta name="twitter:card" content="summary_large_image">
 
+  <link rel="icon" href="assets/favicon-192.png" sizes="192x192" type="image/png">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="preload" href="assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/design-system.css">
-  <style>
-    /* Hero */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: var(--space-32) var(--space-6) var(--space-24);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Animated Gradient Orbs - Soft, organic */
-    .hero-orbs {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.4;
-      animation: float-orb 20s ease-in-out infinite;
-    }
-
-    .orb-1 {
-      width: 500px;
-      height: 500px;
-      background: linear-gradient(135deg, #e8e4df 0%, #d4cfc7 100%);
-      top: -10%;
-      right: -5%;
-      animation-delay: 0s;
-    }
-
-    .orb-2 {
-      width: 400px;
-      height: 400px;
-      background: linear-gradient(135deg, #f0ebe4 0%, #e2dcd3 100%);
-      bottom: 10%;
-      left: -10%;
-      animation-delay: -7s;
-    }
-
-    .orb-3 {
-      width: 300px;
-      height: 300px;
-      background: linear-gradient(135deg, #ebe7e0 0%, #ddd8cf 100%);
-      top: 40%;
-      right: 20%;
-      animation-delay: -14s;
-    }
-
-    @keyframes float-orb {
-
-      0%,
-      100% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      25% {
-        transform: translate(30px, -30px) scale(1.05);
-      }
-
-      50% {
-        transform: translate(-20px, 20px) scale(0.95);
-      }
-
-      75% {
-        transform: translate(20px, 10px) scale(1.02);
-      }
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Stagger animation for hero elements */
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-2);
-      margin-bottom: var(--space-6);
-      opacity: 0;
-      animation: fadeUp 0.6s var(--ease-out) 0.05s forwards;
-    }
-
-    .hero-subtitle {
-      max-width: 500px;
-      margin-bottom: var(--space-10);
-      opacity: 0;
-      animation: fadeUp 0.6s var(--ease-out) 0.7s forwards;
-    }
-
-    .hero-cta {
-      display: flex;
-      gap: var(--space-4);
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.6s var(--ease-out) 0.9s forwards;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hero-eyebrow .dot {
-      width: 8px;
-      height: 8px;
-      background: var(--success);
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.6;
-        transform: scale(0.9);
-      }
-    }
-
-    .hero-eyebrow span {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-    }
-
-    .hero-title {
-      max-width: 700px;
-      margin-bottom: var(--space-6);
-      /* Fixed min-height ensures subtitle doesn't jump during typewriter animation */
-      min-height: 180px;
-      display: flex;
-      align-items: flex-start;
-      overflow: visible;
-    }
-
-    @media (max-width: 900px) {
-      .hero-title {
-        min-height: 200px;
-        height: auto;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .hero-title {
-        min-height: 240px;
-        height: auto;
-      }
-
-      /* Add background to hamburger menu for visibility when scrolling */
-      .nav-toggle {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 6px;
-        border-radius: 6px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero-title {
-        min-height: 280px;
-        height: auto;
-      }
-    }
-
-    .hero-title h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: var(--weight-bold);
-      letter-spacing: var(--tracking-tight);
-      line-height: var(--leading-tight);
-    }
-
-    /* Typewriter effect */
-    .typewriter-text {
-      display: inline;
-    }
-
-    .typewriter-cursor {
-      display: inline-block;
-      width: 3px;
-      height: 1.1em;
-      background: var(--accent);
-      margin-left: 2px;
-      vertical-align: text-bottom;
-      animation: cursorBlink 1s step-end infinite;
-    }
-
-    @keyframes cursorBlink {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0;
-      }
-    }
-
-    /* Recruiter Summary Arrow - Prominent CTA */
-    .scroll-hint {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-4);
-      margin-top: var(--space-12);
-      opacity: 0;
-      animation: fadeUp 0.6s var(--ease-out) 1.2s forwards;
-    }
-
-    .scroll-hint-text {
-      font-size: var(--text-base);
-      font-weight: var(--weight-medium);
-      color: var(--text-secondary);
-      text-align: center;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-      padding: var(--space-3) var(--space-6);
-      border-radius: var(--radius-full);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-    }
-
-    .scroll-hint-arrow {
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-      animation: bounceDown 1.5s ease-in-out infinite;
-      transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
-    }
-
-    .scroll-hint-arrow:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
-    }
-
-    .scroll-hint-arrow svg {
-      width: 24px;
-      height: 24px;
-      stroke: white;
-      stroke-width: 2.5;
-    }
-
-    @keyframes bounceDown {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(8px);
-      }
-    }
-
-    .hero-subtitle p {
-      font-size: var(--text-lg);
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-    }
-
-    /* Stats Section */
-    .stats-section {
-      padding: var(--space-20) 0;
-      background: var(--bg-secondary);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-8);
-    }
-
-    @media (max-width: 768px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-6);
-      }
-    }
-
-    .stat {
-      text-align: center;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.6s var(--ease-out);
-    }
-
-    .stats.visible .stat:nth-child(1) {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 0.1s;
-    }
-
-    .stats.visible .stat:nth-child(2) {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 0.2s;
-    }
-
-    .stats.visible .stat:nth-child(3) {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 0.3s;
-    }
-
-    .stats.visible .stat:nth-child(4) {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 0.4s;
-    }
-
-    .stat-value {
-      font-size: var(--text-4xl);
-      font-weight: var(--weight-bold);
-      letter-spacing: var(--tracking-tight);
-      margin-bottom: var(--space-2);
-    }
-
-    .stat-label {
-      font-size: var(--text-sm);
-      color: var(--text-tertiary);
-    }
-
-    /* Featured Section */
-    .featured-section {
-      padding: var(--space-24) 0;
-    }
-
-    .featured-header {
-      margin-bottom: var(--space-12);
-    }
-
-    .featured-header h2 {
-      font-size: var(--text-3xl);
-      font-weight: var(--weight-semibold);
-      margin-bottom: var(--space-3);
-    }
-
-    .featured-header p {
-      color: var(--text-secondary);
-      max-width: 500px;
-    }
-
-    .featured-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: var(--space-6);
-    }
-
-    @media (max-width: 900px) {
-      .featured-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .featured-card {
-      padding: var(--space-8);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-2xl);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .featured-card-label {
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin-bottom: var(--space-4);
-    }
-
-    .featured-card h3 {
-      font-size: var(--text-2xl);
-      font-weight: var(--weight-semibold);
-      margin-bottom: var(--space-3);
-    }
-
-    .featured-card p {
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-      margin-bottom: var(--space-6);
-    }
-
-    .featured-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      margin-bottom: var(--space-6);
-    }
-
-    .featured-tag {
-      padding: var(--space-1) var(--space-3);
-      font-size: var(--text-xs);
-      color: var(--text-secondary);
-      background: var(--bg-tertiary);
-      border-radius: var(--radius-full);
-    }
-
-    /* Side Cards Stack */
-    .side-cards {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-6);
-    }
-
-    .side-card {
-      padding: var(--space-6);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .side-card h4 {
-      font-size: var(--text-lg);
-      font-weight: var(--weight-medium);
-      margin-bottom: var(--space-2);
-    }
-
-    .side-card p {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-    }
-
-    /* Decorative Elements */
-    .decorative-line {
-      width: 60px;
-      height: 1px;
-      background: var(--border-hover);
-      margin-bottom: var(--space-8);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       SECTION LABELS (reusable)
-       ══════════════════════════════════════════════════════════ */
-    .section-label {
-      display: block;
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin-bottom: var(--space-3);
-    }
-
-    .section-title {
-      font-size: var(--text-2xl);
-      font-weight: var(--weight-semibold);
-      margin-bottom: var(--space-3);
-    }
-
-    .section-desc {
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin-bottom: var(--space-8);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       60-SECOND SUMMARY SECTION
-       ══════════════════════════════════════════════════════════ */
-    .quick-summary-section {
-      padding: var(--space-16) 0;
-    }
-
-    .quick-summary {
-      max-width: 900px;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-6);
-    }
-
-    @media (max-width: 768px) {
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .summary-item {
-      display: flex;
-      gap: var(--space-4);
-      padding: var(--space-5);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      transition: all var(--duration-base) var(--ease-out);
-    }
-
-    .summary-item:hover {
-      border-color: var(--border-hover);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .summary-icon {
-      font-size: 1.75rem;
-      flex-shrink: 0;
-    }
-
-    .summary-content strong {
-      display: block;
-      font-size: var(--text-base);
-      font-weight: var(--weight-semibold);
-      margin-bottom: var(--space-1);
-    }
-
-    .summary-content p {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-      margin: 0;
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       SKILLS / KEYWORD EXPLORER SECTION
-       ══════════════════════════════════════════════════════════ */
-    .skills-section {
-      padding: var(--space-20) 0;
-      background: var(--bg-secondary);
-    }
-
-    .keyword-explorer {
-      margin-bottom: var(--space-8);
-    }
-
-    .keyword-category {
-      margin-bottom: var(--space-6);
-    }
-
-    .category-label {
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: var(--tracking-wider);
-      margin-bottom: var(--space-3);
-      padding-bottom: var(--space-2);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .keyword-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-    }
-
-    .keyword-btn {
-      padding: var(--space-2) var(--space-4);
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-      color: var(--text-secondary);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all var(--duration-fast) var(--ease-out);
-    }
-
-    .keyword-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--text-primary);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .keyword-btn.active {
-      background: var(--text-primary);
-      color: var(--text-inverse);
-      border-color: var(--text-primary);
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       CATEGORY DETAILS (Inline Panel per Category)
-       ══════════════════════════════════════════════════════════ */
-    .category-details {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      margin-top: 0;
-    }
-
-    .category-details.has-content {
-      max-height: 2000px;
-      opacity: 1;
-      margin-top: var(--space-4);
-    }
-
-    /* Individual Keyword Detail Card */
-    .keyword-detail-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: var(--space-5);
-      margin-bottom: var(--space-4);
-      box-shadow: var(--shadow-sm);
-      animation: cardSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-
-    .keyword-detail-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-hover);
-    }
-
-    .keyword-detail-card:last-child {
-      margin-bottom: 0;
-    }
-
-    @keyframes cardSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .detail-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: var(--space-3);
-    }
-
-    .detail-title {
-      font-size: var(--text-lg);
-      font-weight: var(--weight-semibold);
-      margin: 0;
-      color: var(--text-primary);
-    }
-
-    .detail-close {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      color: var(--text-tertiary);
-      background: var(--bg-tertiary);
-      border: none;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      flex-shrink: 0;
-    }
-
-    .detail-close:hover {
-      color: var(--text-primary);
-      background: var(--bg-hover);
-      transform: scale(1.05);
-    }
-
-    .detail-summary {
-      font-size: var(--text-sm);
-      font-weight: var(--weight-medium);
-      color: var(--text-primary);
-      margin-bottom: var(--space-2);
-      animation: fadeIn 0.3s ease 0.1s both;
-    }
-
-    .detail-explanation {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      line-height: var(--leading-relaxed);
-      margin-bottom: var(--space-4);
-      animation: fadeIn 0.3s ease 0.15s both;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* Files Area */
-    .detail-files {
-      background: var(--bg-tertiary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4);
-      margin-bottom: var(--space-4);
-      animation: fadeIn 0.3s ease 0.2s both;
-    }
-
-    .files-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      margin-bottom: var(--space-3);
-    }
-
-    .folder-icon {
-      font-size: 1rem;
-    }
-
-    .folder-path {
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-    }
-
-    .files-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-    }
-
-    .file-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--space-2) var(--space-3);
-      background: var(--bg-elevated);
-      border-radius: var(--radius-md);
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      transition: background 0.2s ease;
-    }
-
-    .file-item:hover {
-      background: var(--bg-hover);
-    }
-
-    .file-name {
-      color: var(--text-primary);
-    }
-
-    .file-size {
-      color: var(--text-tertiary);
-      margin-left: var(--space-3);
-    }
-
-    .file-github-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-1);
-      padding: var(--space-1) var(--space-2);
-      font-size: var(--text-xs);
-      font-weight: var(--weight-medium);
-      color: var(--text-inverse);
-      background: var(--text-primary);
-      border: none;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .file-github-btn:hover {
-      opacity: 0.85;
-      transform: translateY(-1px);
-    }
-
-    .file-github-btn svg {
-      width: 12px;
-      height: 12px;
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       CODE PREVIEW (Matches Site Aesthetic)
-       ══════════════════════════════════════════════════════════ */
-    .code-preview-area {
-      margin-top: var(--space-4);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        margin 0.3s ease;
-    }
-
-    .code-preview-area.visible {
-      max-height: 400px;
-      opacity: 1;
-    }
-
-    .code-preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--space-2) var(--space-4);
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .code-preview-title {
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      font-weight: var(--weight-medium);
-    }
-
-    .code-preview-tabs {
-      display: flex;
-      gap: 6px;
-    }
-
-    .code-tab-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .code-tab-dot.red {
-      background: #e07a5f;
-    }
-
-    .code-tab-dot.yellow {
-      background: #f2cc8f;
-    }
-
-    .code-tab-dot.green {
-      background: #81b29a;
-    }
-
-    .code-preview-content {
-      padding: var(--space-2) var(--space-3);
-      margin: 0;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      line-height: 1.2;
-      color: var(--text-primary);
-      overflow-x: auto;
-      overflow-y: auto;
-      max-height: 320px;
-      background: var(--bg-tertiary);
-    }
-
-    .code-line {
-      display: flex;
-      height: 18px;
-    }
-
-    .code-line:hover {
-      background: var(--bg-hover);
-    }
-
-    .line-number {
-      color: var(--text-tertiary);
-      user-select: none;
-      text-align: right;
-      padding-right: var(--space-2);
-      min-width: 28px;
-      border-right: 1px solid var(--border);
-      margin-right: var(--space-2);
-      flex-shrink: 0;
-    }
-
-    .line-content {
-      flex: 1;
-      white-space: pre;
-    }
-
-    /* Python Syntax Highlighting (Warm Aesthetic) */
-    .syn-keyword {
-      color: #c44d34;
-      font-weight: 500;
-    }
-
-    /* Terracotta red */
-    .syn-builtin {
-      color: #8b5a2b;
-    }
-
-    /* Warm brown */
-    .syn-string {
-      color: #5d7a5d;
-    }
-
-    /* Muted sage green */
-    .syn-comment {
-      color: #8b8378;
-      font-style: italic;
-    }
-
-    /* Warm gray */
-    .syn-number {
-      color: #b87333;
-    }
-
-    /* Copper */
-    .syn-decorator {
-      color: #9b6b4a;
-    }
-
-    /* Sienna */
-    .syn-class {
-      color: #6b4f3a;
-      font-weight: 500;
-    }
-
-    /* Dark brown */
-    .syn-function {
-      color: #5c6b5c;
-    }
-
-    /* Olive */
-    .syn-self {
-      color: #8b6b4f;
-      font-style: italic;
-    }
-
-    /* Tan */
-    .syn-operator {
-      color: #6b5b4f;
-    }
-
-    /* Warm charcoal */
-
-    /* Detail Actions */
-    .detail-actions {
-      display: flex;
-      gap: var(--space-2);
-      flex-wrap: wrap;
-      animation: fadeIn 0.3s ease 0.25s both;
-    }
-
-    .btn-icon {
-      width: 14px;
-      height: 14px;
-      margin-right: var(--space-1);
-    }
-
-    .code-icon {
-      margin-right: var(--space-1);
-    }
-  </style>
+  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/components/player.css">
+
+  <script>
+    document.documentElement.classList.add('js');
+    // Feature check for the 3D scenes; without WebGL the page shows real screenshots instead
+    try {
+      if (document.createElement('canvas').getContext('webgl2')) document.documentElement.classList.add('has-webgl');
+    } catch (e) { /* no 3D */ }
+  </script>
+  <script src="js/main.js" defer></script>
+  <script src="js/player.js" defer></script>
+  <script src="js/home.js" type="module"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Pruitt Colon",
+    "url": "https://whyhirepruitt.dev/",
+    "image": "https://whyhirepruitt.dev/assets/img/portrait-960.jpg",
+    "jobTitle": "AI Engineer",
+    "email": "mailto:PruittColon@gmail.com",
+    "address": { "@type": "PostalAddress", "addressLocality": "Casa Grande", "addressRegion": "AZ", "addressCountry": "US" },
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Western Governors University" },
+      { "@type": "CollegeOrUniversity", "name": "University of the People" }
+    ],
+    "knowsAbout": ["On-device AI", "Speech recognition", "Speech synthesis", "Large language models", "Android", "Flutter", "ONNX Runtime", "Bluetooth Low Energy"],
+    "sameAs": ["https://github.com/prunewhip", "https://www.linkedin.com/in/pruitt-colon-b3a73128a"]
+  }
+  </script>
 </head>
 
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Pruitt Colon</a>
-      <button class="nav-toggle" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.98-6.86a1 1 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14Z" /></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></symbol>
+    <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z" /></symbol>
+    <symbol id="i-device" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" /><path d="M10.5 18.5h3" /></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1 1 16 0" /><path d="m12 16 4-5" /><circle cx="12" cy="16" r="1.25" /></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 5 6v5.5c0 4.3 2.9 7.8 7 9 4.1-1.2 7-4.7 7-9V6Z" /><path d="m9 12 2.2 2.2L15.5 10" /></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z" /><path d="M14 3.5V8h4.5M9 13h6M9 16.5h4" /></symbol>
+  </svg>
+
+  <header class="site-nav">
+    <div class="container site-nav__inner">
+      <a class="brand" href="index.html">
+        <span class="brand__mark" aria-hidden="true">PC</span>
+        <span>Pruitt Colon</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
       </button>
-      <div class="nav-links">
-        <a href="index.html" class="nav-link active">Home</a>
-        <a href="architecture.html" class="nav-link">Architecture</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="demo/index.html" class="nav-link">Demo</a>
-        <a href="contact.html" class="nav-link">Contact</a>
-      </div>
+      <nav id="nav-links" class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="index.html" aria-current="page">Home</a>
+        <a class="nav-link" href="apps.html">Other apps</a>
+        <a class="nav-link" href="architecture.html">How it’s built</a>
+        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="contact.html">Contact</a>
+        <a class="btn btn--primary btn--sm nav-cta" href="Pruitt_Colon_Resume.pdf">
+          Resume
+          <svg aria-hidden="true"><use href="#i-download" /></svg>
+        </a>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <main>
-    <section class="hero">
-      <!-- Soft animated orbs -->
-      <div class="hero-orbs" aria-hidden="true">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-      </div>
-
-      <div class="container">
-        <div class="hero-content reveal">
-          <div class="hero-eyebrow">
-            <span class="dot"></span>
-            <span>Secure. Private. Offline.</span>
-          </div>
-
-          <div class="hero-title">
-            <h1>Enterprise AI. <br>Running Safely <span class="typewriter-text" id="typewriter"></span><span
-                class="typewriter-cursor"></span>
-            </h1>
-          </div>
-
-          <div class="hero-subtitle">
-            <p>Deploy strict, air-gapped AI engines that never send data to the cloud. Complete data privacy. Zero API
-              fees.
-              100% Offline.</p>
-          </div>
-
-          <div class="hero-cta">
-            <a href="architecture.html" class="btn btn-primary btn-lg">View Complete Architecture</a>
-            <a href="demo/index.html" class="vox-btn vox-btn-ghost" style="padding: 1rem 2rem; font-size: 1.1rem;">
-              View Demo
-            </a>
-          </div>
-
-          <div class="scroll-hint">
-            <span class="scroll-hint-text">60 Second Recruiter Summary</span>
-            <a href="#summary" class="scroll-hint-arrow">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="stats-section" id="summary">
-      <div class="container">
-        <div class="stats reveal">
-          <div class="stat">
-            <div class="stat-value">332K+</div>
-            <div class="stat-label">Lines of Code</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">36</div>
-            <div class="stat-label">ML Engines</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">12</div>
-            <div class="stat-label">Microservices</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">7</div>
-            <div class="stat-label">Coding Languages</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 60-Second Summary - What This Demonstrates -->
-    <section class="quick-summary-section">
-      <div class="container">
-        <div class="quick-summary reveal">
-          <div class="decorative-line"></div>
-          <span class="section-label">60-Second Overview</span>
-          <h2 class="section-title">What Is This Project?</h2>
-          <p class="section-desc" style="font-size: 1.1rem; max-width: 800px; margin: 0 auto 1.5rem auto;">
-            <strong>Vox Amelior</strong> is a real-time enterprise transcription and analytics platform that runs
-            entirely offline on consumer hardware.
-            It performs live speech-to-text, speaker identification, sentiment analysis, and 36 specialized ML engines -
-            all on a single GPU with just 6GB VRAM.
-            No cloud dependencies. No API fees. Complete data privacy.
-            <a href="demo/index.html"
-              style="color: var(--accent); font-weight: var(--weight-medium); text-decoration: underline;">See it in
-              action</a>.
+  <main id="main">
+    <nav class="rail" aria-label="On this page" data-rail>
+      <a href="#idea"><span class="mono">01</span><span class="rail__label">The idea</span></a>
+      <a href="#vox"><span class="mono">02</span><span class="rail__label">Vox Amelior</span></a>
+      <a href="#more"><span class="mono">03</span><span class="rail__label">Other apps</span></a>
+      <a href="#contact"><span class="mono">04</span><span class="rail__label">Contact</span></a>
+    </nav>
+    <!-- ══════════ Hero: the pitch and the film ══════════ -->
+    <section class="hero" aria-labelledby="hero-title" data-hero>
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="hero__status">
+            <picture class="hero__avatar">
+              <source srcset="assets/img/avatar-96.webp" type="image/webp">
+              <img src="assets/img/avatar-96.jpg" alt="" width="48" height="48">
+            </picture>
+            <span class="hero__status-name">Pruitt Colon · AI engineer</span>
+            <span class="hero__status-sep" aria-hidden="true"></span>
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Open to full-time roles</span>
           </p>
-          <p class="section-desc" style="color: var(--text-tertiary); font-size: 0.95rem;">What this project
-            demonstrates about my engineering capabilities:</p>
+          <h1 class="display hero__title" id="hero-title">
+            <span class="line"><span>The first steps toward</span></span>
+            <span class="line"><span><em>a <span class="nowrap">human–AI</span> interface.</em></span></span>
+          </h1>
+        </div>
 
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="summary-icon">🏗️</div>
-              <div class="summary-content">
-                <strong>Full-Stack AI Engineering</strong>
-                <p>332K+ lines across 7 coding languages and 12 microservices. Not a tutorial project, a production
-                  system.</p>
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-icon">🎯</div>
-              <div class="summary-content">
-                <strong>GPU Orchestration</strong>
-                <p>Custom semaphore system runs LLM, ASR, and ML models on a single consumer GPU through intelligent
-                  scheduling.</p>
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-icon">🧠</div>
-              <div class="summary-content">
-                <strong>29 ML Engines</strong>
-                <p>Titan AutoML, causal inference, symbolic regression, time series. Specialized engines for enterprise
-                  analytics.</p>
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-icon">🔒</div>
-              <div class="summary-content">
-                <strong>Production Security</strong>
-                <p>AES-256 encryption, JWT auth, Docker secrets, network isolation. Zero data exfiltration by design.
-                </p>
+        <!-- The commercial: a silent loop of its best moments plays here until someone presses play (js/player.js).
+             Phones get a 4:5 cut with larger type below 700px. -->
+        <figure class="hero__film">
+          <div class="hero__film-intro">
+            <p class="eyebrow">The main app · concept film · 2:55</p>
+            <p><strong>Vox Amelior</strong> is an AI that listens, remembers and answers on your phone, so your
+              conversations stay there. The film shows what it could do for you; most of it runs in the app today.</p>
+          </div>
+          <div class="player player--portrait-on-phones" data-player>
+            <div class="player__frame">
+              <div class="player__stage">
+                <video class="player__video" playsinline preload="none" width="1920" height="1080"
+                  poster="assets/video/vox-film-poster.webp" data-poster-portrait="assets/video/vox-film-portrait-poster.webp"
+                  data-preview="assets/video/vox-film-preview.mp4" data-preview-portrait="assets/video/vox-film-preview-portrait.mp4"
+                  aria-describedby="film-video-desc">
+                  <source src="assets/video/vox-film.mp4" data-src-portrait="assets/video/vox-film-portrait.mp4"
+                    type='video/mp4; codecs="avc1.640028"'>
+                  <track kind="chapters" src="assets/video/vox-film-chapters.vtt" srclang="en" label="Chapters" default>
+                  Your browser can’t play this video. <a href="assets/video/vox-film.mp4">Download the MP4</a>.
+                </video>
+                <p class="sr-only" id="film-video-desc">Concept commercial for Vox Amelior, 2 minutes 55 seconds, with quiet
+                  music and no narration. A transcript is available below the video.</p>
+                <button class="player__play" type="button" data-player-play>
+                  <span class="player__play-icon"><svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  <span class="player__play-label">Play the film <span class="mono">2:55</span></span>
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Interactive Keyword Explorer -->
-    <section class="skills-section" id="verify-skills">
-      <div class="container">
-        <div class="skills-header reveal">
-          <div class="decorative-line"></div>
-          <span class="section-label">Verify My Skills</span>
-          <h2 class="section-title">Click Any Technology to See the Code</h2>
-          <p class="section-desc">Every technology listed here links directly to its implementation in the repository.
+          <figcaption class="hero__film-cap">
+            <details class="transcript">
+              <summary>Transcript</summary>
+              <div class="transcript__body prose">
+                <p>Soft piano and ambient music throughout; no narration.</p>
+                <p>On an average day, we speak about 16,000 words. Most of them slip away.</p>
+                <p>Except our words online. Those, they keep. The screen fills with them: searches like “is this rash
+                  serious” and “why do we keep fighting”, things we typed like “I’m fine, really.” and a card number, and the
+                  videos that held our attention, like “10 signs you’re burned out”, watched three times. Now AI is in your
+                  search, your inbox, your photos. All of it can be stored on servers we’ll never see, read by people we’ll
+                  never meet, and sold to companies we’ve never heard of. Our words. Their rules.</p>
+                <p>Take your words offline. Start here. It listens on your phone, thinks on your phone and remembers on your
+                  phone. It works in airplane mode. Encrypted: 256-bit, by Android, keyed to your passcode. Sealed: other
+                  apps can’t read it, and there are no cloud backups. Never sent: no server holds a copy to breach. You
+                  can’t leak what you never send. Your words. Your phone. Your rules.</p>
+                <p>Now let your words work for you. What you heard, when you need it: “What did Jordan say I shouldn’t
+                  forget?” The plumber, Thursday at 9; cake pickup by 5; your mom’s birthday is Sunday. “What do we need from
+                  the store?” Eggs and the good bread; you still have milk.</p>
+                <p>At bedtime, Milo, age five, says: “When I grow up, I want to be just like you.” Years later, on a hard
+                  day, you ask what he said, and it’s there. Worth living up to.</p>
+                <p>So ask about the voice you hear most. Yours. “Which words do I use incorrectly?” “That plan is ingenuous”:
+                  ingenuous means naive; you meant ingenious. “When did I sound sharpest? Why?” Thursday’s pitch; you’d
+                  rehearsed it out loud the night before. “What thinking traps do I fall into?” All-or-nothing: “always”
+                  and “never”, 23 times in arguments. “Who did I thank this week?” Dana, twice.
+                  Jordan, not once. “What have I promised and not done?” Call Mom back; you’ve said “this weekend” three
+                  times. “Honestly, who starts more of our fights: me or Jordan?” You, six to five. “Want to know who
+                  apologizes first?” “Not today.”</p>
+                <p>Three months later: “Who starts more of our fights now?” Hard to say; there haven’t been many. Heated
+                  moments down 60% and laughter up 35% since spring. And you called Mom. Every Sunday.</p>
+                <p>Your voice, to better your life. The words fall away and become the name: Vox Amelior. Free for
+                  Android.</p>
+                <p>Concept film. People, conversations and answers are examples. Listening, speaker recognition, Ask,
+                  reviews and Insights run in the app today. Encryption is Android’s own, standard on phones launched with
+                  Android 10 or later. Let people know when it’s listening.</p>
+              </div>
+            </details>
+          </figcaption>
+        </figure>
+
+        <div class="hero__more">
+          <p class="lead hero__lead">
+            AI keeps getting smarter, yet most of us still reach it through a text box, on someone else’s terms.
+            I’m building the other way in: AI that hears what you say, shows you what you need and speaks in a voice
+            you choose. On your phone, in your glasses, on your terms.
           </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="Pruitt_Colon_Resume.pdf">
+              <svg aria-hidden="true"><use href="#i-download" /></svg>
+              Resume
+            </a>
+            <a class="btn btn--secondary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
+          </div>
         </div>
+      </div>
 
-        <!-- Keyword Category Sections with Inline Detail Panels -->
-        <div class="keyword-explorer reveal">
-
-          <!-- Core AI/ML -->
-          <div class="keyword-category" data-category="core-ai">
-            <h4 class="category-label">Core AI/ML</h4>
-            <div class="keyword-buttons" id="keywords-core-ai"></div>
-            <div class="category-details" id="details-core-ai"></div>
-          </div>
-
-          <!-- ML Engines -->
-          <div class="keyword-category" data-category="ml-engines">
-            <h4 class="category-label">ML Engines</h4>
-            <div class="keyword-buttons" id="keywords-ml-engines"></div>
-            <div class="category-details" id="details-ml-engines"></div>
-          </div>
-
-          <!-- Backend -->
-          <div class="keyword-category" data-category="backend">
-            <h4 class="category-label">Backend</h4>
-            <div class="keyword-buttons" id="keywords-backend"></div>
-            <div class="category-details" id="details-backend"></div>
-          </div>
-
-          <!-- Infrastructure -->
-          <div class="keyword-category" data-category="infrastructure">
-            <h4 class="category-label">Infrastructure</h4>
-            <div class="keyword-buttons" id="keywords-infrastructure"></div>
-            <div class="category-details" id="details-infrastructure"></div>
-          </div>
-
-          <!-- Security -->
-          <div class="keyword-category" data-category="security">
-            <h4 class="category-label">Security</h4>
-            <div class="keyword-buttons" id="keywords-security"></div>
-            <div class="category-details" id="details-security"></div>
-          </div>
-
-          <!-- Architecture Patterns -->
-          <div class="keyword-category" data-category="patterns">
-            <h4 class="category-label">Architecture Patterns</h4>
-            <div class="keyword-buttons" id="keywords-patterns"></div>
-            <div class="category-details" id="details-patterns"></div>
-          </div>
-
-        </div>
+      <div class="container">
+        <dl class="proof">
+          <div class="proof__item"><dt>Open-source Android apps with public builds</dt><dd>3</dd></div>
+          <div class="proof__item"><dt>Automated tests across the three apps</dt><dd>500+</dd></div>
+          <div class="proof__item"><dt>Years in telecom and fiber before software</dt><dd>7</dd></div>
+        </dl>
       </div>
     </section>
 
-    <section class="featured-section">
+    <!-- ══════════ The idea ══════════ -->
+    <section class="section section--tight ways" id="idea" aria-labelledby="ways-title">
       <div class="container">
-        <div class="featured-header reveal">
-          <div class="decorative-line"></div>
-          <h2>Featured Work</h2>
-          <p>Production systems designed for real-world deployment</p>
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">01 · The idea</p>
+            <h2 class="h2" id="ways-title">Three ways in. <em>You stay in charge.</em></h2>
+          </div>
+          <p class="lead">Each app is one sense of the same interface: it hears you, it shows you, it speaks to you.
+            And each one hands back a choice the usual apps make for you.</p>
         </div>
 
-        <div class="featured-grid">
-          <div class="featured-card reveal">
-            <span class="featured-card-label">Flagship Project</span>
-            <h3>NeMo AI Platform</h3>
-            <p>A comprehensive multimodal AI platform featuring real-time speech transcription, speaker verification,
-              emotion analysis, and RAG-powered conversational AI. All orchestrated on a single consumer GPU through
-              intelligent resource management.</p>
-            <div class="featured-tags">
-              <span class="featured-tag">PyTorch</span>
-              <span class="featured-tag">NVIDIA NeMo</span>
-              <span class="featured-tag">FastAPI</span>
-              <span class="featured-tag">Kubernetes</span>
-              <span class="featured-tag">Docker</span>
-              <span class="featured-tag">FAISS</span>
-            </div>
-            <a href="demo/index.html" class="btn btn-primary">View Live Demo</a>
-            <a href="architecture.html" class="btn btn-secondary">Explore Architecture</a>
+        <!-- The real devices on a turntable: the phone runs the apps, the glasses show Even Suite's display.
+             The 3D loads only as this nears the screen (js/home.js). -->
+        <figure class="devices" data-devices>
+          <div class="devices__stage" aria-hidden="true">
+            <canvas class="devices__canvas" data-devices-canvas></canvas>
+            <div class="devices__anchor" data-device-anchor></div>
+            <!-- Shown until the 3D scene is ready, or instead of it without WebGL -->
+            <img class="devices__fallback" src="assets/img/hero-devices.webp" alt="" width="1200" height="1000" loading="lazy">
           </div>
+        </figure>
 
-          <div class="side-cards">
-            <div class="side-card reveal">
-              <h4>GPU Coordination</h4>
-              <p>Custom semaphore-based system for sharing a single GPU across multiple ML models with preemptive
-                scheduling.</p>
+        <ol class="ways__list" role="list">
+          <li class="way reveal">
+            <p class="way__num mono">01 · Hears you</p>
+            <h3 class="way__title">Vox Amelior</h3>
+            <p class="way__text">Listens and remembers on your phone, then helps you hear yourself. Your conversations
+              stay on the phone.</p>
+            <p class="way__choice"><b>Your choice:</b> what stays private.</p>
+            <a class="link-arrow" href="#vox">The main app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </li>
+          <li class="way reveal">
+            <p class="way__num mono">02 · Shows you</p>
+            <h3 class="way__title">Even Suite</h3>
+            <p class="way__text">Puts Claude in your glasses for the questions that need the most capable AI, and only
+              when you ask.</p>
+            <p class="way__choice"><b>Your choice:</b> when to call on the best model.</p>
+            <a class="link-arrow" href="apps.html#even-suite">In other apps <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </li>
+          <li class="way reveal">
+            <p class="way__num mono">03 · Speaks to you</p>
+            <h3 class="way__title">Narrator Studio</h3>
+            <p class="way__text">Turns whatever you decide to read into a podcast, in natural voices made on your
+              phone.</p>
+            <p class="way__choice"><b>Your choice:</b> what fills your ears.</p>
+            <a class="link-arrow" href="apps.html#narrator">In other apps <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </li>
+        </ol>
+
+        <a class="next-link" href="#vox"><span class="mono">Next</span> 02 · Vox Amelior, the main app <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
+    <!-- ══════════ Vox Amelior ══════════ -->
+    <section class="section vox" id="vox" aria-labelledby="vox-title">
+      <div class="container vox__grid">
+        <div class="vox__copy reveal">
+          <p class="eyebrow">02 · The main app · Vox Amelior · Android</p>
+          <h2 class="h2" id="vox-title">A private memory <em>for your conversations.</em></h2>
+          <p class="lead">It writes down what’s said nearby, learns who’s speaking and answers when you ask. Then it
+            does something a feed never will: it helps you hear yourself.</p>
+
+          <dl class="vox__features">
+            <div data-at="0.12"><dt>Remembers</dt><dd>Speech to text and speaker recognition, on the phone (NVIDIA Parakeet,
+                TitaNet).</dd></div>
+            <div data-at="0.42"><dt>Answers</dt><dd>Ask in plain words; a local language model and search by meaning find it.</dd>
             </div>
-            <div class="side-card reveal">
-              <h4>Privacy-First</h4>
-              <p>100% local processing with AES-256 encrypted databases. No cloud dependencies, no data leaves the
-                device.</p>
+            <div data-at="0.58"><dt>Reviews</dt><dd>Promises, kind words, logical fallacies, or any question you ask about your own
+                words.</dd></div>
+            <div data-at="0.8"><dt>Stays yours</dt><dd>No cloud AI and no analytics. Private storage under Android’s encryption,
+                kept out of cloud backups.</dd></div>
+          </dl>
+
+          <ul class="case__facts" role="list">
+            <li><b>400+</b> automated tests</li>
+            <li>Release build tested on an emulator with the real models</li>
+          </ul>
+          <div class="case__actions">
+            <a class="btn btn--primary" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener">
+              <svg aria-hidden="true"><use href="#i-download" /></svg>
+              Android build
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/prunewhip/Vox_Amelior/tree/631d215e7253021196b20e1a8189be653c669883/vox_mobile" rel="noopener">
+              <svg aria-hidden="true"><use href="#i-github" /></svg>
+              Source
+            </a>
+            <a class="link-arrow" href="architecture.html">How it’s built <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </div>
+        </div>
+
+        <figure class="showcase reveal">
+          <div class="showcase__stage" aria-hidden="true">
+            <canvas class="showcase__canvas" data-showcase="vox"></canvas>
+            <!-- Real screenshots, shown without WebGL -->
+            <div class="showcase__fallback">
+              <div class="device"><img src="assets/app/hd/vox-now.webp" alt="" width="810" height="1800" loading="lazy"></div>
+              <div class="device"><img src="assets/app/hd/vox-conversation.webp" alt="" width="810" height="1800" loading="lazy"></div>
+              <div class="device"><img src="assets/app/hd/vox-ask.webp" alt="" width="810" height="1800" loading="lazy"></div>
             </div>
-            <div class="side-card reveal">
-              <h4>Production Ready</h4>
-              <p>Full Kubernetes deployment with health checks, graceful shutdowns, and horizontal scaling support.</p>
+          </div>
+        </figure>
+      </div>
+
+      <div class="container">
+        <a class="next-link" href="#more"><span class="mono">Next</span> 03 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
+    <!-- ══════════ Other apps ══════════ -->
+    <section class="section section--tight more" id="more" aria-labelledby="more-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">03 · Other apps</p>
+            <h2 class="h2" id="more-title">Two more <em>ways in.</em></h2>
+          </div>
+          <p class="lead">Vox Amelior hears you. These two show you and speak to you.</p>
+        </div>
+
+        <div class="more__grid">
+          <a class="more__card reveal" href="apps.html#even-suite">
+            <div class="more__shot device" aria-hidden="true"><img src="assets/app/hd/even-chat.webp" alt="" width="720" height="1560" loading="lazy"></div>
+            <div class="more__body">
+              <p class="way__num mono">Even Suite · Android + smart glasses</p>
+              <h3 class="more__title">Private when it can be. <em>Powerful when you need it.</em></h3>
+              <p>Claude in your Even Realities G1 glasses, for the questions where accuracy matters most.</p>
+              <span class="link-arrow">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
             </div>
+          </a>
+          <a class="more__card reveal" href="apps.html#narrator">
+            <div class="more__shot device" aria-hidden="true"><img src="assets/app/hd/narr-reader.webp" alt="" width="540" height="1170" loading="lazy"></div>
+            <div class="more__body">
+              <p class="way__num mono">Narrator Studio · Android</p>
+              <h3 class="more__title">What you hear shapes how you think. <em>So choose it.</em></h3>
+              <p>Any text or PDF, turned into a podcast in natural voices, made on your phone.</p>
+              <span class="link-arrow">See Narrator Studio <svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
+            </div>
+          </a>
+        </div>
+
+        <a class="next-link" href="#contact"><span class="mono">Next</span> 04 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
+    <!-- ══════════ CTA ══════════ -->
+    <section class="section section--tight" id="contact" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-band reveal">
+          <p class="eyebrow">04 · Hiring?</p>
+          <h2 class="h2" id="cta-title">Let’s <em>talk.</em></h2>
+          <p class="cta-band__text">I’m looking for full-time work in on-device AI, mobile AI features or AI solutions.
+            Before software I spent seven years in telecom and fiber. <a class="link" href="about.html">More about me</a>.</p>
+          <div class="cta-band__actions">
+            <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
+            <a class="btn btn--secondary btn--lg" href="Pruitt_Colon_Resume.pdf">
+              <svg aria-hidden="true"><use href="#i-download" /></svg>
+              Resume
+            </a>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="site-footer">
     <div class="container">
-      <div class="footer-content">
-        <div class="footer-cta">
-          <p class="footer-tagline">Let's build something amazing together.</p>
-          <a href="mailto:pruittcolon@gmail.com" class="footer-contact-btn">Get In Touch</a>
+      <div class="site-footer__grid">
+        <div>
+          <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true">PC</span><span>Pruitt Colon</span></a>
+          <p class="site-footer__blurb">AI engineer building the first steps toward a human–AI interface.
+            Casa Grande, Arizona.</p>
         </div>
-        <div class="footer-links">
-          <a href="https://github.com/pruittcolon" target="_blank" rel="noopener" class="footer-social"
-            aria-label="GitHub">
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-          </a>
-          <a href="https://linkedin.com/in/pruittcolon" target="_blank" rel="noopener" class="footer-social"
-            aria-label="LinkedIn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-            </svg>
-          </a>
+        <nav aria-label="Footer">
+          <p class="site-footer__heading">Site</p>
+          <ul class="site-footer__list" role="list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="apps.html">Other apps</a></li>
+            <li><a href="architecture.html">How it’s built</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+        <div>
+          <p class="site-footer__heading">Elsewhere</p>
+          <ul class="site-footer__list" role="list">
+            <li><a href="https://github.com/prunewhip" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/pruitt-colon-b3a73128a" rel="noopener">LinkedIn</a></li>
+            <li><a href="mailto:PruittColon@gmail.com">Email</a></li>
+            <li><a href="Pruitt_Colon_Resume.pdf">Resume (PDF)</a></li>
+          </ul>
         </div>
       </div>
-      <div class="footer-bottom">
+      <div class="site-footer__bottom">
+        <p>© <span data-year>2026</span> Pruitt Colon</p>
+        <p>Hand-built HTML, CSS, JavaScript and Three.js. No trackers.</p>
       </div>
     </div>
   </footer>
-
-  <script src="js/main.js"></script>
-  <script>
-    // Typewriter Effect
-    class Typewriter {
-      constructor(element, phrases, options = {}) {
-        this.element = element;
-        this.phrases = phrases;
-        this.typeSpeed = options.typeSpeed || 80;
-        this.deleteSpeed = options.deleteSpeed || 50;
-        this.pauseAfterType = options.pauseAfterType || 2000;
-        this.pauseAfterDelete = options.pauseAfterDelete || 500;
-        this.currentPhraseIndex = 0;
-        this.currentCharIndex = 0;
-        this.isDeleting = false;
-
-        this.type();
-      }
-
-      type() {
-        const currentPhrase = this.phrases[this.currentPhraseIndex];
-
-        if (this.isDeleting) {
-          // Deleting
-          this.element.textContent = currentPhrase.substring(0, this.currentCharIndex - 1);
-          this.currentCharIndex--;
-
-          if (this.currentCharIndex === 0) {
-            this.isDeleting = false;
-            this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.phrases.length;
-            setTimeout(() => this.type(), this.pauseAfterDelete);
-            return;
-          }
-        } else {
-          // Typing
-          this.element.textContent = currentPhrase.substring(0, this.currentCharIndex + 1);
-          this.currentCharIndex++;
-
-          if (this.currentCharIndex === currentPhrase.length) {
-            this.isDeleting = true;
-            setTimeout(() => this.type(), this.pauseAfterType);
-            return;
-          }
-        }
-
-        const speed = this.isDeleting ? this.deleteSpeed : this.typeSpeed;
-        setTimeout(() => this.type(), speed);
-      }
-    }
-
-    // Initialize typewriter on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      const typewriterElement = document.getElementById('typewriter');
-      if (typewriterElement) {
-        new Typewriter(typewriterElement, [
-          'on your own hardware.',
-          'without cloud dependencies.',
-          'with complete data privacy.',
-          'using local LLMs.'
-        ], {
-          typeSpeed: 70,
-          deleteSpeed: 40,
-          pauseAfterType: 2500,
-          pauseAfterDelete: 400
-        });
-      }
-    });
-  </script>
-
-  <!-- Keyword Data -->
-  <script src="js/keyword-data.js"></script>
-
-  <!-- Keyword Explorer Functionality -->
-  <script>
-    // Track which panels are open (allows multiple)
-    const openPanels = new Set();
-
-    // Initialize keyword buttons on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof keywordData !== 'undefined') {
-        renderKeywordButtons();
-      }
-    });
-
-    // Render all keyword buttons grouped by category
-    function renderKeywordButtons() {
-      const categories = ['core-ai', 'ml-engines', 'backend', 'infrastructure', 'security', 'patterns'];
-
-      categories.forEach(category => {
-        const container = document.getElementById(`keywords-${category}`);
-        if (!container) return;
-
-        // Filter keywords by category
-        const keywords = Object.entries(keywordData)
-          .filter(([key, data]) => data.category === category)
-          .map(([key]) => key);
-
-        // Create buttons
-        keywords.forEach(keyword => {
-          const btn = document.createElement('button');
-          btn.className = 'keyword-btn';
-          btn.textContent = keyword;
-          btn.dataset.keyword = keyword;
-          btn.onclick = () => toggleKeywordPanel(keyword, category);
-          container.appendChild(btn);
-        });
-      });
-    }
-
-    // Toggle keyword detail panel inline under its category
-    function toggleKeywordPanel(keyword, category) {
-      const detailsContainer = document.getElementById(`details-${category}`);
-      const btn = document.querySelector(`[data-keyword="${keyword}"]`);
-      const existingPanel = document.getElementById(`panel-${keyword.replace(/[^a-zA-Z0-9]/g, '-')}`);
-
-      // If panel exists, close it
-      if (existingPanel) {
-        closePanel(keyword, category);
-        return;
-      }
-
-      // Mark button as active
-      btn.classList.add('active');
-      openPanels.add(keyword);
-
-      // Get keyword data
-      const data = keywordData[keyword];
-      if (!data) return;
-
-      // Create the panel HTML
-      const panelId = `panel-${keyword.replace(/[^a-zA-Z0-9]/g, '-')}`;
-      const panelHTML = createPanelHTML(keyword, data, panelId);
-
-      // Insert panel
-      detailsContainer.insertAdjacentHTML('beforeend', panelHTML);
-      detailsContainer.classList.add('has-content');
-
-      // Smooth scroll to the new panel
-      setTimeout(() => {
-        const panel = document.getElementById(panelId);
-        if (panel) {
-          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 100);
-    }
-
-    // Create panel HTML
-    function createPanelHTML(keyword, data, panelId) {
-      const githubIcon = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`;
-
-      const filesHTML = data.files.map(file => `
-        <div class="file-item" onclick="showCodePreview('${panelId}', '${keyword}', '${file.name}');" style="cursor: pointer;">
-          <span class="file-name">${file.name}</span>
-          <span class="file-size">${file.size || ''}</span>
-          <a href="${GITHUB_BASE}/${file.path}" target="_blank" rel="noopener" class="file-github-btn" onclick="event.stopPropagation();">
-            ${githubIcon} View on GitHub
-          </a>
-        </div>
-      `).join('');
-
-      return `
-        <div class="keyword-detail-card" id="${panelId}">
-          <div class="detail-header">
-            <h3 class="detail-title">${keyword}</h3>
-            <button class="detail-close" onclick="closePanel('${keyword}', '${data.category}')" aria-label="Close">×</button>
-          </div>
-          <p class="detail-summary">${data.summary}</p>
-          <p class="detail-explanation">${data.explanation}</p>
-          
-          <div class="detail-files">
-            <div class="files-header">
-              <span class="folder-icon">📂</span>
-              <span class="folder-path">${data.folder}</span>
-            </div>
-            <div class="files-list">
-              ${filesHTML}
-            </div>
-          </div>
-          
-          <div class="code-preview-area" id="code-${panelId}">
-            <div class="code-preview-header">
-              <span class="code-preview-title" id="code-title-${panelId}"></span>
-              <div class="code-preview-tabs">
-                <span class="code-tab-dot red"></span>
-                <span class="code-tab-dot yellow"></span>
-                <span class="code-tab-dot green"></span>
-              </div>
-            </div>
-            <pre class="code-preview-content" id="code-content-${panelId}"></pre>
-          </div>
-        </div>
-      `;
-    }
-
-    // Close a specific panel
-    function closePanel(keyword, category) {
-      const panelId = `panel-${keyword.replace(/[^a-zA-Z0-9]/g, '-')}`;
-      const panel = document.getElementById(panelId);
-      const btn = document.querySelector(`[data-keyword="${keyword}"]`);
-      const detailsContainer = document.getElementById(`details-${category}`);
-
-      if (panel) {
-        panel.style.opacity = '0';
-        panel.style.transform = 'translateY(-8px)';
-        setTimeout(() => {
-          panel.remove();
-          // Check if container is empty
-          if (detailsContainer && detailsContainer.children.length === 0) {
-            detailsContainer.classList.remove('has-content');
-          }
-        }, 200);
-      }
-
-      if (btn) {
-        btn.classList.remove('active');
-      }
-
-      openPanels.delete(keyword);
-    }
-
-    // Show inline code preview - fetch from code-snippets folder
-    async function showCodePreview(panelId, keyword, fileName) {
-      console.log('🔍 showCodePreview called:', { panelId, keyword, fileName });
-
-      const codeArea = document.getElementById(`code-${panelId}`);
-      const codeTitle = document.getElementById(`code-title-${panelId}`);
-      const codeContent = document.getElementById(`code-content-${panelId}`);
-
-      console.log('🔍 Elements found:', {
-        codeArea: !!codeArea,
-        codeTitle: !!codeTitle,
-        codeContent: !!codeContent
-      });
-
-      if (!codeArea) {
-        console.error('❌ codeArea not found! ID was:', `code-${panelId}`);
-        return;
-      }
-
-      // Toggle visibility if already open
-      if (codeArea.classList.contains('visible')) {
-        console.log('🔄 Toggling off - already visible');
-        codeArea.classList.remove('visible');
-        return;
-      }
-
-      // Set title
-      codeTitle.textContent = fileName;
-
-      // Show loading state
-      codeContent.innerHTML = '<div class="code-line"><span class="line-number">1</span><span class="line-content"># Loading code...</span></div>';
-      codeArea.classList.add('visible');
-      console.log('✅ Code area made visible');
-
-      // Fetch the code from file
-      console.log('📥 Fetching code for keyword:', keyword);
-      const code = await fetchCodeSnippet(keyword);
-      console.log('📥 Code fetched, length:', code.length, 'chars');
-
-      const lines = code.split('\n');
-      console.log('📥 Split into', lines.length, 'lines');
-
-      codeContent.innerHTML = lines.map((line, i) => `<div class="code-line"><span class="line-number">${i + 1}</span><span class="line-content">${highlightPython(line)}</span></div>`).join('');
-      console.log('✅ Code rendered with syntax highlighting');
-    }
-
-    // Escape HTML for code display
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    // Python syntax highlighter
-    function highlightPython(line) {
-      // First escape HTML
-      let html = escapeHtml(line);
-
-      // Comments (must be first to prevent issues)
-      html = html.replace(/(#.*)$/g, '<span class="syn-comment">$1</span>');
-
-      // Triple-quoted strings and docstrings
-      html = html.replace(/(""".*?"""|\'\'\'.*?\'\'\')/g, '<span class="syn-string">$1</span>');
-
-      // Decorators
-      html = html.replace(/(@\w+)/g, '<span class="syn-decorator">$1</span>');
-
-      // Strings (single and double quotes)
-      html = html.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, '<span class="syn-string">$1</span>');
-
-      // Numbers
-      html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="syn-number">$1</span>');
-
-      // Keywords
-      const keywords = ['import', 'from', 'class', 'def', 'async', 'await', 'return', 'if', 'else', 'elif', 'for', 'while', 'try', 'except', 'finally', 'with', 'as', 'in', 'not', 'and', 'or', 'is', 'None', 'True', 'False', 'raise', 'yield', 'lambda', 'pass', 'break', 'continue'];
-      keywords.forEach(kw => {
-        html = html.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="syn-keyword">$1</span>');
-      });
-
-      // Built-in functions
-      const builtins = ['print', 'len', 'range', 'str', 'int', 'float', 'list', 'dict', 'set', 'tuple', 'type', 'isinstance', 'hasattr', 'getattr', 'setattr', 'open', 'super', 'self', 'cls'];
-      builtins.forEach(fn => {
-        html = html.replace(new RegExp(`\\b(${fn})\\b`, 'g'), '<span class="syn-builtin">$1</span>');
-      });
-
-      // Function definitions (after def keyword)
-      html = html.replace(/(<span class="syn-keyword">def<\/span>\s+)(\w+)/g, '$1<span class="syn-function">$2</span>');
-
-      // Class definitions (after class keyword)
-      html = html.replace(/(<span class="syn-keyword">class<\/span>\s+)(\w+)/g, '$1<span class="syn-class">$2</span>');
-
-      return html;
-    }
-
-    // Map keywords to snippet file names
-    const snippetFiles = {
-      // Core AI/ML
-      'PyTorch': 'pytorch',
-      'Gemma LLM': 'gemma-llm',
-      'Llama.cpp': 'llama-cpp',
-      'NVIDIA NeMo': 'nemo-asr',
-      'Parakeet ASR': 'parakeet-asr',
-      'FAISS': 'faiss',
-      'Sentence-Transformers': 'sentence-transformers',
-      'DistilRoBERTa': 'distilroberta',
-      // ML Engines
-      'Titan AutoML': 'titan-automl',
-      'Oracle Causal': 'oracle-causal',
-      'Newton Symbolic': 'newton-symbolic',
-      'Chronos Temporal': 'chronos-timeseries',
-      'Galileo Geometric': 'galileo-gnn',
-      'Mirror Synthetic': 'mirror-synthetic',
-      'Scout Discovery': 'scout-discovery',
-      'Chaos Non-Linear': 'chaos-nonlinear',
-      // Backend
-      'FastAPI': 'fastapi',
-      'Redis': 'redis',
-      'PostgreSQL': 'postgresql',
-      'WebSocket': 'websocket',
-      'SQLCipher': 'sqlcipher',
-      // Infrastructure
-      'Docker': 'docker',
-      'Kubernetes': 'kubernetes',
-      'Kustomize': 'kustomize',
-      'CUDA': 'cuda-gpu',
-      // Security
-      'JWT Authentication': 'jwt-auth',
-      'AES-256 Encryption': 'aes-encryption',
-      'Docker Secrets': 'docker-secrets',
-      // Architecture Patterns
-      'GPU Semaphore': 'redis',
-      'Microservices': 'microservices',
-      'RAG (Retrieval-Augmented Generation)': 'rag-pipeline',
-      'System 2 Thinking': 'system2-thinking'
-    };
-
-    // Fetch code snippet from text file
-    async function fetchCodeSnippet(keyword) {
-      const fileName = snippetFiles[keyword];
-      if (!fileName) {
-        return `# Code snippet for ${keyword}\n# See full implementation on GitHub`;
-      }
-
-      try {
-        const response = await fetch(`code-snippets/${fileName}.txt`);
-        if (!response.ok) throw new Error('Not found');
-        return await response.text();
-      } catch (error) {
-        return `# Could not load snippet for ${keyword}\n# Click "View on GitHub" to see the full code`;
-      }
-    }
-  </script>
 </body>
 
 </html>

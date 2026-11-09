@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work scene test</title>
+<meta name="robots" content="noindex">
+<style>
+  @font-face { font-family: "Geist"; src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; background: #101318; }
+  .stage { width: 640px; height: 820px; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <div class="stage"><canvas id="c"></canvas></div>
+  <script type="module">
+    import { mountWork } from '../../js/3d/work.js';
+    const id = new URLSearchParams(location.search).get('case') || 'vox';
+    const base = '../../assets/app/hd/';
+    window.ready = mountWork({
+      canvas: document.getElementById('c'),
+      cases: [
+        { id: 'vox', screens: [base + 'vox-now.webp'] },
+        { id: 'narrator', screens: [base + 'narr-reader.webp'] },
+        { id: 'glasses', screens: [base + 'even-chat.webp'] }
+      ]
+    }).then(async (w) => {
+      w.setCase(id);
+      // Let the pose settle (the scene damps toward its target over time)
+      await new Promise((r) => setTimeout(r, 3500));
+      return 'ok';
+    }, (e) => 'ERR ' + e.message);
+  </script>
+</body>
+</html>

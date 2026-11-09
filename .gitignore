@@ -1,0 +1,5 @@
+# Local tooling for tools/promo-video and tools/brand
+node_modules
+tools/promo-video/preview/
+tools/brand/.*.png
+tools/film/preview/

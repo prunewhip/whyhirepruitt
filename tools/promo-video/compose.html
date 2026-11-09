@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Product tour (video composition)</title>
+  <meta name="robots" content="noindex">
+  <!--
+    Deterministic 1920×1080 composition for the home-page product tour.
+    Every frame is a pure function of time: render.mjs calls window.renderAt(seconds)
+    and screenshots the stage. The intro and outro use the site's Three.js hero scene,
+    baked into two layers by hero-3d.html (shots/hd/hero-*.png); the app scenes frame real
+    screenshots from each app's CI (shots/, shots/hd/).
+    Open through a local server: ?t=30 previews a moment, ?poster shows the poster.
+  -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --bg: #fcfcfa;
+      --ink: #18201c;
+      --ink-2: #4a544e;
+      --ink-3: #5f6963;
+      --line: #e2e6e0;
+      --accent: #1e6b57;
+      --live: #1e6b57;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    #stage {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Geist", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "ss01", "cv11";
+    }
+
+    .mono {
+      font-family: "Geist Mono", ui-monospace, monospace;
+    }
+
+    .head {
+      font-weight: 650;
+      letter-spacing: -0.05em;
+      line-height: 0.98;
+      color: var(--ink);
+    }
+
+    .head em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .bg-glow {
+      display: none;
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(36% 34% at var(--gx, 50%) var(--gy, 18%), rgba(255, 170, 120, 0.3), transparent 70%),
+        radial-gradient(30% 30% at 85% 90%, rgba(255, 255, 255, 0.9), transparent 70%);
+    }
+
+    /* 3D intro and outro: the site's hero scene, baked by hero-3d.html into two layers */
+    .layer3d {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      opacity: 0;
+    }
+
+    #field3d {
+      transform-origin: 70% 75%;
+      /* Keep the voice field quiet under the copy on the left */
+      -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.28) 38%, #000 64%);
+      mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.28) 38%, #000 64%);
+    }
+
+    #devices3d {
+      transform-origin: 78% 50%;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      display: none;
+    }
+
+    /* HUD: app name and chapter steps */
+    .hud {
+      position: absolute;
+      top: 52px;
+      left: 120px;
+      right: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #15171b;
+      color: #ffffff;
+      font-family: "Geist Mono", monospace;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .steps {
+      display: flex;
+      gap: 8px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 17px;
+      color: var(--ink-3);
+    }
+
+    .step .mono {
+      font-size: 13px;
+    }
+
+    .step.on {
+      color: var(--ink);
+      border-color: rgba(30, 107, 87, 0.5);
+      background: rgba(30, 107, 87, 0.08);
+    }
+
+    .step.on .mono {
+      color: var(--accent);
+    }
+
+    .step.done {
+      color: var(--ink-2);
+    }
+
+    /* Intro/outro copy */
+    .hero-copy {
+      position: absolute;
+      left: 140px;
+      top: 50%;
+      width: 900px;
+      transform: translateY(-50%);
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 20px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 22px;
+      color: var(--ink-2);
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--live);
+      box-shadow: none;
+    }
+
+    .hero-title {
+      margin-top: 40px;
+      font-size: 150px;
+    }
+
+    #s1t,
+    .poster-copy .hero-title {
+      font-size: 100px;
+    }
+
+    .hero-sub {
+      margin-top: 36px;
+      max-width: 620px;
+      font-size: 34px;
+      line-height: 1.35;
+      color: var(--ink-2);
+    }
+
+    .hero-url {
+      margin-top: 40px;
+      font-size: 30px;
+      color: var(--accent);
+    }
+
+    /* Chapter caption (left column) */
+    .caption {
+      position: absolute;
+      left: 120px;
+      top: 50%;
+      width: 560px;
+      transform: translateY(-44%);
+    }
+
+    .cap-num {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .cap-num::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+
+    .cap-title {
+      margin-top: 18px;
+      font-size: 110px;
+    }
+
+    .cap-text {
+      margin-top: 30px;
+      font-size: 34px;
+      line-height: 1.32;
+      color: var(--ink-2);
+      letter-spacing: -0.015em;
+    }
+
+    .cap-text b {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .cap-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 36px;
+    }
+
+    .cap-chip {
+      height: 40px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 17px;
+      color: var(--ink-2);
+    }
+
+    /* Glossy phone frame around a real screenshot */
+    .phone {
+      position: absolute;
+      top: 150px;
+      width: 400px;
+      height: 860px;
+      padding: 12px;
+      border-radius: 60px;
+      background: linear-gradient(145deg, #3a3e46 0%, #16181d 30%, #0d0e12 70%, #2a2d34 100%);
+      box-shadow:
+        inset 0 0 0 1.5px rgba(255, 255, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 80px 140px -50px rgba(24, 32, 28, 0.5);
+      opacity: 0;
+    }
+
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 48px;
+      background: #fff;
+    }
+
+    .screen img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 28%, transparent 42%);
+      pointer-events: none;
+    }
+
+    .hl {
+      position: absolute;
+      border-radius: 14px;
+      box-shadow: 0 0 0 3px var(--accent), 0 0 0 9px rgba(30, 107, 87, 0.2), 0 0 0 1600px rgba(24, 32, 28, 0.4);
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .callout {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      height: 54px;
+      padding: 0 22px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(30, 107, 87, 0.45);
+      box-shadow: 0 24px 44px -20px rgba(24, 32, 28, 0.45);
+      font-size: 22px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      z-index: 2;
+    }
+
+    .callout i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: none;
+    }
+
+    .badge-big {
+      position: absolute;
+      display: grid;
+      gap: 6px;
+      padding: 22px 28px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #ffffff;
+      box-shadow: 0 34px 60px -30px rgba(24, 32, 28, 0.4);
+      opacity: 0;
+    }
+
+    .badge-big b {
+      font-size: 64px;
+      font-weight: 650;
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    .badge-big span {
+      font-size: 20px;
+      color: var(--ink-2);
+    }
+
+    .glasses-img {
+      position: absolute;
+      left: 500px;
+      top: 577px;
+      width: 845px;
+      opacity: 0;
+      filter: drop-shadow(0 40px 50px rgba(24, 32, 28, 0.22));
+    }
+
+    /* Poster-only copy */
+    .poster-copy {
+      display: none;
+    }
+
+    #stage.is-poster .poster-copy {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+    <div class="bg-glow" id="glow"></div>
+    <img class="layer3d" id="field3d" src="shots/hd/hero-field.png" alt="">
+    <img class="layer3d" id="devices3d" src="shots/hd/hero-devices.png" alt="">
+
+    <div class="hud" id="hud">
+      <div class="brand"><span class="brand-mark">PC</span>Pruitt Colon</div>
+      <div class="steps">
+        <div class="step"><span class="mono">01</span>Vox Amelior</div>
+        <div class="step"><span class="mono">02</span>Narrator Studio</div>
+        <div class="step"><span class="mono">03</span>Even Suite</div>
+      </div>
+    </div>
+
+    <!-- 1 · Intro, baked 3D (0–5s) -->
+    <section class="scene" id="s1">
+      <div class="hero-copy">
+        <p class="hero-kicker" id="s1k"><span class="dot"></span>Pruitt Colon · AI engineer</p>
+        <h1 class="hero-title head" id="s1t">I build AI that runs<br><em>on your phone.</em></h1>
+        <p class="hero-sub" id="s1s">Three open-source Android apps, shown with real screens from their test builds.</p>
+      </div>
+      <div class="poster-copy hero-copy" style="top:50%">
+        <p class="hero-kicker"><span class="dot"></span>Product tour · 0:48</p>
+        <!-- Three lines keep the headline clear of the play button in the middle of the frame -->
+        <h1 class="hero-title head">I build AI<br>that runs<br><em>on your phone.</em></h1>
+        <p class="hero-sub">Vox Amelior, Narrator Studio<br>and Even Suite.</p>
+      </div>
+    </section>
+
+    <!-- 2 · Vox: Listen (5–10s) -->
+    <section class="scene" id="s2">
+      <div class="caption">
+        <p class="cap-num mono" id="s2n">01 / VOX AMELIOR</p>
+        <h2 class="cap-title head" id="s2t">Listen</h2>
+        <p class="cap-text" id="s2x">An always-on assistant that writes down what’s said nearby, <b>on the phone.</b></p>
+        <div class="cap-chips" id="s2c"><span class="cap-chip mono">Parakeet ASR</span><span class="cap-chip mono">Silero VAD</span></div>
+      </div>
+      <div class="phone" id="s2p" style="left:960px"><div class="screen"><img src="shots/now.png" alt="" data-w="1080" data-h="2400"><span class="hl" id="s2h0"></span><span class="hl" id="s2h1"></span></div></div>
+      <span class="callout" id="s2k0"><i></i>Always listening, on the phone</span>
+      <span class="callout" id="s2k1"><i></i>Every line, with who said it</span>
+    </section>
+
+    <!-- 3 · Vox: Recognize (10–15s) -->
+    <section class="scene" id="s3">
+      <div class="caption">
+        <p class="cap-num mono" id="s3n">01 / VOX AMELIOR</p>
+        <h2 class="cap-title head" id="s3t">Recognize</h2>
+        <p class="cap-text" id="s3x">Name a voice once. <b>It knows them from then on.</b></p>
+        <div class="cap-chips" id="s3c"><span class="cap-chip mono">TitaNet voiceprints</span><span class="cap-chip mono">Sortformer</span></div>
+      </div>
+      <div class="phone" id="s3p" style="left:960px"><div class="screen"><img src="shots/who-said-this.png" alt="" data-w="1080" data-h="2400"><span class="hl" id="s3h0"></span></div></div>
+      <span class="callout" id="s3k0"><i></i>Tap a line, pick who said it</span>
+    </section>
+
+    <!-- 4 · Vox: Ask (15–20s) -->
+    <section class="scene" id="s4">
+      <div class="caption">
+        <p class="cap-num mono" id="s4n">01 / VOX AMELIOR</p>
+        <h2 class="cap-title head" id="s4t">Ask</h2>
+        <p class="cap-text" id="s4x">Search by meaning, then ask: <b>“When is the vet?”</b></p>
+        <div class="cap-chips" id="s4c"><span class="cap-chip mono">EmbeddingGemma</span><span class="cap-chip mono">Gemma 4 on-device</span></div>
+      </div>
+      <div class="phone" id="s4p" style="left:960px"><div class="screen"><img src="shots/search.png" alt="" data-w="1080" data-h="2400"><span class="hl" id="s4h0"></span></div></div>
+      <span class="callout" id="s4k0"><i></i>Found by meaning, not just words</span>
+    </section>
+
+    <!-- 5 · Narrator: Podcast (20–26s) -->
+    <section class="scene" id="s5">
+      <div class="caption">
+        <p class="cap-num mono" id="s5n">02 / NARRATOR STUDIO</p>
+        <h2 class="cap-title head" id="s5t">Text to podcast</h2>
+        <p class="cap-text" id="s5x">Any text becomes an episode, with <b>chapters and a read-along player.</b></p>
+        <div class="cap-chips" id="s5c"><span class="cap-chip mono">Kokoro</span><span class="cap-chip mono">Chaptered M4A</span></div>
+      </div>
+      <div class="phone" id="s5p0" style="left:790px"><div class="screen"><img src="shots/hd/02_library.png" alt="" data-w="540" data-h="1170"><span class="hl" id="s5h0"></span></div></div>
+      <div class="phone" id="s5p1" style="left:1290px;top:190px"><div class="screen"><img src="shots/hd/05_reader.png" alt="" data-w="540" data-h="1170"><span class="hl" id="s5h1"></span></div></div>
+      <span class="callout" id="s5k0"><i></i>Your library</span>
+      <span class="callout" id="s5k1"><i></i>Jump between chapters</span>
+    </section>
+
+    <!-- 6 · Narrator: Voices (26–32s) -->
+    <section class="scene" id="s6">
+      <div class="caption">
+        <p class="cap-num mono" id="s6n">02 / NARRATOR STUDIO</p>
+        <h2 class="cap-title head" id="s6t">Voices</h2>
+        <p class="cap-text" id="s6x">Four voice engines <b>run on the phone.</b></p>
+        <div class="cap-chips" id="s6c"><span class="cap-chip mono">ONNX</span><span class="cap-chip mono">Voice cloning, with consent</span></div>
+      </div>
+      <div class="phone" id="s6p0" style="left:790px"><div class="screen"><img src="shots/hd/03_voices.png" alt="" data-w="540" data-h="1170"><span class="hl" id="s6h0"></span></div></div>
+      <div class="phone" id="s6p1" style="left:1290px;top:190px"><div class="screen"><img src="shots/hd/06_cast_sheet.png" alt="" data-w="540" data-h="1170"></div></div>
+      <span class="callout" id="s6k0"><i></i>Natural, studio or lifelike voices</span>
+      <div class="badge-big" id="s6b" style="left:120px;top:800px"><b>2.6%</b><span>word error rate, checked by Whisper on every build</span></div>
+    </section>
+
+    <!-- 7 · Even Suite: talk (32–41s) -->
+    <section class="scene" id="s7">
+      <div class="caption">
+        <p class="cap-num mono" id="s7n">03 / EVEN SUITE</p>
+        <h2 class="cap-title head" id="s7t">Say “Claude”</h2>
+        <p class="cap-text" id="s7x">Talk hands-free through G1 smart glasses. <b>The answer appears in your view.</b></p>
+        <div class="cap-chips" id="s7c"><span class="cap-chip mono">Wake word</span><span class="cap-chip mono">Glasses mic</span><span class="cap-chip mono">Claude Code</span></div>
+      </div>
+      <div class="phone" id="s7p" style="left:1290px;top:110px"><div class="screen" style="background:#0e1622"><img src="shots/hd/4_claude_chat.png" alt="" data-w="720" data-h="1560"><span class="hl" id="s7h0"></span></div></div>
+      <img class="glasses-img" id="s7g" src="shots/hd/glasses-3d.png" alt="">
+      <span class="callout" id="s7k0"><i></i>Claude’s reply, five lines a page</span>
+    </section>
+
+    <!-- 8 · Outro, baked 3D (41–48s) -->
+    <section class="scene" id="s10">
+      <div class="hero-copy">
+        <p class="hero-kicker" id="s10k"><span class="dot"></span>Open to full-time roles</p>
+        <h2 class="hero-title head" id="s10t">Pruitt <em>Colon.</em></h2>
+        <p class="hero-sub" id="s10s">AI engineer. Speech, voice and language apps for Android.</p>
+        <p class="hero-url mono" id="s10u">whyhirepruitt.dev</p>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    const DURATION = 48;
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const lerp = (a, b, p) => a + (b - a) * p;
+    const ease = { out: (p) => 1 - Math.pow(1 - p, 3) };
+    const prog = (t, start, dur) => clamp((t - start) / dur);
+
+    function enter(el, t, start, { dur = 0.8, y = 28, x = 0, scale = 1, blur = 0 } = {}) {
+      const p = ease.out(prog(t, start, dur));
+      el.style.opacity = p;
+      el.style.transform = `translate(${x * (1 - p)}px, ${y * (1 - p)}px) scale(${lerp(scale, 1, p)})`;
+      el.style.filter = blur ? `blur(${(blur * (1 - p)).toFixed(2)}px)` : '';
+      return p;
+    }
+
+    // Phone screen: 400×860 frame with a 12px bezel → 376×836 screen; images use object-fit: cover
+    const SCREEN = { pad: 12, w: 376, h: 836, frameH: 860 };
+
+    function coverMap(img) {
+      const w = Number(img.dataset.w);
+      const h = Number(img.dataset.h);
+      const s = Math.max(SCREEN.w / w, SCREEN.h / h);
+      return { s, ox: (SCREEN.w - w * s) / 2, oy: 0 };
+    }
+
+    function placeHighlight(el, [x, y, w, h]) {
+      const img = el.parentElement.querySelector('img');
+      const m = coverMap(img);
+      el.style.left = `${m.ox + x * m.s}px`;
+      el.style.top = `${m.oy + y * m.s}px`;
+      el.style.width = `${w * m.s}px`;
+      el.style.height = `${h * m.s}px`;
+    }
+
+    function spotlight(t, hl, callout, frame, region, start, end, side = 'right') {
+      const vis = prog(t, start, 0.45) * (1 - prog(t, end - 0.45, 0.45));
+      hl.style.opacity = vis.toFixed(3);
+      if (!callout) return;
+      const m = coverMap(frame.querySelector('img'));
+      const pr = frame.getBoundingClientRect();
+      const k = pr.height / SCREEN.frameH;
+      const [x, y, w, h] = region;
+      const yTop = pr.top + (SCREEN.pad + m.oy + y * m.s) * k;
+      const yBottom = pr.top + (SCREEN.pad + m.oy + (y + h) * m.s) * k;
+      const cw = callout.offsetWidth;
+      const rise = (1 - ease.out(prog(t, start, 0.6))) * 14;
+      let left;
+      let top;
+      if (side === 'right') {
+        left = pr.right + 28 - rise;
+        top = (yTop + yBottom) / 2 - 27;
+      } else {
+        const cx = pr.left + (SCREEN.pad + m.ox + (x + w / 2) * m.s) * k;
+        left = clamp(cx - cw / 2, 40, 1880 - cw);
+        top = side === 'above' ? yTop - 54 - 18 + rise : yBottom + 18 - rise;
+      }
+      callout.style.left = `${left.toFixed(1)}px`;
+      callout.style.top = `${top.toFixed(1)}px`;
+      callout.style.opacity = vis.toFixed(3);
+    }
+
+    function caption(prefix, t, start) {
+      enter($(`${prefix}n`), t, start + 0.35, { dur: 0.7 });
+      enter($(`${prefix}t`), t, start + 0.5, { dur: 0.9, blur: 6 });
+      enter($(`${prefix}x`), t, start + 0.75, { dur: 0.8 });
+      enter($(`${prefix}c`), t, start + 1.0, { dur: 0.8 });
+    }
+
+    function frameIn(el, t, start, end) {
+      const p = enter(el, t, start, { dur: 1.1, y: 90, scale: 0.96 });
+      const drift = 1 + 0.025 * prog(t, start + 1.1, end - start - 1.1);
+      if (p >= 1) el.style.transform = `scale(${drift.toFixed(4)})`;
+    }
+
+    const SCENES = [
+      { id: 's1', start: 0, end: 5 },
+      { id: 's2', start: 5, end: 10 },
+      { id: 's3', start: 10, end: 15 },
+      { id: 's4', start: 15, end: 20 },
+      { id: 's5', start: 20, end: 26 },
+      { id: 's6', start: 26, end: 32 },
+      { id: 's7', start: 32, end: 41 },
+      { id: 's10', start: 41, end: DURATION + 1 }
+    ];
+    const FADE = 0.45;
+
+    // Regions in screenshot pixels [x, y, w, h]
+    const R = {
+      nowListening: [44, 432, 992, 740],
+      nowHeard: [28, 1490, 1024, 640],
+      whoSheet: [40, 1400, 1000, 560],
+      searchHits: [20, 880, 1040, 660],
+      narrLibrary: [20, 160, 500, 230],
+      narrChapters: [20, 475, 500, 440],
+      narrVoices: [20, 200, 500, 110],
+      evenChat: [20, 250, 680, 620]
+    };
+
+    const RENDER = {
+      s1(t) {
+        enter($('s1k'), t, 0.4, { dur: 0.7, y: 16 });
+        enter($('s1t'), t, 0.6, { dur: 1, y: 36, blur: 8 });
+        enter($('s1s'), t, 1.2, { dur: 0.8, y: 20 });
+      },
+      s2(t) {
+        caption('s2', t, 5);
+        frameIn($('s2p'), t, 5.2, 10);
+        spotlight(t, $('s2h0'), $('s2k0'), $('s2p'), R.nowListening, 6.2, 8.0);
+        spotlight(t, $('s2h1'), $('s2k1'), $('s2p'), R.nowHeard, 8.1, 9.8);
+      },
+      s3(t) {
+        caption('s3', t, 10);
+        frameIn($('s3p'), t, 10.2, 15);
+        spotlight(t, $('s3h0'), $('s3k0'), $('s3p'), R.whoSheet, 11.2, 14.6);
+      },
+      s4(t) {
+        caption('s4', t, 15);
+        frameIn($('s4p'), t, 15.2, 20);
+        spotlight(t, $('s4h0'), $('s4k0'), $('s4p'), R.searchHits, 16.2, 19.6);
+      },
+      s5(t) {
+        caption('s5', t, 20);
+        frameIn($('s5p0'), t, 20.2, 26);
+        frameIn($('s5p1'), t, 22.0, 26);
+        spotlight(t, $('s5h0'), $('s5k0'), $('s5p0'), R.narrLibrary, 21.0, 22.8, 'below');
+        spotlight(t, $('s5h1'), $('s5k1'), $('s5p1'), R.narrChapters, 23.2, 25.7, 'above');
+      },
+      s6(t) {
+        caption('s6', t, 26);
+        frameIn($('s6p0'), t, 26.2, 32);
+        frameIn($('s6p1'), t, 27.4, 32);
+        spotlight(t, $('s6h0'), $('s6k0'), $('s6p0'), R.narrVoices, 27.0, 29.2, 'below');
+        enter($('s6b'), t, 29.4, { dur: 0.8, y: 24 });
+      },
+      s7(t) {
+        caption('s7', t, 32);
+        frameIn($('s7p'), t, 32.2, 41);
+        const g = enter($('s7g'), t, 33.0, { dur: 1.1, y: 60, scale: 0.94 });
+        if (g >= 1) $('s7g').style.transform = `translateY(${(Math.sin((t - 34.1) * 0.9) * 6).toFixed(1)}px)`;
+        spotlight(t, $('s7h0'), $('s7k0'), $('s7p'), R.evenChat, 34.6, 40.5, 'below');
+      },
+      s10(t) {
+        enter($('s10k'), t, 41.4, { dur: 0.7, y: 16 });
+        enter($('s10t'), t, 41.7, { dur: 1, y: 36, blur: 8 });
+        enter($('s10s'), t, 42.3, { dur: 0.8, y: 20 });
+        enter($('s10u'), t, 42.8, { dur: 0.8, y: 14 });
+      }
+    };
+
+    document.querySelectorAll('.hl').forEach((hl) => {
+      const key = {
+        s2h0: 'nowListening', s2h1: 'nowHeard', s3h0: 'whoSheet', s4h0: 'searchHits',
+        s5h0: 'narrLibrary', s5h1: 'narrChapters', s6h0: 'narrVoices',
+        s7h0: 'evenChat'
+      }[hl.id];
+      if (key) placeHighlight(hl, R[key]);
+    });
+
+    function renderAt(t) {
+      const glow = $('glow');
+      glow.style.setProperty('--gx', `${(50 + 14 * Math.sin(t * 0.11)).toFixed(2)}%`);
+      glow.style.setProperty('--gy', `${(16 + 6 * Math.cos(t * 0.09)).toFixed(2)}%`);
+
+      SCENES.forEach((s) => {
+        const el = $(s.id);
+        const fadeIn = s.start === 0 ? prog(t, 0, 0.6) : prog(t, s.start, FADE);
+        const fadeOut = 1 - prog(t, s.end - FADE, FADE);
+        const visible = t >= s.start && t < s.end;
+        el.style.display = visible ? 'block' : 'none';
+        if (!visible) return;
+        el.style.opacity = Math.min(fadeIn, fadeOut).toFixed(3);
+        RENDER[s.id](t);
+      });
+
+      // 3D layers for the intro and outro; the field and the devices drift at different speeds
+      const intro = 1 - prog(t, 4.4, 0.6);
+      const outro = prog(t, 40.6, 0.8);
+      const threeOpacity = t < 5 ? Math.min(prog(t, 0, 0.8), intro) : outro;
+      const p = t < 5 ? t / 5 : prog(t, 40.6, 7.4);
+      const dir = t < 5 ? 1 : -1;
+      $('field3d').style.opacity = threeOpacity.toFixed(3);
+      $('devices3d').style.opacity = threeOpacity.toFixed(3);
+      $('field3d').style.transform = `translate(${(-54 * p * dir).toFixed(2)}px, ${(-10 * p).toFixed(2)}px) scale(${(1.03 + 0.035 * p).toFixed(4)})`;
+      $('devices3d').style.transform = `translate(${(-22 * p * dir).toFixed(2)}px, ${(Math.sin(t * 0.8) * 9).toFixed(2)}px) scale(${(1 + 0.03 * p).toFixed(4)})`;
+
+      $('hud').style.opacity = (prog(t, 5.2, 0.6) * (1 - prog(t, 40.4, 0.6))).toFixed(3);
+      const bounds = [5, 20, 32, 41];
+      document.querySelectorAll('.step').forEach((step, i) => {
+        step.classList.toggle('on', t >= bounds[i] && t < bounds[i + 1]);
+        step.classList.toggle('done', t >= bounds[i + 1]);
+      });
+    }
+
+    function renderPoster() {
+      document.getElementById('stage').classList.add('is-poster');
+      renderAt(2.5);
+      $('s1k').parentElement.style.display = 'none';
+      $('field3d').style.opacity = 1;
+      $('devices3d').style.opacity = 1;
+    }
+
+    window.DURATION = DURATION;
+    window.renderAt = renderAt;
+    window.renderPoster = renderPoster;
+    window.ready = true;
+
+    const params = new URLSearchParams(location.search);
+    if (params.has('poster')) renderPoster();
+    else renderAt(Number(params.get('t') || 0));
+  </script>
+</body>
+
+</html>

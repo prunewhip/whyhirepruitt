@@ -1,0 +1,176 @@
+/*
+ * Contact page — intro + contact methods beside the message form
+ * Depends on css/design-system.css tokens.
+ */
+
+.contact {
+  position: relative;
+  padding-block: clamp(var(--space-12), 7vw, 6.5rem) var(--section);
+  overflow-x: clip;
+  isolation: isolate;
+}
+
+.contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: none;
+  pointer-events: none;
+}
+
+.contact__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  align-items: start;
+  gap: clamp(var(--space-10), 6vw, 6rem);
+}
+
+.contact__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.contact__intro .lead {
+  max-width: 34em;
+  margin-top: var(--space-5);
+}
+
+.methods {
+  margin-top: var(--space-10);
+  border-top: 1px solid var(--line);
+}
+
+.method {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 72px;
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--line);
+  transition: padding var(--dur-2) var(--ease-out);
+}
+
+.method__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.method__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.method__text {
+  display: grid;
+  min-width: 0;
+}
+
+.method__label {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.method__value {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.method__arrow {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  flex: none;
+  color: var(--ink-3);
+  transition: transform var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+
+.method:hover .method__value {
+  color: var(--accent);
+}
+
+.method:hover .method__arrow {
+  color: var(--accent);
+  transform: translate(2px, -2px);
+}
+
+/* Form */
+.form-card {
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-2);
+}
+
+.form-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.form-card__sub {
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.form__submit {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.form__submit[aria-busy="true"] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.form__status {
+  min-height: 1.5em;
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+.form__status.is-success {
+  color: var(--ok);
+}
+
+.form__status.is-error {
+  color: #ff8a78;
+}
+
+@media (max-width: 900px) {
+  .contact__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .form__row {
+    grid-template-columns: 1fr;
+  }
+}

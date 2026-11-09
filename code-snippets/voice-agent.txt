@@ -1,0 +1,60 @@
+// vox_mobile/lib/assistant/agent_tools.dart (excerpt, Vox Amelior for Android)
+
+/// The actions Gemma can take on its own when agent mode is on.
+class AgentToolbox {
+  AgentToolbox({
+    required this.transcripts,
+    required this.speakers,
+    required this.notes,
+    required this.reminders,
+
+  // …
+
+  late final List<AgentTool> tools = [
+    AgentTool(
+      const ToolSpec(
+        name: 'search_conversations',
+        description: 'Search what was said at home. Use for specific facts, names, plans or topics.',
+        parameters: {
+          'type': 'object',
+          'properties': {
+            'query': {'type': 'string', 'description': 'Words to look for, e.g. "plumber appointment".'},
+            'person': {'type': 'string', 'description': 'Only lines said by this person (optional).'},
+            'period': {'type': 'string', 'description': 'Time phrase such as "last week", "yesterday", "this month" (optional).'},
+          },
+          'required': ['query'],
+        },
+      ),
+      _search,
+    ),
+    AgentTool(
+      const ToolSpec(
+        name: 'get_timeline',
+        description: 'Read an overview of all conversations in a period, e.g. to summarise a day or week.',
+        parameters: {
+          'type': 'object',
+          'properties': {
+            'period': {'type': 'string', 'description': 'Time phrase such as "today", "last week", "on Monday".'},
+          },
+          'required': ['period'],
+        },
+      ),
+      _timeline,
+    ),
+    AgentTool(
+      const ToolSpec(
+        name: 'save_note',
+        description: 'Save a note, to-do or shopping item for the household.',
+        parameters: {
+          'type': 'object',
+          'properties': {'text': {'type': 'string'}},
+          'required': ['text'],
+        },
+      ),
+      (a) async {
+        final text = '${a['text'] ?? ''}'.trim();
+        if (text.isEmpty) return {'ok': false, 'error': 'text is empty'};
+        return {'ok': true, 'id': notes.add(text, source: 'assistant')};
+      },
+    ),
+    AgentTool(

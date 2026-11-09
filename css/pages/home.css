@@ -1,0 +1,1313 @@
+/*
+ * Home page: the hero with the film, the three ways in (with the 3D devices), Vox Amelior, the other-apps teaser and
+ * the call to action. The "Other apps" page (apps.html) shares this file for its sticky 3D device stage and case studies.
+ * The film's player styles live in css/components/player.css.
+ * Depends on css/design-system.css tokens.
+ */
+
+/* ══════════════════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  padding-top: clamp(var(--space-12), 7vw, 5.5rem);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Desktop: the pitch on the left, the film on the right. Phones: the film comes right after the headline, so the
+   first screen shows it */
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  grid-template-areas:
+    "copy film"
+    "more film";
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  column-gap: clamp(var(--space-8), 4vw, var(--space-16));
+  min-height: min(640px, calc(100svh - var(--nav-h) - 180px));
+}
+
+.hero__copy {
+  grid-area: copy;
+  align-self: end;
+}
+
+.hero__more {
+  grid-area: more;
+  align-self: start;
+}
+
+.hero__status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--pill-bg);
+  box-shadow: var(--edge);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.hero__avatar img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.hero__status-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--line-strong);
+}
+
+/* A notch under the display size, so the film beside it can be larger */
+.hero__title {
+  max-width: 11em;
+  font-size: clamp(2.6rem, 1.4rem + 3.6vw, 4.4rem);
+}
+
+.hero__title .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.hero__title .line > span {
+  display: inline-block;
+  /* Each line paints its own metal fill; a parent's text clip can't reach moved children */
+}
+
+.hero__lead {
+  max-width: 33em;
+  margin-top: var(--space-6);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-10);
+}
+
+/* The film: a short intro above it, the transcript underneath */
+.hero__film {
+  grid-area: film;
+  margin: 0;
+}
+
+.hero__film-intro {
+  max-width: 40em;
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.hero__film-intro .eyebrow {
+  margin-bottom: var(--space-2);
+}
+
+.hero__film-intro strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.hero__film-cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: var(--space-4);
+  margin-top: var(--space-3);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.hero__film-cap .transcript {
+  margin-top: 0;
+}
+
+.hero__film-cap .transcript[open] {
+  flex-basis: 100%;
+}
+
+/* Proof strip */
+.proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(var(--space-8), 4vw, var(--space-12));
+  margin-bottom: clamp(var(--space-10), 5vw, var(--space-16));
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--pill-bg);
+  box-shadow: var(--edge);
+}
+
+.proof__item {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-6);
+}
+
+.proof__item + .proof__item {
+  border-left: 1px solid var(--line);
+}
+
+.proof dd {
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.proof dt {
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+@media (max-width: 860px) {
+  .hero__grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "film"
+      "more";
+    grid-template-rows: auto;
+    min-height: 0;
+  }
+
+  .hero__status {
+    margin-bottom: var(--space-5);
+  }
+
+  .hero__film {
+    margin-top: var(--space-6);
+  }
+
+  .hero__lead {
+    margin-top: var(--space-8);
+  }
+
+  .hero__actions {
+    margin-top: var(--space-6);
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 100%;
+  }
+
+  .proof__item {
+    padding: var(--space-5) var(--space-3);
+  }
+
+  .proof dd {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__status-name,
+  .hero__status-sep {
+    display: none;
+  }
+}
+
+/* Phone frame around a real screenshot (fallbacks and the mobile case shots) */
+.device {
+  position: relative;
+  padding: 2.6%;
+  border-radius: 13% / 6%;
+  background: linear-gradient(145deg, #3a3e46 0%, #16181d 30%, #0d0e12 70%, #2a2d34 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 40px 80px -30px rgba(21, 23, 27, 0.45);
+}
+
+.device img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 11% / 5%;
+  object-fit: cover;
+  object-position: top;
+  background: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════
+   WORK: sticky 3D stage + case studies
+   ══════════════════════════════════════════════════════════ */
+
+.work__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+}
+
+.work__stage {
+  position: sticky;
+  top: var(--nav-h);
+  height: calc(100svh - var(--nav-h));
+  max-height: 860px;
+  order: 2;
+}
+
+.work__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.work__stage::before {
+  content: "";
+  position: absolute;
+  inset: 12% 8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: none;
+  pointer-events: none;
+}
+
+.work__dots {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-6);
+  display: flex;
+  gap: var(--space-2);
+  transform: translateX(-50%);
+}
+
+.work__dots li {
+  width: 26px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  transition: background-color var(--dur-2) var(--ease-out), width var(--dur-2) var(--ease-out);
+}
+
+.work__dots li.is-active {
+  width: 44px;
+  background: var(--accent);
+}
+
+.work__cases {
+  order: 1;
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100svh - var(--nav-h));
+  padding-block: var(--space-16);
+}
+
+.case + .case {
+  border-top: 1px solid var(--line);
+}
+
+.case__num {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case__title {
+  margin-top: var(--space-4);
+  font-size: clamp(2.4rem, 1.6rem + 3vw, 4rem);
+  font-weight: 650;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.case__tag {
+  margin-top: var(--space-3);
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.case__text {
+  margin-top: var(--space-4);
+  max-width: 40em;
+  color: var(--ink-2);
+}
+
+.case__shots {
+  display: none;
+}
+
+.case__built {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.case__built li {
+  padding: 4px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+
+/* Two or three short, checkable facts per app */
+.case__facts {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.case__facts li {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.case__facts li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 8px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.case__facts b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.case__proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.case__proof > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.case__proof dd {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.2rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.case__proof dt {
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.case__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.work__also {
+  margin-top: var(--space-8);
+  padding: var(--space-5) var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.work__also .mono {
+  margin-right: var(--space-3);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Without the 3D stage (small screens, no WebGL) the cases show real screenshots */
+@media (max-width: 1023px) {
+  .work__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .work__stage {
+    display: none;
+  }
+
+  .case {
+    min-height: 0;
+    padding-block: var(--space-12);
+  }
+
+  .case__shots {
+    display: flex;
+    gap: var(--space-3);
+    margin: var(--space-6) calc(var(--gutter) * -1) 0;
+    padding: 0 var(--gutter) var(--space-2);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .case__shots::-webkit-scrollbar {
+    display: none;
+  }
+
+  .case__shots .device {
+    flex: 0 0 min(46%, 220px);
+    aspect-ratio: 540 / 1170;
+    scroll-snap-align: start;
+  }
+}
+
+html:not(.has-webgl) .work__stage {
+  display: none;
+}
+
+html:not(.has-webgl) .work__layout {
+  grid-template-columns: 1fr;
+}
+
+html:not(.has-webgl) .case {
+  min-height: 0;
+}
+
+html:not(.has-webgl) .case__shots {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+html:not(.has-webgl) .case__shots .device {
+  flex: 0 0 min(30%, 220px);
+  aspect-ratio: 540 / 1170;
+}
+
+@media (max-width: 600px) {
+  .case__proof {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .case__proof > div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-4);
+  }
+}
+
+/* Sample podcast player */
+.listen {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card-fill);
+  box-shadow: var(--edge);
+}
+
+.listen__play {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: none;
+  transition: transform var(--dur-1) var(--ease-out);
+}
+
+.listen__play:hover {
+  transform: scale(1.05);
+}
+
+.listen__play svg {
+  width: 20px;
+  height: 20px;
+}
+
+.listen__icon-play {
+  margin-left: 3px;
+}
+
+.listen__icon-pause,
+.listen.is-playing .listen__icon-play {
+  display: none;
+}
+
+.listen.is-playing .listen__icon-pause {
+  display: block;
+}
+
+.listen__title {
+  font-weight: 600;
+}
+
+.listen__sub {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.listen__bar {
+  position: relative;
+  height: 6px;
+  margin-top: var(--space-4);
+  border-radius: 6px;
+  background: rgba(21, 23, 27, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.listen__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+}
+
+.listen__chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.listen__chapters button {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-2xs);
+  color: var(--ink-2);
+  transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+
+.listen__chapters button:hover,
+.listen__chapters button[aria-current="true"] {
+  color: var(--ink);
+  border-color: var(--accent-line);
+}
+
+.listen__time {
+  padding-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOTION (off under prefers-reduced-motion)
+   ══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero__title .line > span {
+    animation: line-up 800ms var(--ease-out) both;
+  }
+
+  .js .hero__title .line:nth-child(2) > span {
+    animation-delay: 100ms;
+  }
+
+  .js .hero__actions,
+  .js .hero__status {
+    animation: fade-up 700ms var(--ease-out) both;
+  }
+
+  .js .hero__actions {
+    animation-delay: 240ms;
+  }
+
+  /* Section headings wipe in when their block reveals */
+  .js .reveal .h2 {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.25em);
+    transition: clip-path 900ms var(--ease-out), transform 900ms var(--ease-out);
+  }
+
+  .js .reveal.is-visible .h2 {
+    clip-path: inset(-10% -2% -20% -2%);
+    transform: none;
+  }
+
+  /* Case studies slide up as they become the active one */
+  .js .case > * {
+    opacity: 0.25;
+    transform: translateY(14px);
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+  }
+
+  .js .case.is-active > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .js .case.is-active > :nth-child(2) { transition-delay: 40ms; }
+  .js .case.is-active > :nth-child(3) { transition-delay: 80ms; }
+  .js .case.is-active > :nth-child(4) { transition-delay: 120ms; }
+  .js .case.is-active > :nth-child(n + 5) { transition-delay: 160ms; }
+}
+
+@keyframes line-up {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* Cursor spotlight on cards (main.js sets --mx/--my) */
+.spot {
+  position: relative;
+}
+
+.spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), var(--spot), transparent 45%);
+  opacity: 0;
+  transition: opacity 300ms var(--ease-out);
+  pointer-events: none;
+}
+
+.spot:hover::after {
+  opacity: 1;
+}
+
+[data-stagger] > :nth-child(2) { --reveal-delay: 80ms; }
+[data-stagger] > :nth-child(3) { --reveal-delay: 160ms; }
+[data-stagger] > :nth-child(4) { --reveal-delay: 240ms; }
+
+/* ══════════════════════════════════════════════════════════
+   THE IDEA: three ways in
+   ══════════════════════════════════════════════════════════ */
+
+.ways__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 860px) {
+  .ways__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The phone and glasses on a turntable, between the heading and the three cards. The 3D draws on the canvas at the
+   anchor, a 6:5 box; the still shows until then */
+.devices {
+  margin: 0 0 var(--space-8);
+}
+
+.devices__stage {
+  position: relative;
+  height: clamp(380px, 42vw, 560px);
+  /* Horizontal drags turn the devices; vertical swipes still scroll the page */
+  touch-action: pan-y;
+}
+
+.devices__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.devices.is-3d .devices__canvas {
+  opacity: 1;
+}
+
+.devices.is-3d .devices__stage {
+  cursor: grab;
+}
+
+.devices.is-3d .devices__stage.is-dragging {
+  cursor: grabbing;
+}
+
+/* The anchor sits low in the stage: the phone stands taller than the box the scene is fitted to */
+.devices__anchor,
+.devices__fallback {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  max-width: 100%;
+  aspect-ratio: 6 / 5;
+  margin: auto;
+}
+
+.devices__anchor {
+  inset: auto 0 2%;
+  height: 82%;
+}
+
+.devices__fallback {
+  width: auto;
+  object-fit: contain;
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.devices.is-3d .devices__fallback {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 860px) {
+  .devices {
+    margin-bottom: var(--space-6);
+  }
+
+  .devices__stage {
+    height: min(440px, 96vw);
+  }
+}
+
+.way {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--edge);
+}
+
+.way__num {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.way__title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: var(--lh-tight);
+}
+
+.way__text {
+  color: var(--ink-2);
+}
+
+.way__choice {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.way__choice b {
+  color: var(--ink);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   VOX AMELIOR
+   ══════════════════════════════════════════════════════════ */
+
+.vox__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+}
+
+.vox__copy .lead {
+  margin-top: var(--space-4);
+}
+
+.vox__features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.vox__features dt {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.vox__features dt::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.vox__features dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.vox__copy .case__facts {
+  margin-top: var(--space-8);
+}
+
+/* A device turning on its turntable, with real screenshots as the fallback */
+.showcase {
+  margin: 0;
+}
+
+.showcase__stage {
+  position: relative;
+  height: clamp(460px, 46vw, 640px);
+  touch-action: pan-y;
+}
+
+.showcase__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+
+.showcase.is-3d .showcase__canvas {
+  opacity: 1;
+}
+
+.showcase.is-3d .showcase__stage {
+  cursor: grab;
+}
+
+.showcase__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.showcase__fallback .device {
+  aspect-ratio: 540 / 1200;
+}
+
+.showcase__fallback .device:nth-child(2) {
+  transform: translateY(var(--space-8));
+}
+
+.showcase.is-3d .showcase__fallback {
+  visibility: hidden;
+}
+
+.showcase__caption {
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.showcase__drag {
+  display: none;
+  color: var(--accent);
+}
+
+.showcase.is-3d .showcase__drag {
+  display: inline;
+}
+
+@media (max-width: 960px) {
+  .vox__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .vox__features {
+    grid-template-columns: 1fr;
+  }
+
+  .showcase__stage {
+    height: 420px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   OTHER APPS: teaser on the home page
+   ══════════════════════════════════════════════════════════ */
+
+.more__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.more__card {
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--edge);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+}
+
+.more__card:hover {
+  border-color: var(--line-hover);
+  transform: translateY(-2px);
+}
+
+.more__shot {
+  aspect-ratio: 540 / 1170;
+}
+
+.more__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.more__title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: var(--lh-tight);
+}
+
+.more__body p:not(.way__num) {
+  color: var(--ink-2);
+}
+
+@media (max-width: 960px) {
+  .more__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   OTHER APPS PAGE (apps.html)
+   ══════════════════════════════════════════════════════════ */
+
+.apps-head {
+  padding-top: clamp(var(--space-12), 7vw, 5.5rem);
+}
+
+.apps-head .lead {
+  max-width: 40em;
+  margin-top: var(--space-6);
+}
+
+.case__lede {
+  margin-top: var(--space-5);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-snug);
+  color: var(--ink);
+}
+
+.case__text + .case__text {
+  margin-top: var(--space-3);
+}
+
+/* Three tiers of AI, from private to most capable */
+.tiers {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  list-style: none;
+}
+
+.tiers li {
+  display: grid;
+  grid-template-columns: 8.5em 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.tiers b {
+  color: var(--ink);
+}
+
+.tiers .tiers__next {
+  border-style: dashed;
+}
+
+.tag-next {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.imperatives {
+  margin-top: var(--space-5);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: var(--lh-tight);
+}
+
+@media (max-width: 560px) {
+  .tiers li {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+/* Keeps a short phrase on one line */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════
+   LEADING THE WAY: next links and the on-page rail
+   ══════════════════════════════════════════════════════════ */
+
+/* Every section ends by pointing at the next one: a quiet text link, right-aligned */
+.next-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  margin: var(--space-10) 0 0 auto;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.next-link:hover {
+  color: var(--ink);
+}
+
+.next-link .mono {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.next-link svg {
+  width: 15px;
+  height: 15px;
+  color: var(--accent);
+}
+
+/* The rail: where you are on the page, and where you can jump (wide screens only) */
+.rail {
+  position: fixed;
+  top: 50%;
+  right: clamp(12px, 1.6vw, 28px);
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transform: translate(8px, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+}
+
+.rail.is-shown {
+  opacity: 1;
+  transform: translate(0, -50%);
+  pointer-events: auto;
+}
+
+.rail a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rail a .mono {
+  font-size: var(--fs-2xs);
+}
+
+.rail a:hover {
+  color: var(--ink);
+}
+
+.rail a[aria-current] {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.rail a[aria-current] .mono {
+  color: var(--accent);
+}
+
+/* Compact by default: numbers only, with each label shown beside it on hover or focus */
+.rail__label {
+  position: absolute;
+  right: calc(100% + var(--space-2));
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--ink);
+  opacity: 0;
+  transform: translateX(4px);
+  pointer-events: none;
+  transition: opacity var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+
+.rail a {
+  position: relative;
+}
+
+.rail a:hover .rail__label,
+.rail a:focus-visible .rail__label {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 1360px) {
+  .rail {
+    display: flex;
+  }
+}
+
+/* Wide screens have room for the labels themselves */
+@media (min-width: 1680px) {
+  .rail__label {
+    position: static;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* In-page switcher on the other-apps page */
+.switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+}
+
+/* Other apps: each app's copy beside its own turning device, which stays in view while you read */
+.app {
+  display: block;
+  min-height: 0;
+  padding-block: clamp(var(--space-12), 6vw, var(--space-20));
+}
+
+.app__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+}
+
+.app__visual {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--space-6));
+}
+
+.app__visual .showcase__stage {
+  height: clamp(480px, 50vw, 700px);
+}
+
+@media (max-width: 960px) {
+  .app__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app__visual {
+    position: relative;
+    top: 0;
+    order: -1;
+  }
+}
+
+/* Vox Amelior's features light up as the matching layer of the phone opens */
+.vox__features [data-at] {
+  transition: opacity var(--dur-3) var(--ease-out);
+}
+
+.js .vox.is-scrubbed .vox__features [data-at]:not(.is-lit) {
+  opacity: 0.45;
+}

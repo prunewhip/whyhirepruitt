@@ -1,0 +1,53 @@
+// vox_mobile/lib/native/sherpa_engines.dart (excerpt, Vox Amelior for Android)
+
+/// NVIDIA Parakeet RNNT (NeMo transducer) speech recognition.
+class SherpaParakeetAsr implements AsrEngine {
+  SherpaParakeetAsr(SpeechModelPaths paths, {int threads = 2}) {
+    ensureSherpaInitialized();
+    _recognizer = sherpa.OfflineRecognizer(
+      sherpa.OfflineRecognizerConfig(
+        model: sherpa.OfflineModelConfig(
+          transducer: sherpa.OfflineTransducerModelConfig(
+            encoder: paths.encoder,
+            decoder: paths.decoder,
+            joiner: paths.joiner,
+          ),
+          tokens: paths.tokens,
+          numThreads: threads,
+          debug: false,
+          modelType: 'nemo_transducer',
+        ),
+      ),
+    );
+  }
+
+  late final sherpa.OfflineRecognizer _recognizer;
+
+  @override
+  String transcribe(Float32List samples, int sampleRate) {
+    final stream = _recognizer.createStream();
+    try {
+      stream.acceptWaveform(samples: samples, sampleRate: sampleRate);
+      _recognizer.decode(stream);
+      return _recognizer.getResult(stream).text;
+    } finally {
+      stream.free();
+    }
+  }
+
+  @override
+  Transcript transcribeTimed(Float32List samples, int sampleRate) {
+    final stream = _recognizer.createStream();
+    try {
+      stream.acceptWaveform(samples: samples, sampleRate: sampleRate);
+      _recognizer.decode(stream);
+      final r = _recognizer.getResult(stream);
+      return Transcript(r.text, wordsFromTokens(r.tokens, r.timestamps));
+    } finally {
+      stream.free();
+    }
+  }
+
+  @override
+  void dispose() => _recognizer.free();
+}

@@ -1,0 +1,499 @@
+/*
+ * Architecture page — hero, Android pipeline, server diagram, services, k8s
+ * Depends on css/design-system.css tokens.
+ */
+
+.arch-hero {
+  padding-top: clamp(var(--space-12), 7vw, 6.5rem);
+}
+
+.arch-hero__title {
+  margin-top: var(--space-4);
+}
+
+.arch-hero__lead {
+  max-width: 40em;
+  margin-top: var(--space-6);
+}
+
+.arch-hero__stats {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+}
+
+/* ══════════════════════════════════════════════════════════
+   DIAGRAM
+   ══════════════════════════════════════════════════════════ */
+
+.diagram {
+  position: relative;
+  display: grid;
+  gap: clamp(var(--space-10), 5vw, 4.5rem);
+  margin: 0;
+  padding: clamp(var(--space-6), 4vw, var(--space-12));
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--surface-2);
+  box-shadow: var(--shadow-1);
+  isolation: isolate;
+}
+
+.diagram__wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.wire {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.25;
+  transition: stroke var(--dur-2) var(--ease-out), stroke-width var(--dur-2) var(--ease-out);
+}
+
+.wire.is-active {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.wire-dot {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.25;
+}
+
+.diagram__layer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.diagram__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.diagram__nodes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.diagram__nodes--grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 180px));
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.diagram__nodes--grid .node {
+  min-width: 0;
+}
+
+.node {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 150px;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  text-align: center;
+  transition: border-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-2) var(--ease-out);
+}
+
+.node__name {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.node__meta {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+.node__port {
+  margin-top: var(--space-2);
+  padding: 1px 8px;
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--ink-2);
+}
+
+.node--gateway {
+  border-color: var(--accent-line);
+}
+
+.node--gpu {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+
+.node--gpu .node__name {
+  color: var(--accent);
+}
+
+.node.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-2);
+  transform: translateY(-1px);
+}
+
+.diagram__caption {
+  position: relative;
+  z-index: 1;
+  max-width: 70ch;
+  margin-inline: auto;
+  padding-top: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* On small screens the wires give way to stacked layers with a down-arrow between them */
+@media (max-width: 760px) {
+  .diagram {
+    gap: var(--space-10);
+  }
+
+  .diagram__wires {
+    display: none;
+  }
+
+  .diagram__layer:not(:nth-last-child(2))::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--space-10) * -0.78);
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-right: 1.5px solid var(--ink-3);
+    border-bottom: 1.5px solid var(--ink-3);
+    transform: rotate(45deg);
+  }
+
+  .diagram__layer {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .diagram__label {
+    text-align: center;
+  }
+
+  .diagram__nodes,
+  .diagram__nodes--grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .diagram__nodes > :only-child,
+  .diagram__nodes > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .node {
+    min-width: 0;
+    padding: var(--space-3);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SERVICES
+   ══════════════════════════════════════════════════════════ */
+
+.service__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.service__name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.service__port {
+  flex: none;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--ink-3);
+}
+
+.service--accent {
+  border-color: var(--accent-line);
+}
+
+.service--accent .service__port {
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════════════
+   KUBERNETES
+   ══════════════════════════════════════════════════════════ */
+
+.k8s__list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+
+.k8s__list li {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.k8s__list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 8px;
+  height: 1.5px;
+  background: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ANDROID PIPELINE (vertical, numbered stages)
+   ══════════════════════════════════════════════════════════ */
+
+.pipeline {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  max-width: 920px;
+}
+
+/* The spine that connects the stage numbers */
+.pipeline::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.pipeline__stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.pipeline__num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+
+.pipeline__body {
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.pipeline__stage--accent .pipeline__num {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--btn-ink);
+}
+
+.pipeline__stage--accent .pipeline__body {
+  border-color: var(--accent-line);
+}
+
+.pipeline__title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+}
+
+.pipeline__text {
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  max-width: 64ch;
+}
+
+.pipeline__models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.phone-notes {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+}
+
+@media (max-width: 600px) {
+  .pipeline::before {
+    left: 17px;
+  }
+
+  .pipeline__stage {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .pipeline__num {
+    width: 36px;
+    height: 36px;
+    font-size: var(--fs-2xs);
+  }
+
+  .pipeline__body {
+    padding: var(--space-4);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PAGE CONTENTS, FLOWLINES AND NOTES
+   ══════════════════════════════════════════════════════════ */
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-10);
+}
+
+.toc a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+
+.toc a:hover {
+  color: var(--ink);
+  border-color: var(--accent-line);
+}
+
+.toc .mono {
+  font-size: var(--fs-2xs);
+  color: var(--accent);
+}
+
+/* A horizontal five-step pipeline (vertical on small screens) */
+.flowline {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.flowline li {
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--card-fill);
+  box-shadow: var(--edge);
+}
+
+.flowline li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--space-4) / -2 - 4px);
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-top: 1.5px solid var(--ink-3);
+  border-right: 1.5px solid var(--ink-3);
+  transform: rotate(45deg);
+}
+
+.flowline li.is-accent {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.flowline .mono {
+  font-size: var(--fs-2xs);
+  color: var(--accent);
+}
+
+.flowline b {
+  margin-top: var(--space-1);
+  font-weight: 600;
+}
+
+.flowline li > span:last-child {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+@media (max-width: 960px) {
+  .flowline {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .flowline li:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: calc(var(--space-3) / -2 - 4px);
+    transform: rotate(135deg);
+  }
+}
+
+.notes {
+  margin-top: clamp(var(--space-10), 5vw, var(--space-16));
+}

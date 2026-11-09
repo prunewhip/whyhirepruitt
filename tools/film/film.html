@@ -1,0 +1,2580 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Vox Amelior commercial (video composition)</title>
+  <meta name="robots" content="noindex">
+  <!--
+    A 2:55 commercial for Vox Amelior, rendered frame by frame by tools/promo-video/render.mjs:
+      --page tools/film/film.html --name vox-film                                  (16:9, 1920×1080, desktop)
+      --page "tools/film/film.html?format=portrait" --name vox-film-portrait        (4:5, 1080×1350, phones)
+    The phone cut has its own layout and larger type, so text stays readable at phone width.
+    Script, sources and the reasoning behind each line: docs/FILM_SCRIPT.md.
+    Sound: tools/film/score.mjs writes the music and effects; its cue times follow SCENES below.
+
+    Five acts, in the order of a classic persuasive sequence (attention, need, answer, picture, action):
+      1 Your voice   we speak about 16,000 words a day; most slip away
+      2 Their rules  except our words online: searches, messages, videos; kept, read and sold on someone else's terms
+      3 Your phone   take your words offline, start here: an AI on your phone that's encrypted, sealed, never sent
+      4 Your life    it remembers, then you ask it about yourself, and three months later things are better
+      5 The name     "Your voice, to better your life" turns into "Vox Amelior"
+
+    The 3D phone and voice field are Three.js stills baked by bake.html; everything moves in CSS 3D here,
+    so each frame is a pure function of time and needs no GPU.
+    Preview through a local server: ?t=30 shows a moment, ?poster shows the poster; add &format=portrait.
+  -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --paper: #fcfcfa;
+      --surface: #ffffff;
+      --ink: #18201c;
+      --ink-2: #4a544e;
+      --ink-3: #5f6963;
+      --line: #e2e6e0;
+      --accent: #1e6b57;
+      --accent-soft: #e6f0ec;
+      --W: 1920px;
+      --H: 1080px;
+    }
+
+    .portrait {
+      --W: 1080px;
+      --H: 1350px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html,
+    body {
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      background: var(--paper);
+    }
+
+    #stage {
+      position: relative;
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      font-family: "Geist", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: "Geist Mono", ui-monospace, monospace;
+    }
+
+    /* Line breaks for one cut only */
+    .pb {
+      display: none;
+    }
+
+    .portrait .pb {
+      display: inline;
+    }
+
+    .portrait .lb {
+      display: none;
+    }
+
+    em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    /* Words animate one by one */
+    .w {
+      display: inline-block;
+    }
+
+    /* Baked 3D stills are 1920×1080; the phone cut centres them */
+    .layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      opacity: 0;
+    }
+
+    .portrait .layer {
+      left: -420px;
+      top: 135px;
+    }
+
+    .rig {
+      position: absolute;
+      inset: 0;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: none;
+      opacity: 0;
+    }
+
+    .title {
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1.04;
+    }
+
+    .center-text {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
+
+    .portrait .center-text {
+      left: 70px;
+      right: 70px;
+    }
+
+    .middle {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Left column in the wide cut */
+    .copy {
+      position: absolute;
+      left: 150px;
+      top: 50%;
+      width: 860px;
+      transform: translateY(-50%);
+    }
+
+    .portrait .copy {
+      left: 70px;
+      right: 70px;
+      width: auto;
+      transform: none;
+      text-align: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      height: 56px;
+      padding: 0 24px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 26px;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+
+    .portrait .tag {
+      gap: 16px;
+      height: 78px;
+      padding: 0 32px;
+      font-size: 38px;
+    }
+
+    .tag i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .portrait .tag i {
+      width: 15px;
+      height: 15px;
+    }
+
+    .tag svg {
+      width: 30px;
+      height: 30px;
+      color: var(--accent);
+    }
+
+    .portrait .tag svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .ico {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .ico--fill {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    /* Brand lockup: the mark is a "V" of sound bars hanging from the top edge */
+    .lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 34px;
+    }
+
+    .mark {
+      width: 150px;
+      height: 150px;
+      flex: none;
+    }
+
+    .kicker {
+      font-family: "Geist Mono", monospace;
+      font-size: 26px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .portrait .kicker {
+      font-size: 40px;
+    }
+
+    /* ── Act 1 · your voice ───────────────────────────── */
+    #a1 {
+      top: 250px;
+    }
+
+    #a1 .lead {
+      display: block;
+      font-size: 58px;
+      font-weight: 520;
+      letter-spacing: -0.03em;
+      color: var(--ink-2);
+    }
+
+    #a1 .big {
+      display: block;
+      margin-top: 22px;
+      font-size: 170px;
+      letter-spacing: -0.05em;
+    }
+
+    #a1 b {
+      font-weight: 620;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .portrait #a1 {
+      top: 150px;
+    }
+
+    .portrait #a1 .lead {
+      font-size: 66px;
+      line-height: 1.15;
+    }
+
+    .portrait #a1 .big b,
+    .portrait #a1 .big .wd {
+      display: block;
+    }
+
+    .portrait #a1 .big {
+      margin-top: 10px;
+      font-size: 236px;
+    }
+
+    .portrait #a1 .big .wd {
+      margin-top: -10px;
+      font-size: 120px;
+    }
+
+    /* Forgetting: moments drift away and blur out */
+    .space {
+      position: absolute;
+      inset: 0;
+      perspective: 1200px;
+      perspective-origin: 50% 46%;
+    }
+
+    .card {
+      position: absolute;
+      left: 50%;
+      top: 470px;
+      width: 540px;
+      margin-left: -270px;
+      margin-top: -80px;
+      padding: 24px 28px 26px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(24, 32, 28, 0.06), 0 30px 60px -36px rgba(24, 32, 28, 0.3);
+    }
+
+    .portrait .card {
+      top: 560px;
+    }
+
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      flex: none;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .who b {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .who .mono {
+      margin-left: auto;
+      font-size: 17px;
+      color: var(--ink-3);
+    }
+
+    .quote {
+      margin-top: 16px;
+      font-size: 31px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    }
+
+    #bCap {
+      bottom: 110px;
+      font-size: 84px;
+    }
+
+    .portrait #bCap {
+      bottom: 150px;
+      font-size: 104px;
+    }
+
+    /* ── Act 2 · their rules ──────────────────────────── */
+    .h-xl {
+      font-size: 100px;
+    }
+
+    .portrait .h-xl {
+      font-size: 100px;
+    }
+
+    /* Our words online: searches, things typed and videos watched fill the frame behind one card */
+    #cFlood {
+      position: absolute;
+      inset: 0;
+    }
+
+    .fl {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 26px;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    .fl--s {
+      height: 58px;
+      padding: 0 26px 0 20px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink-2);
+      box-shadow: 0 1px 2px rgba(24, 32, 28, 0.05), 0 16px 30px -22px rgba(24, 32, 28, 0.3);
+    }
+
+    .fl--s svg {
+      width: 24px;
+      height: 24px;
+      color: var(--ink-3);
+    }
+
+    .fl--t {
+      padding: 14px 24px;
+      border-radius: 26px 26px 8px 26px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .fl--f,
+    .fl--v {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgba(24, 32, 28, 0.05), 0 16px 30px -22px rgba(24, 32, 28, 0.3);
+    }
+
+    .fl--f {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 22px 14px;
+      border-radius: 16px;
+      color: var(--ink);
+    }
+
+    .fl small {
+      font-family: "Geist Mono", monospace;
+      font-size: 18px;
+      color: var(--ink-3);
+    }
+
+    .fl--v {
+      gap: 16px;
+      padding: 10px 24px 10px 10px;
+      border-radius: 18px;
+    }
+
+    .fl--v i {
+      display: grid;
+      place-items: center;
+      width: 104px;
+      height: 62px;
+      flex: none;
+      border-radius: 10px;
+      background: #2b3631;
+      color: #fff;
+    }
+
+    .fl--v i svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .fl--v span {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .fl--v b {
+      font-weight: 560;
+    }
+
+    .portrait .fl {
+      font-size: 30px;
+    }
+
+    .portrait .fl small {
+      font-size: 22px;
+    }
+
+    #cWrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #cPanel {
+      padding: 46px 76px 54px;
+      border: 1px solid var(--line);
+      border-radius: 44px;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(24, 32, 28, 0.06), 0 60px 120px -50px rgba(24, 32, 28, 0.5);
+      text-align: center;
+      opacity: 0;
+    }
+
+    #cPanel .title {
+      font-size: 96px;
+      white-space: nowrap;
+    }
+
+    #c2 {
+      margin-top: 12px;
+    }
+
+    .portrait #cPanel {
+      padding: 40px 54px 48px;
+      border-radius: 40px;
+    }
+
+    .portrait #cPanel .title {
+      font-size: 90px;
+    }
+
+    /* A cloud drawn as one outline: a darker union of shapes under a white one */
+    .cloud {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 560px;
+      height: 331px;
+      overflow: visible;
+      opacity: 0;
+    }
+
+    /* AI in everything: product chips around the line */
+    .chip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      height: 66px;
+      padding: 0 28px 0 22px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 29px;
+      font-weight: 520;
+      letter-spacing: -0.015em;
+      color: var(--ink-2);
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(24, 32, 28, 0.05), 0 18px 36px -24px rgba(24, 32, 28, 0.25);
+      opacity: 0;
+    }
+
+    .chip svg {
+      width: 26px;
+      height: 26px;
+      color: var(--accent);
+    }
+
+    .portrait .chip {
+      height: 74px;
+      padding: 0 30px 0 24px;
+      font-size: 35px;
+    }
+
+    .portrait .chip svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    #dLines .title {
+      font-size: 104px;
+    }
+
+    #dLines .title > span {
+      display: block;
+    }
+
+    .portrait #dLines .title {
+      font-size: 96px;
+    }
+
+    /* What can happen to what we tell it */
+    #eBlock {
+      position: absolute;
+      left: 200px;
+      right: 120px;
+      top: 240px;
+    }
+
+    #eHead {
+      font-size: 58px;
+      font-weight: 520;
+      letter-spacing: -0.03em;
+      color: var(--ink-2);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      margin-top: 62px;
+    }
+
+    .row__icon {
+      display: grid;
+      place-items: center;
+      width: 104px;
+      height: 104px;
+      flex: none;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--surface);
+      color: var(--ink);
+      opacity: 0;
+    }
+
+    .row__icon svg {
+      width: 56px;
+      height: 56px;
+    }
+
+    .row--accent .row__icon {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: transparent;
+    }
+
+    .row__text {
+      font-size: 72px;
+    }
+
+    .portrait #eBlock {
+      left: 80px;
+      right: 70px;
+      top: 270px;
+    }
+
+    .portrait #eHead {
+      font-size: 64px;
+    }
+
+    .portrait .row {
+      gap: 34px;
+      margin-top: 70px;
+    }
+
+    .portrait .row__icon {
+      width: 112px;
+      height: 112px;
+    }
+
+    .portrait .row__text {
+      font-size: 70px;
+    }
+
+    #f1 .title {
+      font-size: 150px;
+    }
+
+    #f1 .title > span {
+      display: block;
+    }
+
+    .portrait #f1 .title {
+      font-size: 140px;
+    }
+
+    /* ── Act 3 · your phone ───────────────────────────── */
+    .portrait #gCopy {
+      top: auto;
+      bottom: 90px;
+    }
+
+    .portrait #g1 {
+      font-size: 90px;
+    }
+
+    #g2 {
+      margin-top: 18px;
+    }
+
+    #hCopy .lines {
+      list-style: none;
+    }
+
+    #hCopy {
+      width: 1030px;
+    }
+
+    #hCopy .lines li {
+      font-size: 70px;
+      padding: 6px 0;
+    }
+
+    #hTag {
+      margin-top: 44px;
+      opacity: 0;
+    }
+
+    .portrait #hCopy {
+      top: auto;
+      bottom: 70px;
+    }
+
+    .portrait #hCopy .lines li {
+      font-size: 64px;
+      padding: 4px 0;
+    }
+
+    .portrait #hTag {
+      margin-top: 30px;
+    }
+
+    /* Three layers around the phone */
+    #rings {
+      position: absolute;
+      inset: 0;
+      width: var(--W);
+      height: var(--H);
+      overflow: visible;
+    }
+
+    #rings circle.ring {
+      fill: none;
+      stroke: var(--accent);
+    }
+
+    .badge {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: grid;
+      place-items: center;
+      width: 78px;
+      height: 78px;
+      margin: -39px 0 0 -39px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      opacity: 0;
+    }
+
+    .badge svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .portrait .badge {
+      width: 92px;
+      height: 92px;
+      margin: -46px 0 0 -46px;
+    }
+
+    .portrait .badge svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    #iRows {
+      list-style: none;
+    }
+
+    #iRows li {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      column-gap: 26px;
+      align-items: center;
+      padding: 18px 0;
+      opacity: 0;
+    }
+
+    #iRows li svg {
+      width: 52px;
+      height: 52px;
+      color: var(--accent);
+    }
+
+    #iRows b {
+      font-size: 64px;
+      font-weight: 620;
+      letter-spacing: -0.04em;
+    }
+
+    #iRows span {
+      grid-column: 2;
+      font-size: 32px;
+      line-height: 1.3;
+      letter-spacing: -0.015em;
+      color: var(--ink-2);
+    }
+
+    #iCopy {
+      width: 800px;
+    }
+
+    #iEpi {
+      position: absolute;
+      left: 150px;
+      width: 900px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 84px;
+    }
+
+    .portrait #iCopy {
+      top: 870px;
+    }
+
+    .portrait #iCopy {
+      width: auto;
+    }
+
+    /* One left-aligned block, centred */
+    .portrait #iRows {
+      display: table;
+      margin: 0 auto;
+    }
+
+    .portrait #iRows li {
+      grid-template-columns: 58px auto;
+      column-gap: 20px;
+      padding: 6px 0;
+      text-align: left;
+    }
+
+    .portrait #iRows li svg {
+      width: 50px;
+      height: 50px;
+    }
+
+    .portrait #iRows b {
+      font-size: 56px;
+    }
+
+    .portrait #iRows span {
+      font-size: 36px;
+    }
+
+    .portrait #iEpi {
+      left: 70px;
+      right: 70px;
+      width: auto;
+      top: 920px;
+      transform: none;
+      text-align: center;
+      font-size: 84px;
+    }
+
+    #jLines .title {
+      font-size: 132px;
+    }
+
+    #jLines > .title > span {
+      display: block;
+    }
+
+    .portrait #jLines .title {
+      font-size: 124px;
+    }
+
+    .swap {
+      position: relative;
+      display: inline-grid;
+      vertical-align: bottom;
+    }
+
+    .swap > span {
+      grid-area: 1 / 1;
+      white-space: nowrap;
+    }
+
+    .swap .strike {
+      position: absolute;
+      left: -4px;
+      right: -4px;
+      top: 54%;
+      height: 9px;
+      border-radius: 5px;
+      background: var(--ink);
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+    }
+
+    #k1 .title {
+      font-size: 118px;
+    }
+
+    .portrait #k1 .title {
+      font-size: 96px;
+    }
+
+
+    /* ── Act 4 · your life: remembered, then asked about yourself ─ */
+    .story__head {
+      position: absolute;
+      left: 150px;
+      top: 50%;
+      width: 760px;
+      transform: translateY(-50%);
+    }
+
+    .portrait .story__head {
+      left: 80px;
+      right: 80px;
+      top: 100px;
+      width: auto;
+      transform: none;
+    }
+
+    .story__head .title {
+      position: relative;
+      margin-top: 24px;
+      font-size: 92px;
+    }
+
+    .portrait .story__head .title {
+      margin-top: 22px;
+      font-size: 96px;
+    }
+
+    /* A second headline that replaces the first */
+    .story__head .title--after {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      opacity: 0;
+    }
+
+    .story__stage {
+      position: absolute;
+      left: 960px;
+      top: 0;
+      width: 840px;
+      height: 1080px;
+    }
+
+    .portrait .story__stage {
+      left: 0;
+      top: 400px;
+      width: 1080px;
+      height: 900px;
+    }
+
+    .slot {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1400px;
+    }
+
+    .said,
+    .ask {
+      width: 760px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(24, 32, 28, 0.06), 0 40px 80px -44px rgba(24, 32, 28, 0.42);
+      opacity: 0;
+    }
+
+    .portrait .said,
+    .portrait .ask {
+      width: 940px;
+      border-radius: 34px;
+    }
+
+    .said {
+      padding: 34px 40px 40px;
+    }
+
+    .said .avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 26px;
+    }
+
+    .said .who b {
+      font-size: 30px;
+    }
+
+    .said .who .mono {
+      font-size: 26px;
+    }
+
+    .said .quote {
+      margin-top: 24px;
+      font-size: 44px;
+      line-height: 1.22;
+      letter-spacing: -0.025em;
+    }
+
+    .portrait .said {
+      padding: 40px 48px 48px;
+    }
+
+    .portrait .said .avatar {
+      width: 76px;
+      height: 76px;
+      font-size: 34px;
+    }
+
+    .portrait .said .who b {
+      font-size: 40px;
+    }
+
+    .portrait .said .who .mono {
+      font-size: 36px;
+    }
+
+    .portrait .said .quote {
+      margin-top: 28px;
+      font-size: 58px;
+    }
+
+    .later {
+      position: absolute;
+      left: 40px;
+      top: 210px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: "Geist Mono", monospace;
+      font-size: 30px;
+      color: var(--ink-2);
+      opacity: 0;
+    }
+
+    .later::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+    }
+
+    .portrait .later {
+      left: 70px;
+      top: 40px;
+      font-size: 42px;
+    }
+
+    .ask {
+      padding: 26px 30px 34px;
+    }
+
+    .ask__bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 76px;
+      padding: 12px 24px 12px 14px;
+      border-radius: 40px;
+      line-height: 1.2;
+      background: #f2f4f0;
+      font-size: 31px;
+      letter-spacing: -0.015em;
+    }
+
+    .ask__bar .mark {
+      width: 50px;
+      height: 50px;
+    }
+
+    .ask__q::after {
+      content: "";
+      display: inline-block;
+      width: 3px;
+      height: 1em;
+      margin-left: 4px;
+      vertical-align: -0.12em;
+      background: var(--accent);
+      opacity: var(--caret, 0);
+    }
+
+    .ask__body {
+      position: relative;
+    }
+
+    .ask__a {
+      margin: 30px 10px 0;
+      list-style: none;
+    }
+
+    .skeleton {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 40px;
+      display: grid;
+      gap: 26px;
+      opacity: 0;
+    }
+
+    .skeleton i {
+      height: 26px;
+      border-radius: 13px;
+      background: #eef1ec;
+    }
+
+    .skeleton i:nth-child(2) {
+      width: 78%;
+    }
+
+    .skeleton i:nth-child(3) {
+      width: 56%;
+    }
+
+    .portrait .skeleton {
+      gap: 34px;
+    }
+
+    .portrait .skeleton i {
+      height: 34px;
+      border-radius: 17px;
+    }
+
+    .ask__a li {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      font-size: 40px;
+      font-weight: 520;
+      letter-spacing: -0.025em;
+      opacity: 0;
+    }
+
+    .ask__a li:first-child {
+      border-top: 0;
+    }
+
+    .ask__a li .n {
+      font-family: "Geist Mono", monospace;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .ask__a .check {
+      width: 34px;
+      height: 34px;
+      flex: none;
+      align-self: center;
+      color: var(--accent);
+    }
+
+    .portrait .ask__a .check {
+      width: 44px;
+      height: 44px;
+    }
+
+    .ask__a li.muted {
+      font-weight: 450;
+      color: var(--ink-2);
+    }
+
+    .ask__a .big {
+      display: block;
+      padding: 6px 0 0;
+      border: 0;
+      font-size: 52px;
+      line-height: 1.18;
+      font-weight: 560;
+      letter-spacing: -0.03em;
+    }
+
+    /* An answer with a headline and a reason */
+    .ask__a li.finding {
+      display: block;
+      padding: 16px 0;
+    }
+
+    .finding q {
+      display: block;
+      quotes: none;
+      font-size: 44px;
+      line-height: 1.15;
+      font-weight: 580;
+      letter-spacing: -0.03em;
+    }
+
+    .finding .why {
+      display: block;
+      margin-top: 10px;
+      font-size: 31px;
+      line-height: 1.3;
+      font-weight: 450;
+      letter-spacing: -0.012em;
+      color: var(--ink-2);
+    }
+
+    .finding b {
+      font-weight: 620;
+      color: var(--accent);
+    }
+
+    .ask__src {
+      margin: 22px 10px 0;
+      font-family: "Geist Mono", monospace;
+      font-size: 26px;
+      color: var(--ink-3);
+      opacity: 0;
+    }
+
+    .portrait .ask {
+      padding: 30px 34px 40px;
+    }
+
+    .portrait .ask__bar {
+      min-height: 96px;
+      border-radius: 50px;
+      gap: 18px;
+      font-size: 40px;
+    }
+
+    .portrait .ask__bar .mark {
+      width: 64px;
+      height: 64px;
+    }
+
+    .portrait .ask__a li {
+      padding: 16px 0;
+      font-size: 54px;
+    }
+
+    .portrait .ask__a li .n {
+      font-size: 34px;
+    }
+
+    .portrait .ask__a .big {
+      font-size: 66px;
+    }
+
+    .portrait .finding q {
+      font-size: 56px;
+    }
+
+    .portrait .finding .why {
+      font-size: 40px;
+    }
+
+    .portrait .ask__src {
+      font-size: 36px;
+    }
+
+    #n1 .title {
+      font-size: 96px;
+    }
+
+    #n2 {
+      margin-top: 30px;
+      font-size: 220px;
+    }
+
+    .portrait #n2 {
+      font-size: 230px;
+    }
+
+    /* The montage: questions you ask about yourself pile up around the newest one */
+    .mspace {
+      position: absolute;
+      inset: 0;
+      perspective: 1500px;
+    }
+
+    .ask--m {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 760px;
+    }
+
+    .portrait .ask--m {
+      width: 920px;
+    }
+
+    .ask__a li.follow {
+      display: block;
+      padding-top: 18px;
+      font-size: 32px;
+      font-weight: 450;
+      letter-spacing: -0.015em;
+      color: var(--ink-2);
+    }
+
+    .portrait .ask__a li.follow {
+      font-size: 42px;
+    }
+
+    .reply {
+      display: flex;
+      justify-content: flex-end;
+      margin: 14px 10px 0;
+      opacity: 0;
+    }
+
+    .reply span {
+      padding: 14px 28px;
+      border-radius: 28px 28px 8px 28px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 34px;
+      font-weight: 520;
+      letter-spacing: -0.02em;
+    }
+
+    .portrait .reply span {
+      padding: 18px 34px;
+      font-size: 44px;
+    }
+
+    /* Three months later */
+    #pTag {
+      top: 130px;
+    }
+
+    #pStage {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 240px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #pStage .ask {
+      width: 900px;
+    }
+
+    #pStats {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 690px;
+      display: flex;
+      justify-content: center;
+      gap: 26px;
+    }
+
+    .stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      height: 80px;
+      padding: 0 32px 0 26px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 32px;
+      font-weight: 520;
+      letter-spacing: -0.02em;
+      color: var(--ink-2);
+      opacity: 0;
+    }
+
+    .stat svg {
+      width: 34px;
+      height: 34px;
+      color: var(--accent);
+    }
+
+    .stat b {
+      font-weight: 640;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat small {
+      font-family: "Geist Mono", monospace;
+      font-size: 22px;
+      color: var(--ink-3);
+    }
+
+    #pCap {
+      top: 850px;
+      font-size: 76px;
+    }
+
+    .portrait #pTag {
+      top: 80px;
+    }
+
+    .portrait #pStage {
+      top: 200px;
+    }
+
+    .portrait #pStage .ask {
+      width: 940px;
+    }
+
+    .portrait #pStats {
+      top: 760px;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .portrait .stat {
+      height: 88px;
+      font-size: 40px;
+    }
+
+    .portrait .stat small {
+      font-size: 30px;
+    }
+
+    .portrait #pCap {
+      top: 1000px;
+      font-size: 82px;
+    }
+
+    /* ── Act 5 · the name ─────────────────────────────── */
+    #nmMark {
+      position: absolute;
+      left: 50%;
+      top: 120px;
+      width: 136px;
+      height: 136px;
+      margin-left: -68px;
+      overflow: visible;
+    }
+
+    #nmBox {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 290px;
+      height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nm-line {
+      font-size: 136px;
+      white-space: nowrap;
+    }
+
+    /* Collapsing parts: room for descenders while their width shrinks */
+    .nm-c,
+    .nm-x {
+      display: inline-block;
+      overflow: hidden;
+      white-space: pre;
+      vertical-align: bottom;
+      padding-bottom: 0.16em;
+      margin-bottom: -0.16em;
+    }
+
+    .nm-vv,
+    .nm-stack {
+      display: inline-grid;
+      vertical-align: bottom;
+    }
+
+    .nm-vv > span,
+    .nm-stack > span {
+      grid-area: 1 / 1;
+      justify-self: start;
+      white-space: nowrap;
+    }
+
+
+    #nmCta {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 715px;
+      display: flex;
+      justify-content: center;
+      opacity: 0;
+    }
+
+    #nmCta p {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      height: 78px;
+      padding: 0 38px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 31px;
+      font-weight: 520;
+      letter-spacing: -0.01em;
+    }
+
+    #nmCta .mono {
+      color: #bfe0d4;
+      font-size: 27px;
+    }
+
+    #nmFine {
+      position: absolute;
+      left: 170px;
+      right: 170px;
+      bottom: 52px;
+      text-align: center;
+      font-size: 23px;
+      line-height: 1.55;
+      color: var(--ink-3);
+      opacity: 0;
+    }
+
+    .portrait #nmMark {
+      top: 110px;
+      width: 124px;
+      height: 124px;
+      margin-left: -62px;
+    }
+
+    .portrait #nmBox {
+      top: 260px;
+      height: 500px;
+    }
+
+    .portrait .nm-line {
+      font-size: 124px;
+    }
+
+    .portrait #nmLife {
+      display: block;
+      white-space: normal;
+      text-align: center;
+    }
+
+
+    .portrait #nmCta {
+      top: 820px;
+    }
+
+    .portrait #nmCta p {
+      flex-direction: column;
+      gap: 4px;
+      height: auto;
+      padding: 24px 56px;
+      border-radius: 40px;
+      font-size: 44px;
+    }
+
+    .portrait #nmCta .mono {
+      font-size: 36px;
+    }
+
+    .portrait #nmFine {
+      left: 66px;
+      right: 66px;
+      bottom: 44px;
+      font-size: 30px;
+      line-height: 1.38;
+    }
+
+    /* Poster */
+    #poster {
+      display: none;
+    }
+
+    #stage.is-poster #poster {
+      display: block;
+    }
+
+    /* The play button sits in the middle of the frame, so the poster keeps the centre clear */
+    #poster .copy {
+      width: 760px;
+    }
+
+    #poster .copy .title {
+      margin-top: 40px;
+      font-size: 100px;
+    }
+
+    #poster .lockup {
+      gap: 18px;
+    }
+
+    #poster .lockup .mark {
+      width: 64px;
+      height: 64px;
+    }
+
+    #poster .lockup span {
+      font-size: 40px;
+      font-weight: 620;
+      letter-spacing: -0.03em;
+    }
+
+    .portrait #poster .copy {
+      top: 64px;
+      width: auto;
+      text-align: left;
+    }
+
+    .portrait #poster .copy .title {
+      margin-top: 30px;
+      font-size: 104px;
+    }
+
+    .portrait #poster .lockup .mark {
+      width: 72px;
+      height: 72px;
+    }
+
+    .portrait #poster .lockup span {
+      font-size: 46px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- The brand mark and line icons, defined once and reused -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 96 96">
+      <rect width="96" height="96" rx="26" fill="#1e6b57" />
+      <g stroke="#ffffff" stroke-width="5.5" stroke-linecap="round">
+        <path d="M21 26v12M30 26v22M39 26v32M48 26v44M57 26v32M66 26v22M75 26v12" />
+      </g>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path class="ico--fill" d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z" /></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24"><g class="ico"><rect x="3.5" y="4" width="17" height="6.5" rx="2" /><rect x="3.5" y="13.5" width="17" height="6.5" rx="2" /><path d="M7.5 7.25h.01M7.5 16.75h.01M11 7.25h5M11 16.75h5" /></g></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><g class="ico"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" /><circle cx="12" cy="12" r="3.2" /></g></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><g class="ico"><path d="M20.4 13.4l-7 7a2 2 0 0 1-2.8 0L3 12.8V4a1 1 0 0 1 1-1h8.8l7.6 7.6a2 2 0 0 1 0 2.8z" /><circle cx="8" cy="8" r="1.6" /></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g class="ico"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v2" /></g></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><g class="ico"><path d="M12 2.8l7.5 3v5.6c0 4.6-3.1 8.4-7.5 9.8-4.4-1.4-7.5-5.2-7.5-9.8V5.8z" /><path d="M8.8 12.2l2.2 2.2 4.2-4.4" /></g></symbol>
+    <symbol id="i-nocloud" viewBox="0 0 24 24"><g class="ico"><path d="M7 18.5h10.2a4.2 4.2 0 0 0 .5-8.4A6 6 0 0 0 6.4 9a4.8 4.8 0 0 0 .6 9.5z" /><path d="M3.5 3.5l17 17" /></g></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path class="ico--fill" d="M21.5 15.5v-2l-8-5V3.6a1.6 1.6 0 0 0-3.2 0V8.5l-8 5v2l8-2.4V18l-2.2 1.6V21l3.8-1 3.8 1v-1.4L13.5 18v-4.9z" /></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><g class="ico" stroke-width="2.4"><path d="M12 4v15M6 13l6 6 6-6" /></g></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><g class="ico" stroke-width="2.4"><path d="M12 20V5M6 11l6-6 6 6" /></g></symbol>
+    <symbol id="cloud" viewBox="0 0 220 130">
+      <g fill="#5f6963"><circle cx="62" cy="78" r="36" /><circle cx="112" cy="56" r="48" /><circle cx="162" cy="76" r="34" /><rect x="26" y="68" width="170" height="48" rx="24" /></g>
+      <g fill="#ffffff"><circle cx="62" cy="78" r="34" /><circle cx="112" cy="56" r="46" /><circle cx="162" cy="76" r="32" /><rect x="28" y="70" width="166" height="44" rx="22" /></g>
+    </symbol>
+  </svg>
+
+  <div id="stage">
+    <!-- 3D stills that carry across scenes -->
+    <div class="rig" id="fieldRig">
+      <img class="layer" id="fieldA" src="shots/field-a.png" alt="">
+      <img class="layer" id="fieldB" src="shots/field-b.png" alt="">
+    </div>
+    <div class="rig" id="phoneRig">
+      <img class="layer" id="phoneNow" src="shots/phone-now.png" alt="">
+      <img class="layer" id="phoneConv" src="shots/phone-conversation.png" alt="">
+      <img class="layer" id="phoneAsk" src="shots/phone-ask.png" alt="">
+    </div>
+
+    <!-- ── Act 1 · your voice ── -->
+    <!-- A · 0–5: the fact of life -->
+    <section class="scene" id="A">
+      <h1 class="center-text title" id="a1"><span class="lead" data-words>On an average day,<br class="pb"> we speak about</span>
+        <span class="big"><b id="count">16,000</b> <span class="wd">words.</span></span></h1>
+    </section>
+
+    <!-- B · 5–9.5: forgetting -->
+    <section class="scene" id="B">
+      <div class="space" id="space"></div>
+      <p class="center-text title" id="bCap" data-words>Most of them<br class="pb"> <em>slip away.</em></p>
+    </section>
+
+    <!-- ── Act 2 · their rules ── -->
+    <!-- C · 9.5–16: except our words online, which fill the frame -->
+    <section class="scene" id="C">
+      <div id="cFlood"></div>
+      <div id="cWrap">
+        <div id="cPanel">
+          <h2 class="title" id="c1" data-words>Except our words<br class="pb"> online.</h2>
+          <p class="title" id="c2" data-words><em>Those, they keep.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- D · 16–20: and now AI is in all of it -->
+    <section class="scene" id="D">
+      <div id="dChips"></div>
+      <div class="center-text middle" id="dLines">
+        <h2 class="title"><span id="d1" data-words>Now AI is in<br class="pb"> your search.</span> <span id="d2" data-words>Your inbox.</span> <span id="d3" data-words>Your photos.</span></h2>
+      </div>
+    </section>
+
+    <!-- E · 20–29: what can happen to it -->
+    <section class="scene" id="E">
+      <div id="eBlock">
+        <p id="eHead" data-words>All of it can be</p>
+        <div class="row" id="e1"><span class="row__icon"><svg><use href="#i-server" /></svg></span><p class="title row__text" data-words>stored on servers<br class="pb"> we’ll never see,</p></div>
+        <div class="row" id="e2"><span class="row__icon"><svg><use href="#i-eye" /></svg></span><p class="title row__text" data-words>read by people<br class="pb"> we’ll never meet,</p></div>
+        <div class="row row--accent" id="e3"><span class="row__icon"><svg><use href="#i-tag" /></svg></span><p class="title row__text" data-words><em>sold</em> to companies<br class="pb"> we’ve never heard of.</p></div>
+      </div>
+    </section>
+
+    <!-- F · 29–33: the line -->
+    <section class="scene" id="F">
+      <div class="center-text middle" id="f1">
+        <h2 class="title"><span id="f1a" data-words>Our words.</span> <span id="f1b" data-words>Their rules.</span></h2>
+      </div>
+    </section>
+
+    <!-- ── Act 3 · your phone ── -->
+    <!-- G · 33–37: the call to action -->
+    <section class="scene" id="G">
+      <svg class="cloud" id="gCloud"><use href="#cloud" /></svg>
+      <div id="gFall"></div>
+      <div class="copy" id="gCopy">
+        <h2 class="title h-xl" id="g1" data-words>Take your words<br>offline.</h2>
+        <p class="title h-xl" id="g2" data-words><em>Start here.</em></p>
+      </div>
+    </section>
+
+    <!-- H · 37–44.5: where it works -->
+    <section class="scene" id="H">
+      <div class="copy" id="hCopy">
+        <ul class="lines">
+          <li class="title" id="h1" data-words>It listens <em>on your phone.</em></li>
+          <li class="title" id="h2" data-words>It thinks <em>on your phone.</em></li>
+          <li class="title" id="h3" data-words>It remembers <em>on your phone.</em></li>
+        </ul>
+        <div><p class="tag" id="hTag"><svg><use href="#i-plane" /></svg>Works in airplane mode</p></div>
+      </div>
+    </section>
+
+    <!-- I · 44.5–57: why it's safe -->
+    <section class="scene" id="I">
+      <svg id="rings" aria-hidden="true">
+        <circle class="ring" id="r1" pathLength="1" />
+        <circle class="ring" id="r2" pathLength="1" />
+        <circle class="ring" id="r3" pathLength="1" />
+      </svg>
+      <span class="badge" id="b1"><svg><use href="#i-lock" /></svg></span>
+      <span class="badge" id="b2"><svg><use href="#i-shield" /></svg></span>
+      <span class="badge" id="b3"><svg><use href="#i-nocloud" /></svg></span>
+      <div class="copy" id="iCopy">
+        <ul id="iRows">
+          <li id="i1"><svg><use href="#i-lock" /></svg><b>Encrypted.</b><span>256-bit, by Android. Keyed to your passcode.</span></li>
+          <li id="i2"><svg><use href="#i-shield" /></svg><b>Sealed.</b><span>Other apps can’t read it. No cloud backups.</span></li>
+          <li id="i3"><svg><use href="#i-nocloud" /></svg><b>Never sent.</b><span>No server holds a copy to breach.</span></li>
+        </ul>
+      </div>
+      <p class="title" id="iEpi" data-words>You can’t leak<br><em>what you never send.</em></p>
+    </section>
+
+    <!-- J · 57–61: the line, rewritten -->
+    <section class="scene" id="J">
+      <div class="center-text middle" id="jLines">
+        <h2 class="title"><span id="j1" data-words>Your words.</span> <span id="j2" data-words>Your phone.</span>
+          <span id="j3"><span class="swap" id="jSwap"><span id="jOld">Their</span><span id="jNew"><em>Your</em></span><i class="strike" id="jStrike"></i></span> rules.</span></h2>
+      </div>
+    </section>
+
+    <!-- ── Act 4 · your life ── -->
+    <!-- K · 61–63.5 -->
+    <section class="scene" id="K">
+      <div class="center-text middle" id="k1">
+        <h2 class="title" data-words>Now let your words<br><em>work for you.</em></h2>
+      </div>
+    </section>
+
+    <!-- L · 63.5–72: it remembers (filled from REMEMBER below) -->
+    <section class="scene" id="L">
+      <div class="story__head">
+        <p class="kicker" id="lKick">Remember</p>
+        <h2 class="title" id="lTitle" data-words>What you heard,<br><em>when you need it.</em></h2>
+      </div>
+      <div class="story__stage" id="lStage"></div>
+    </section>
+
+    <!-- M · 72–80.5: words worth keeping -->
+    <section class="scene" id="M">
+      <div class="story__head">
+        <p class="kicker" id="mKick">At bedtime</p>
+        <h2 class="title"><span id="mTitleA" data-words>The words you’d never <em>want to lose.</em></span><span class="title title--after" id="mTitleB" data-words>Worth<br><em>living up to.</em></span></h2>
+      </div>
+      <div class="story__stage" id="mStage"></div>
+    </section>
+
+    <!-- N · 80.5–84: turn it on yourself -->
+    <section class="scene" id="N">
+      <div class="center-text middle">
+        <div id="n1"><h2 class="title" data-words>So ask about<br> the voice<br class="pb"> you hear most.</h2></div>
+        <p class="title" id="n2"><em>Yours.</em></p>
+      </div>
+    </section>
+
+    <!-- O · 84–108.8: questions about yourself (filled from MONTAGE below) -->
+    <section class="scene" id="O">
+      <div class="mspace" id="mspace"></div>
+    </section>
+
+    <!-- P · 108.8–118.3: three months later -->
+    <section class="scene" id="P">
+      <p class="center-text" id="pTag"><span class="tag"><i></i>Three months later</span></p>
+      <div id="pStage"></div>
+      <div id="pStats">
+        <p class="stat" id="pS1"><svg><use href="#i-down" /></svg>Heated moments <b id="pN1">−60%</b> <small>vs. spring</small></p>
+        <p class="stat" id="pS2"><svg><use href="#i-up" /></svg>Laughter <b id="pN2">+35%</b> <small>vs. spring</small></p>
+      </div>
+      <p class="center-text title" id="pCap" data-words>And you called Mom.<br class="pb"> <em>Every Sunday.</em></p>
+    </section>
+
+    <!-- ── Act 5 · the name ── -->
+    <!-- Q · the last 14 s: "Your voice, to better your life" becomes "Vox Amelior" -->
+    <section class="scene" id="Q">
+      <svg id="nmMark" viewBox="0 0 96 96" aria-hidden="true">
+        <rect id="nmSq" width="96" height="96" rx="26" fill="#1e6b57" />
+        <g stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" id="nmBars">
+          <path d="M21 26v12" pathLength="1" /><path d="M30 26v22" pathLength="1" /><path d="M39 26v32" pathLength="1" />
+          <path d="M48 26v44" pathLength="1" /><path d="M57 26v32" pathLength="1" /><path d="M66 26v22" pathLength="1" />
+          <path d="M75 26v12" pathLength="1" />
+        </g>
+      </svg>
+      <div id="nmBox">
+        <div class="title nm-line" id="nmL1"><span class="nm-c" id="nmYour">Your </span><span class="nm-vv" id="nmVV"><span id="nmV1">v</span><span id="nmV2">V</span></span>o<span class="nm-c" id="nmIce">ice</span><span class="nm-x" id="nmX">x</span><span class="nm-c" id="nmComma">,</span></div>
+        <div class="title nm-line" id="nmL2"><span class="nm-stack" id="nmStack"><span id="nmTo">to better</span><span id="nmAm">Amelior</span></span><span class="nm-c" id="nmLife"> your life.</span></div>
+      </div>
+      <div id="nmCta"><p>Free for Android <span class="mono">whyhirepruitt.dev</span></p></div>
+      <p id="nmFine">Concept film. People, conversations and answers are examples. Listening, speaker recognition, Ask, reviews
+        and Insights run in the app today. Encryption is Android’s own, standard on phones launched with Android 10 or
+        later. Let people know when it’s listening. Made by Pruitt Colon.</p>
+    </section>
+
+    <!-- Poster -->
+    <section id="poster">
+      <img class="layer" id="posterField" src="shots/field-a.png" alt="">
+      <img class="layer" id="posterPhone" src="shots/phone-ask.png" alt="">
+      <div class="copy">
+        <div class="lockup"><svg class="mark"><use href="#mark" /></svg><span>Vox Amelior</span></div>
+        <h1 class="title">Your voice,<br>to better<br><em>your life.</em></h1>
+      </div>
+    </section>
+  </div>
+
+  <script src="timeline.js"></script>
+  <script>
+    const DURATION = TIMELINE.duration;
+    // Scene start times
+    const T0 = TIMELINE.scenes;
+    const PORTRAIT = new URLSearchParams(location.search).get('format') === 'portrait';
+    document.documentElement.classList.toggle('portrait', PORTRAIT);
+    const P = (portrait, landscape) => (PORTRAIT ? portrait : landscape);
+
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const lerp = (a, b, p) => a + (b - a) * p;
+    const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+    const easeOutQuint = (p) => 1 - Math.pow(1 - p, 5);
+    const easeIn = (p) => p * p * p;
+    const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+    // A small overshoot, for things that pop into place
+    const easeOutBack = (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2);
+    const prog = (t, start, dur) => clamp((t - start) / dur);
+    // 0 → 1 → 0 between start and end, with soft edges
+    const span = (t, start, end, fade = 0.6) => Math.min(prog(t, start, fade), 1 - prog(t, end - fade, fade));
+    const px = (v) => `${v.toFixed(1)}px`;
+
+    function enter(el, t, start, { dur = 0.8, y = 30, blur = 0, scale = 1 } = {}) {
+      const p = easeOut(prog(t, start, dur));
+      el.style.opacity = p.toFixed(3);
+      el.style.transform = `translateY(${px(y * (1 - p))}) scale(${lerp(scale, 1, p).toFixed(4)})`;
+      el.style.filter = blur && p < 1 ? `blur(${(blur * (1 - p)).toFixed(2)}px)` : '';
+      return p;
+    }
+
+    // Leaves upward with a blur
+    function leave(el, t, start, { dur = 0.5, y = -24, blur = 8 } = {}) {
+      const p = easeInOut(prog(t, start, dur));
+      if (p <= 0) return 0;
+      el.style.opacity = (Number(el.style.opacity || 1) * (1 - p)).toFixed(3);
+      el.style.transform = `translateY(${px(y * p)})`;
+      el.style.filter = `blur(${(blur * p).toFixed(2)}px)`;
+      return p;
+    }
+
+    /* Kinetic type: [data-words] elements are split into words that rise in one by one */
+    function splitWords(root) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        if (!node.textContent.trim()) return;
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            const s = document.createElement('span');
+            s.className = 'w';
+            s.textContent = part;
+            frag.appendChild(s);
+          }
+        });
+        node.replaceWith(frag);
+      });
+      root.words = [...root.querySelectorAll('.w')];
+    }
+    document.querySelectorAll('[data-words]').forEach(splitWords);
+
+    // Words arrive about 8 a second, settle in half a second, then hold still to be read
+    function words(el, t, start, { stagger = 0.11, dur = 0.55, y = 22, blur = 5 } = {}) {
+      el.words.forEach((w, i) => {
+        const p = easeOut(prog(t, start + i * stagger, dur));
+        w.style.opacity = p.toFixed(3);
+        w.style.transform = `translateY(${px(y * (1 - p))})`;
+        w.style.filter = blur && p < 1 ? `blur(${(blur * (1 - p)).toFixed(2)}px)` : '';
+      });
+    }
+
+    const place = (el, x, y, s = 1, extra = '') => {
+      el.style.transform = `translate(${px(x)}, ${px(y)}) translate(-50%, -50%) scale(${s.toFixed(4)})${extra}`;
+    };
+
+    /* ── Content (illustrative people and data) ──────────── */
+
+    const MOMENTS = [
+      { name: 'Maya', color: '#8a5a00', time: '9:12 AM', text: 'I start the new job on the 14th.', x: -520, y: -210, z: 150 },
+      { name: 'Dr. Patel', color: '#1f4f99', time: '11:40 AM', text: 'Take it with food, twice a day.', x: 480, y: -250, z: 40 },
+      { name: 'Mom', color: '#9b3d1a', time: '1:05 PM', text: 'Call me after the interview.', x: -400, y: 170, z: -80 },
+      { name: 'You', color: '#18201c', time: '6:30 PM', text: 'Next spring, I’m running the half marathon.', x: 520, y: 140, z: -200 },
+      { name: 'Dad', color: '#136b78', time: '7:55 PM', text: 'Grandma’s recipe uses brown butter.', x: -60, y: -330, z: -320 },
+      { name: 'Sam', color: '#6b4aa0', time: '10:20 PM', text: 'The spare key is under the blue pot.', x: 60, y: 250, z: -440 }
+    ];
+
+    // Our words online: what we search, type and watch (s search, t typed, f a form field, v a video)
+    const FLOOD = [
+      ['s', 'is this rash serious'], ['v', '10 signs you’re burned out', 'Watched 3 times'], ['t', 'I’m fine, really.'],
+      ['s', 'cheap flights friday'], ['f', 'Card number', '•••• •••• •••• 4417'], ['s', 'can we afford a house on 68k'],
+      ['v', 'How to argue without fighting', 'Paused at 2:14'], ['t', 'Sorry, can’t make it tonight'], ['s', 'why do we keep fighting'],
+      ['f', 'Date of birth', '03 / 14 / 1991'], ['v', 'Tiny house tour', 'Watched at 2:13 AM'], ['s', 'signs of a toxic boss'],
+      ['t', 'Help me word my resignation.'], ['s', 'is it normal to cry at work'], ['v', 'Is it ADHD or just stress?', 'Rewatched'],
+      ['f', 'Home address', '1123 Elm St, Apt 4'], ['s', 'how much sleep do i need'], ['t', 'we need to talk'],
+      ['s', 'couples counseling near me'], ['v', 'Morning routine for anxiety', 'Watched 5 times'], ['s', 'symptoms of burnout'],
+      ['t', 'Love you. See you at 6.'], ['f', 'Phone', '(555) 014-2290'], ['s', 'best card to pay off debt'],
+      ['v', 'How to quit your job gracefully', 'Saved'], ['s', 'what to say to a grieving friend']
+    ];
+    // Searches that fall out of the cloud into the phone at "Take your words offline"
+    const FALLING = ['is this rash serious', 'why do we keep fighting', 'can we afford a house on 68k', 'signs of a toxic boss'];
+
+    const CHIPS = ['Keyboard', 'Maps', 'Messages', 'Docs', 'Calendar', 'Shopping', 'Music', 'Camera', 'Car', 'TV', 'Glasses', 'Speaker', 'Doorbell', 'Notes'];
+    // Chip centres, kept clear of the three lines in the middle
+    const CHIP_AT = P(
+      [[230, 120], [640, 105], [890, 225], [370, 245], [690, 360], [190, 380], [920, 400], [250, 960], [700, 960], [470, 1080], [880, 1090], [200, 1210], [640, 1230], [930, 1250]],
+      [[250, 130], [650, 105], [1010, 150], [1390, 110], [1710, 175], [500, 260], [1520, 290], [170, 980], [560, 1000], [940, 940], [1330, 1010], [1720, 950], [180, 610], [1760, 640]]);
+
+    const CHECK = '<svg class="check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    // Remembered when it's needed (the Ask screen)
+    const REMEMBER = [
+      { q: 'What did Jordan say I shouldn’t forget?', answer: ['<span class="n">1</span>Plumber, Thursday at 9.', '<span class="n">2</span>Cake pickup by 5.', '<span class="n">3</span>Your mom’s birthday is Sunday.'], src: 'From Jordan · this morning, 7:41 AM' },
+      { q: 'What do we need from the store?', answer: [`${CHECK}Eggs`, `${CHECK}The good bread`, { cls: 'muted', html: 'You still have milk.' }], src: 'From Jordan · Tuesday, 8:10 AM' }
+    ];
+
+    const MILO = {
+      who: { name: 'Milo, age 5', color: '#9b3d1a', time: 'Wed 8:02 PM' },
+      quote: 'When I grow up, I want to be just like you.',
+      later: 'Years later · on a hard day',
+      q: 'What did Milo say at bedtime when he was five?',
+      answer: [{ cls: 'big', html: '“When I grow up, I want to be just like you.”' }],
+      src: 'Milo, age 5 · Oct 14, 2026, 8:02 PM'
+    };
+
+    // Your own reviews: each card joins the pile when the next question arrives (arrival times in timeline.js)
+    const ARRIVE = TIMELINE.montage;
+    const MONTAGE = [
+      { q: 'Which words do I use incorrectly?', answer: [{ cls: 'finding', html: '<q>“That plan is ingenuous.”</q><span class="why"><b>Ingenuous</b> means naive. You meant <b>ingenious</b>.</span>' }], src: 'Your lines · this month' },
+      { q: 'When did I sound sharpest? Why?', answer: [{ cls: 'finding', html: '<q>Thursday’s pitch.</q><span class="why">You’d rehearsed it out loud the night before.</span>' }], src: 'Your lines · this week' },
+      { q: 'What thinking traps do I fall into?', answer: [{ cls: 'finding', html: '<q><b>All-or-nothing.</b></q><span class="why">“Always” and “never”, 23 times in arguments.</span>' }], src: 'Everything · 3,412 lines' },
+      { q: 'Who did I thank this week?', answer: [{ cls: 'finding', html: '<q>Dana, twice. Jordan, <b>not once.</b></q>' }], src: 'Kind words · this week' },
+      { q: 'What have I promised and not done?', answer: [{ cls: 'finding', html: '<q><b>Call Mom back.</b></q><span class="why">You’ve said “this weekend” three times.</span>' }], src: 'Promises & to-dos · this month' },
+      { q: 'Honestly, who starts more of our fights: me or Jordan?', answer: [{ cls: 'finding', html: '<q>You. Six to five.</q>' }, { cls: 'follow', html: 'Want to know who apologizes first?' }], reply: 'Not today.', src: '' }
+    ];
+    // Where each card settles once the next one arrives (offset from the centre, scale, tilt)
+    const SLOTS = P(
+      [[-280, -420, 0.44, -3], [270, -380, 0.44, 2.5], [-270, 420, 0.44, 2], [270, 450, 0.44, -2.5], [0, 520, 0.44, 1]],
+      [[-610, -300, 0.48, -3], [610, -290, 0.48, 2.5], [-620, 280, 0.48, 2], [620, 300, 0.48, -2.5], [0, -420, 0.42, 1]]);
+
+    const AFTER = { q: 'Who starts more of our fights now?', answer: [{ cls: 'finding', html: '<q>Hard to say.</q><span class="why">There haven’t been many.</span>' }], src: 'Fights & tension · this month' };
+
+    /* ── Builders ─────────────────────────────────────── */
+
+    function askCard(spec, extraClass = '') {
+      const el = document.createElement('div');
+      el.className = `ask ${extraClass}`.trim();
+      const items = spec.answer.map((a) => (typeof a === 'string' ? `<li>${a}</li>` : `<li class="${a.cls}">${a.html}</li>`)).join('');
+      el.innerHTML = `
+        <div class="ask__bar"><svg class="mark"><use href="#mark" /></svg><span class="ask__q"></span></div>
+        <div class="ask__body"><div class="skeleton"><i></i><i></i><i></i></div><ol class="ask__a">${items}</ol></div>
+        ${spec.reply ? `<div class="reply"><span>${spec.reply}</span></div>` : ''}
+        ${spec.src ? `<p class="ask__src">${spec.src}</p>` : ''}`;
+      return {
+        el,
+        spec,
+        q: el.querySelector('.ask__q'),
+        lis: [...el.querySelectorAll('.ask__a li')],
+        skel: el.querySelector('.skeleton'),
+        reply: el.querySelector('.reply'),
+        src: el.querySelector('.ask__src')
+      };
+    }
+
+    // Types the question (about 30 characters a second), "thinks", then reveals the answer; returns when the answer starts
+    function playAsk(a, r, typeAt, { rate = 0.034, maxType = 1.6, think = 0.4, gap = 0.4, gaps = null } = {}) {
+      const text = a.spec.q;
+      const dur = Math.min(maxType, text.length * rate);
+      const typed = prog(r, typeAt, dur);
+      a.q.textContent = text.slice(0, Math.round(typed * text.length));
+      a.q.style.setProperty('--caret', typed > 0 && typed < 1 ? (Math.floor(r * 4) % 2 ? 0.2 : 1) : 0);
+      const answerAt = typeAt + dur + think;
+      a.skel.style.opacity = (prog(r, typeAt + dur, 0.15) * (1 - prog(r, answerAt - 0.05, 0.25))).toFixed(3);
+      let at = answerAt;
+      a.lis.forEach((li, i) => {
+        if (i) at += gaps ? gaps[i - 1] : gap;
+        const p = easeOut(prog(r, at, 0.5));
+        li.style.opacity = p.toFixed(3);
+        li.style.transform = `translateY(${px(14 * (1 - p))})`;
+      });
+      if (a.reply) enter(a.reply, r, at + (gaps ? gaps[gaps.length - 1] : 1), { dur: 0.45, y: 16, scale: 0.94 });
+      if (a.src) enter(a.src, r, at + 0.5, { dur: 0.5, y: 8 });
+      return answerAt;
+    }
+
+    // B: moments drifting away
+    const space = $('space');
+    const cards = MOMENTS.map((m) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `<div class="who"><span class="avatar" style="background:${m.color}">${m.name[0]}</span><b>${m.name}</b><span class="mono">${m.time}</span></div><p class="quote">“${m.text}”</p>`;
+      space.appendChild(el);
+      return { el, ...m, x: P(m.x * 0.42, m.x), y: P(m.y * 1.45, m.y) };
+    });
+
+    // C: the flood, laid out on a jittered grid and revealed in a shuffled order; G: searches that fall into the phone
+    const hash = (i) => {
+      const x = Math.sin(i * 12.9898 + 4.1) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    const SEARCH_ICON = '<svg viewBox="0 0 24 24" class="ico"><circle cx="10.5" cy="10.5" r="6" /><path d="M15 15l5 5" /></svg>';
+    const PLAY_ICON = '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg>';
+    function floodItem([kind, text, meta]) {
+      const el = document.createElement('div');
+      el.className = `fl fl--${kind}`;
+      if (kind === 's') el.innerHTML = `${SEARCH_ICON}${text}`;
+      else if (kind === 't') el.textContent = text;
+      else if (kind === 'f') el.innerHTML = `<small>${text}</small>${meta}`;
+      else el.innerHTML = `<i>${PLAY_ICON}</i><span><b>${text}</b><small>${meta}</small></span>`;
+      return el;
+    }
+    const COLS = P(3, 6);
+    const ROWS = P(9, 5);
+    const cellW = P(1080, 1920) / COLS;
+    const cellH = P(1350, 1080) / ROWS;
+    // Every cell but the ones hidden behind the card in the middle, so the flood reaches all four edges
+    const hidden = P([[1, 4]], [[1, 2], [2, 2], [3, 2], [4, 2]]);
+    const cells = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (!hidden.some(([hc, hr]) => hc === c && hr === r)) cells.push([c, r]);
+    const flood = FLOOD.map((item, i) => {
+      const el = floodItem(item);
+      $('cFlood').appendChild(el);
+      const [c, r] = cells[i % cells.length];
+      return {
+        el,
+        x: (c + 0.5) * cellW + (hash(i) - 0.5) * cellW * 0.45,
+        y: (r + 0.5) * cellH + (hash(i + 50) - 0.5) * cellH * 0.4,
+        rot: (hash(i + 90) - 0.5) * 3,
+        order: hash(i + 130)
+      };
+    });
+    // Reveal order: shuffled across the frame, faster and faster
+    [...flood].sort((a, b) => a.order - b.order).forEach((f, k) => { f.at = 0.6 + 3.8 * Math.pow(k / flood.length, 0.65); });
+    const gFall = FALLING.map((text) => {
+      const el = floodItem(['s', text]);
+      $('gFall').appendChild(el);
+      return el;
+    });
+
+    // D: chips
+    const chips = CHIPS.map((label) => {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.innerHTML = `<svg><use href="#i-spark" /></svg>${label}`;
+      $('dChips').appendChild(el);
+      return el;
+    });
+
+    // L: two questions, one after the other
+    const remember = REMEMBER.map((spec) => {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      const a = askCard(spec);
+      slot.appendChild(a.el);
+      $('lStage').appendChild(slot);
+      return a;
+    });
+
+    // M: said at bedtime, asked about years later
+    $('mStage').innerHTML = `
+      <div class="slot"><div class="said" id="mSaid">
+        <div class="who"><span class="avatar" style="background:${MILO.who.color}">M</span><b>${MILO.who.name}</b><span class="mono">${MILO.who.time}</span></div>
+        <p class="quote">“${MILO.quote}”</p>
+      </div></div>
+      <p class="later" id="mLater">${MILO.later}</p>
+      <div class="slot" id="mAskSlot"></div>`;
+    const milo = askCard(MILO);
+    $('mAskSlot').appendChild(milo.el);
+
+    // O: the pile of questions
+    const montage = MONTAGE.map((spec) => {
+      const a = askCard(spec, 'ask--m');
+      $('mspace').appendChild(a.el);
+      return a;
+    });
+
+    // P: the same kind of question, months later
+    const after = askCard(AFTER);
+    $('pStage').appendChild(after.el);
+
+    /* ── Rigs: the voice field and the phone carry across scenes ─ */
+
+    // Voice field: [start, end, still, opacity]
+    const FIELD = [[0, T0.B + 0.2, 'A', 1], [T0.F - 0.2, T0.G + 0.3, 'B', 0.4], [T0.J - 0.2, T0.K + 0.3, 'A', 0.5],
+      [T0.N - 0.2, T0.O + 0.3, 'B', 0.38], [T0.Q - 0.2, DURATION + 1, 'A', 0.5]];
+
+    function fieldRig(t) {
+      let a = 0;
+      let b = 0;
+      let tf = '';
+      FIELD.forEach(([s, e, still, op]) => {
+        if (t < s || t >= e) return;
+        const k = op * (s === 0 ? Math.min(prog(t, 0, 0.8), 1 - prog(t, e - 0.6, 0.6)) : span(t, s, e, 0.8));
+        const r = t - s;
+        if (s === 0) {
+          // The opening: the field rises as the number counts
+          a = k * (1 - prog(t, 1, 3.2) * 0.9);
+          b = k * prog(t, 1, 3.2);
+          const p = t / T0.B;
+          tf = P(`translateY(${px(330 - 40 * p)}) scale(${(1.4 + 0.08 * easeInOut(p)).toFixed(4)})`,
+            `translateY(${px(250 - 40 * p)}) scale(${(1.02 + 0.07 * easeInOut(p)).toFixed(4)})`);
+        } else {
+          if (still === 'A') a = k; else b = k;
+          tf = P(`translate(${px(-18 * r)}, 380px) scale(1.45)`, `translate(${px(-18 * r)}, 320px) scale(1.08)`);
+        }
+      });
+      $('fieldA').style.opacity = a.toFixed(3);
+      $('fieldB').style.opacity = b.toFixed(3);
+      $('fieldA').style.transform = tf;
+      $('fieldB').style.transform = tf;
+    }
+
+    // Phone: rises at "Start here", sits beside the three lines, then shrinks into the middle of the rings
+    const PHONE_IN = T0.G + 0.1;
+    const PHONE_OUT = T0.J - 0.6;
+    function phoneTransform(t) {
+      const pIn = easeOut(prog(t, PHONE_IN, 1.3));
+      const toRings = easeInOut(prog(t, T0.I, 1.2));
+      const drift = prog(t, T0.G + 1.5, T0.I - T0.G);
+      const out = easeInOut(prog(t, PHONE_OUT, 0.8));
+      if (PORTRAIT) {
+        const y = -230 + 240 * (1 - pIn) - 10 * drift + lerp(0, -10, toRings) + 120 * out;
+        const s = lerp(0.6 + 0.02 * drift, 0.5, toRings);
+        return { tf: `translate(0px, ${px(y)}) scale(${s.toFixed(4)})`, cx: 545, cy: 680 + y };
+      }
+      const x = 390 + 30 * (1 - pIn);
+      const y = 160 * (1 - pIn) - 14 * drift + 120 * out;
+      const s = lerp(0.9 + 0.03 * drift, 0.62, toRings);
+      return { tf: `translate(${px(x)}, ${px(y)}) scale(${s.toFixed(4)})`, cx: 965 + x, cy: 545 + y };
+    }
+
+    function phoneRig(t) {
+      const on = t >= PHONE_IN && t < PHONE_OUT + 0.8;
+      const k = on ? Math.min(easeOut(prog(t, PHONE_IN, 0.9)), 1 - easeInOut(prog(t, PHONE_OUT, 0.8))) : 0;
+      const { tf } = phoneTransform(t);
+      // Screens follow the lines: listening, the conversation, Ask; the conversation again inside the rings
+      const toConv = easeInOut(prog(t, T0.H + 1.9, 0.6));
+      const toAsk = easeInOut(prog(t, T0.H + 3.5, 0.6));
+      const backConv = easeInOut(prog(t, T0.I + 0.1, 0.8));
+      const ask = toAsk * (1 - backConv);
+      const conv = Math.max(toConv * (1 - toAsk), backConv);
+      $('phoneNow').style.opacity = (k * (1 - toConv)).toFixed(3);
+      $('phoneConv').style.opacity = (k * conv).toFixed(3);
+      $('phoneAsk').style.opacity = (k * ask).toFixed(3);
+      ['phoneNow', 'phoneConv', 'phoneAsk'].forEach((id) => { $(id).style.transform = tf; });
+    }
+
+    // Act 2 cools the paper slightly; Act 3 brings it back
+    function paper(t) {
+      const k = 0.55 * Math.min(prog(t, T0.C, 1.5), 1 - prog(t, T0.G - 0.4, 1.2));
+      const mix = (a, b) => Math.round(lerp(a, b, k));
+      $('stage').style.background = `rgb(${mix(252, 239)}, ${mix(252, 241)}, ${mix(250, 237)})`;
+    }
+
+    /* ── Scenes ────────────────────────────────────────── */
+
+    // [id, start, end] from timeline.js; the last scene holds to the end
+    const ORDER = Object.keys(T0);
+    const SCENES = ORDER.map((id, i) => [id, T0[id], i < ORDER.length - 1 ? T0[ORDER[i + 1]] : DURATION + 1]);
+
+    const CLOUD_G = P({ x: 540, y: 40, w: 420 }, { x: 1400, y: 110, w: 460 });
+
+    function cloud(el, c, scale, op, blur = 0) {
+      el.style.width = px(c.w);
+      el.style.height = px(c.w * 130 / 220);
+      el.style.opacity = op.toFixed(3);
+      el.style.transform = `translate(${px(c.x)}, ${px(c.y)}) translate(-50%, -50%) scale(${scale.toFixed(4)})`;
+      el.style.filter = blur ? `blur(${blur.toFixed(2)}px)` : '';
+    }
+
+    // Rings around the phone: radius and where each badge sits (degrees, 0 = right, clockwise)
+    const RINGS = P([[250, 230], [315, 270], [380, 310]], [[285, 215], [355, 180], [425, 145]]);
+
+    const RENDER = {
+      A(t) {
+        words($('a1').querySelector('.lead'), t, 0.25);
+        enter($('a1').querySelector('.big'), t, 1.0, { dur: 0.8, y: 24, blur: 6, scale: 0.97 });
+        const n = Math.round((16000 * easeOut(prog(t, 1.1, 1.7))) / 10) * 10;
+        $('count').textContent = n.toLocaleString('en-US');
+        enter($('a1').querySelector('.wd'), t, 1.9, { dur: 0.6, y: 16, blur: 4 });
+      },
+
+      B(t) {
+        // Forgetting: the moments drift away from you and blur out
+        const s = t - T0.B;
+        cards.forEach((c) => {
+          const z = c.z + 120 - s * 360;
+          const fadeIn = prog(s, 0, 0.5);
+          const away = 1 - prog(-z, 1700, 900);
+          const blur = Math.min(14, Math.max(0, -z - 100) / 140);
+          c.el.style.opacity = (fadeIn * clamp(away)).toFixed(3);
+          c.el.style.transform = `translate3d(${c.x}px, ${c.y}px, ${z.toFixed(1)}px) rotateY(${(-c.x / 60).toFixed(2)}deg)`;
+          c.el.style.filter = `blur(${blur.toFixed(2)}px)`;
+        });
+        words($('bCap'), s, 0.6, { stagger: 0.14 });
+      },
+
+      C(t) {
+        // Our words online don't drift away: searches, messages, forms and videos pile up until they fill the frame
+        const r = t - T0.C;
+        enter($('cPanel'), r, 0.1, { dur: 0.7, y: 20, scale: 0.96 });
+        words($('c1'), r, 0.3);
+        words($('c2'), r, 3.0, { stagger: 0.15 });
+        const W = P(1080, 1920);
+        flood.forEach((f) => {
+          // Keep every item inside the frame (its width is known once the fonts are in)
+          if (f.w === undefined) f.w = f.el.offsetWidth * P(0.92, 1);
+          f.x = clamp(f.x, f.w / 2 + 18, W - f.w / 2 - 18);
+          const p = prog(r, f.at, 0.45);
+          f.el.style.opacity = easeOut(prog(r, f.at, 0.25)).toFixed(3);
+          // The whole feed creeps upward, like a page that never stops scrolling
+          place(f.el, f.x, f.y - 14 * r, lerp(0.8, 1, easeOutBack(p)) * P(0.92, 1), ` rotate(${f.rot.toFixed(2)}deg)`);
+        });
+      },
+
+      D(t) {
+        const r = t - T0.D;
+        words($('d1'), r, 0.3);
+        words($('d2'), r, 1.6, { stagger: 0.14 });
+        words($('d3'), r, 2.5, { stagger: 0.14 });
+        const cx = P(540, 960);
+        const cy = P(675, 540);
+        chips.forEach((el, i) => {
+          const [x, y] = CHIP_AT[i];
+          const at = 0.5 + i * 0.12;
+          const p = prog(r, at, 0.75);
+          const e = easeOutBack(p);
+          el.style.opacity = easeOut(prog(r, at, 0.35)).toFixed(3);
+          place(el, lerp(cx, x, e), lerp(cy, y, e) + 7 * Math.sin(r * 1.2 + i * 1.7), lerp(0.4, 1, easeOut(p)));
+        });
+      },
+
+      E(t) {
+        // One row at a time, each given time to be read before the next
+        const r = t - T0.E;
+        words($('eHead'), r, 0.3);
+        ['e1', 'e2', 'e3'].forEach((id, k) => {
+          const at = 1.6 + k * 2.4;
+          const row = $(id);
+          enter(row.querySelector('.row__icon'), r, at, { dur: 0.5, y: 0, blur: 4, scale: 0.75 });
+          words(row.querySelector('.row__text'), r, at + 0.15);
+        });
+      },
+
+      F(t) {
+        const r = t - T0.F;
+        words($('f1a'), r, 0.3, { stagger: 0.16 });
+        words($('f1b'), r, 1.6, { stagger: 0.22, dur: 0.7, blur: 6 });
+      },
+
+      G(t) {
+        // The call to action: the cloud fades and what was in it falls into the phone
+        const r = t - T0.G;
+        words($('g1'), r, 0.3);
+        words($('g2'), r, 2.2, { stagger: 0.16 });
+        cloud($('gCloud'), CLOUD_G, 1 + 0.12 * prog(r, 0, 1.6), 0.6 * (1 - prog(r, 0.4, 1.3)), 10 * prog(r, 0.4, 1.3));
+        const { cx, cy } = phoneTransform(t);
+        gFall.forEach((el, i) => {
+          const at = 0.45 + i * 0.32;
+          const p = prog(r, at, 1.25);
+          const e = easeIn(p);
+          const x = lerp(CLOUD_G.x + (i - 1.5) * 70, cx, e);
+          const y = lerp(CLOUD_G.y + 20, cy - 20, e);
+          el.style.opacity = Math.min(easeOut(prog(r, at, 0.3)), 1 - prog(p, 0.75, 0.25)).toFixed(3);
+          place(el, x, y, lerp(0.7, 0.16, e));
+          el.style.filter = '';
+        });
+      },
+
+      H(t) {
+        const r = t - T0.H;
+        [['h1', 0.4], ['h2', 2.0], ['h3', 3.6]].forEach(([id, at]) => words($(id), r, at));
+        enter($('hTag'), r, 5.2, { dur: 0.6, y: 12, scale: 0.96 });
+      },
+
+      I(t) {
+        // Three layers close around the phone, then one line sums them up
+        const r = t - T0.I;
+        const { cx, cy } = phoneTransform(t);
+        const svg = $('rings');
+        svg.setAttribute('viewBox', P('0 0 1080 1350', '0 0 1920 1080'));
+        const epiAt = 10.9;
+        RINGS.forEach(([radius, deg], k) => {
+          const at = 0.5 + k * 3.0;
+          const ring = $(`r${k + 1}`);
+          const draw = easeInOut(prog(r, at, 1.1));
+          ring.setAttribute('cx', cx.toFixed(1));
+          ring.setAttribute('cy', cy.toFixed(1));
+          ring.setAttribute('r', radius);
+          ring.setAttribute('transform', `rotate(${deg} ${cx.toFixed(1)} ${cy.toFixed(1)})`);
+          ring.style.strokeWidth = [5, 3.5, 3][k];
+          ring.style.strokeOpacity = [1, 0.6, 0.35][k];
+          ring.style.strokeDasharray = '1 1';
+          ring.style.strokeDashoffset = (1 - draw).toFixed(4);
+          const badge = $(`b${k + 1}`);
+          const a = (deg * Math.PI) / 180;
+          const bp = easeOutBack(prog(r, at + 0.9, 0.5));
+          badge.style.opacity = easeOut(prog(r, at + 0.9, 0.3)).toFixed(3);
+          badge.style.transform = `translate(${px(cx + radius * Math.cos(a))}, ${px(cy + radius * Math.sin(a))}) scale(${lerp(0.5, 1, bp).toFixed(4)})`;
+          const row = $(`i${k + 1}`);
+          enter(row, r, at + 0.2, { dur: 0.6, y: 18, blur: 4 });
+          leave(row, r, epiAt - 0.6 + k * 0.08, { dur: 0.5 });
+        });
+        words($('iEpi'), r, epiAt, { stagger: 0.14 });
+      },
+
+      J(t) {
+        // "Their rules" from Act 2, rewritten
+        const r = t - T0.J;
+        words($('j1'), r, 0.3, { stagger: 0.14 });
+        words($('j2'), r, 1.1, { stagger: 0.14 });
+        enter($('j3'), r, 1.9, { dur: 0.6, y: 24, blur: 5 });
+        const swap = $('jSwap');
+        if (!swap.dataset.w) {
+          swap.dataset.w = `${$('jOld').getBoundingClientRect().width},${$('jNew').getBoundingClientRect().width}`;
+        }
+        const [wOld, wNew] = swap.dataset.w.split(',').map(Number);
+        const strike = easeInOut(prog(r, 3.0, 0.3));
+        const out = easeInOut(prog(r, 3.4, 0.35));
+        const into = easeOut(prog(r, 3.55, 0.55));
+        $('jStrike').style.transform = `scaleX(${strike.toFixed(4)})`;
+        $('jStrike').style.opacity = (1 - out).toFixed(3);
+        $('jOld').style.opacity = (1 - out).toFixed(3);
+        $('jOld').style.transform = `translateY(${px(-30 * out)})`;
+        $('jOld').style.filter = out > 0 ? `blur(${(8 * out).toFixed(2)}px)` : '';
+        $('jNew').style.opacity = into.toFixed(3);
+        $('jNew').style.transform = `translateY(${px(30 * (1 - into))})`;
+        $('jNew').style.filter = into < 1 ? `blur(${(6 * (1 - into)).toFixed(2)}px)` : '';
+        swap.style.width = px(lerp(wOld, wNew, easeInOut(prog(r, 3.4, 0.6))));
+      },
+
+      K(t) {
+        words($('k1').querySelector('h2'), t - T0.K, 0.3);
+      },
+
+      L(t) {
+        const r = t - T0.L;
+        enter($('lKick'), r, 0.15, { dur: 0.6, y: 14 });
+        words($('lTitle'), r, 0.3);
+        remember.forEach((a, i) => {
+          const at = [0.6, 8.0][i];
+          const pIn = easeOut(prog(r, at, 0.7));
+          const out = i === 0 ? easeInOut(prog(r, 7.6, 0.5)) : 0;
+          a.el.style.opacity = (pIn * (1 - out)).toFixed(3);
+          a.el.style.transform = `translateY(${px(60 * (1 - pIn) - 70 * out)}) rotateX(${(16 * out - 8 * (1 - pIn)).toFixed(2)}deg) scale(${lerp(0.96, 1, pIn).toFixed(4)})`;
+          a.el.style.filter = out > 0 ? `blur(${(8 * out).toFixed(2)}px)` : '';
+          playAsk(a, r, at + 0.4);
+        });
+      },
+
+      M(t) {
+        const r = t - T0.M;
+        enter($('mKick'), r, 0.15, { dur: 0.6, y: 14 });
+        words($('mTitleA'), r, 0.3);
+        const said = $('mSaid');
+        const pIn = easeOut(prog(r, 0.9, 0.8));
+        const away = easeInOut(prog(r, 4.6, 1.0));
+        said.style.opacity = (pIn * (1 - 0.85 * away)).toFixed(3);
+        said.style.transform = `translate3d(0, ${px(40 * (1 - pIn) - P(140, 90) * away)}, ${px(-520 * away)}) scale(${lerp(0.96, 1, pIn).toFixed(4)})`;
+        said.style.filter = `blur(${(6 * (1 - pIn) + 9 * away).toFixed(2)}px)`;
+        enter($('mLater'), r, 4.9, { dur: 0.6, y: 12 });
+        const pA = easeOut(prog(r, 5.2, 0.8));
+        milo.el.style.opacity = pA.toFixed(3);
+        milo.el.style.transform = `translateY(${px(P(70, 60) * (1 - pA) + P(30, 26))}) scale(${lerp(0.96, 1, pA).toFixed(4)})`;
+        playAsk(milo, r, 5.5, { maxType: 1.7 });
+        // The payoff line replaces the title, once the answer has been read
+        const out = easeInOut(prog(r, 10.8, 0.35));
+        if (out > 0) {
+          $('mTitleA').style.opacity = (1 - out).toFixed(3);
+          $('mTitleA').style.filter = `blur(${(6 * out).toFixed(2)}px)`;
+          $('mTitleA').style.transform = `translateY(${px(-14 * out)})`;
+        } else {
+          $('mTitleA').style.opacity = '';
+          $('mTitleA').style.filter = '';
+          $('mTitleA').style.transform = '';
+        }
+        $('mTitleB').style.opacity = r >= 11.1 ? '1' : '0';
+        words($('mTitleB'), r, 11.15, { stagger: 0.14 });
+      },
+
+      N(t) {
+        const r = t - T0.N;
+        words($('n1').querySelector('h2'), r, 0.3);
+        enter($('n2'), r, 3.0, { dur: 0.8, y: 26, blur: 8, scale: 0.92 });
+      },
+
+      O(t) {
+        const r0 = t - T0.O;
+        const last = montage.length - 1;
+        montage.forEach((a, i) => {
+          const r = r0 - ARRIVE[i];
+          if (r < 0) {
+            a.el.style.opacity = '0';
+            return;
+          }
+          // Flies in from the back, then joins the pile when the next question arrives
+          const pIn = easeOutQuint(prog(r, 0, 0.75));
+          const next = i < last ? easeInOut(prog(r0, ARRIVE[i + 1], 0.85)) : 0;
+          const [sx, sy, ss, sr] = i < last ? SLOTS[i] : [0, 0, 1, 0];
+          const z = -900 * (1 - pIn);
+          a.el.style.zIndex = String(i);
+          a.el.style.opacity = (easeOut(prog(r, 0, 0.4)) * lerp(1, 0.66, next)).toFixed(3);
+          a.el.style.transform = `translate(-50%, -50%) translate3d(${px(sx * next)}, ${px(sy * next + 40 * (1 - pIn))}, ${px(z)}) rotate(${(sr * next).toFixed(2)}deg) scale(${lerp(1, ss, next).toFixed(4)})`;
+          a.el.style.filter = pIn < 1 ? `blur(${(10 * (1 - pIn)).toFixed(2)}px)` : '';
+          // The last one is the joke: a pause, a follow-up, and a short reply
+          if (i === last) playAsk(a, r, 0.4, { maxType: 1.8, think: 0.5, gaps: [1.6, 2.2] });
+          else playAsk(a, r, 0.4);
+        });
+      },
+
+      P(t) {
+        const r = t - T0.P;
+        enter($('pTag'), r, 0.2, { dur: 0.6, y: 12 });
+        const pA = easeOut(prog(r, 0.5, 0.8));
+        after.el.style.opacity = pA.toFixed(3);
+        after.el.style.transform = `translateY(${px(50 * (1 - pA))}) scale(${lerp(0.96, 1, pA).toFixed(4)})`;
+        playAsk(after, r, 0.8);
+        [['pS1', 'pN1', -60, '−'], ['pS2', 'pN2', 35, '+']].forEach(([id, num, v, sign], k) => {
+          const at = 4.3 + k * 0.6;
+          enter($(id), r, at, { dur: 0.6, y: 16, scale: 0.95 });
+          $(num).textContent = `${sign}${Math.round(Math.abs(v) * easeOut(prog(r, at + 0.1, 1.1)))}%`;
+        });
+        words($('pCap'), r, 6.9, { stagger: 0.14 });
+      },
+
+      Q(t) {
+        // "Your voice, to better your life": the extra words fall away, voice becomes Vox, to better becomes Amelior
+        const r = t - T0.Q;
+        const L1 = $('nmL1');
+        const L2 = $('nmL2');
+        enter(L1, r, 0.2, { dur: 0.8, y: 26, blur: 6 });
+        enter(L2, r, 0.9, { dur: 0.8, y: 26, blur: 6 });
+        const nm = RENDER.nm || (RENDER.nm = measureName());
+        const fall = easeInOut(prog(r, 3.9, 0.9));
+        const morph = easeInOut(prog(r, 4.6, 1.3));
+        [['nmYour', nm.your], ['nmComma', nm.comma]].forEach(([id, w]) => {
+          $(id).style.maxWidth = px(w * (1 - fall));
+          $(id).style.opacity = (1 - fall).toFixed(3);
+        });
+        const life = $('nmLife');
+        life.style.opacity = (1 - fall).toFixed(3);
+        if (PORTRAIT) life.style.maxHeight = px(nm.lifeH * (1 - fall));
+        else life.style.maxWidth = px(nm.life * (1 - fall));
+        $('nmIce').style.maxWidth = px(nm.ice * (1 - morph));
+        $('nmIce').style.opacity = (1 - morph).toFixed(3);
+        $('nmX').style.maxWidth = px(nm.x * morph);
+        $('nmX').style.opacity = morph.toFixed(3);
+        $('nmV1').style.opacity = (1 - morph).toFixed(3);
+        $('nmV2').style.opacity = morph.toFixed(3);
+        $('nmVV').style.width = px(lerp(nm.v, nm.V, morph));
+        $('nmTo').style.opacity = (1 - morph).toFixed(3);
+        $('nmTo').style.filter = morph > 0 ? `blur(${(10 * morph).toFixed(2)}px)` : '';
+        $('nmAm').style.opacity = morph.toFixed(3);
+        $('nmAm').style.filter = morph < 1 ? `blur(${(10 * (1 - morph)).toFixed(2)}px)` : '';
+        $('nmStack').style.width = px(lerp(nm.to, nm.am, morph));
+        // The mark: the square, then the sound bars hang down from its top edge, middle first
+        const sq = easeOutBack(prog(r, 6.4, 0.55));
+        $('nmMark').style.opacity = easeOut(prog(r, 6.4, 0.3)).toFixed(3);
+        $('nmSq').style.transformOrigin = '48px 48px';
+        $('nmSq').style.transform = `scale(${lerp(0.4, 1, sq).toFixed(4)})`;
+        [...$('nmBars').children].forEach((bar, k) => {
+          const order = [3, 2, 4, 1, 5, 0, 6].indexOf(k);
+          const p = easeOut(prog(r, 6.75 + order * 0.07, 0.45));
+          bar.style.strokeDasharray = '1 1';
+          bar.style.strokeDashoffset = (1 - p).toFixed(4);
+          bar.style.opacity = p > 0 ? '1' : '0';
+        });
+        enter($('nmCta'), r, 7.4, { dur: 0.7, y: 14, scale: 0.96 });
+        enter($('nmFine'), r, 8.0, { dur: 0.8, y: 10 });
+      }
+    };
+
+    // Natural sizes of the parts that change width, read once the fonts are in
+    function measureName() {
+      const w = (id) => $(id).getBoundingClientRect().width;
+      $('nmV2').style.opacity = '0';
+      const life = $('nmLife');
+      return {
+        your: w('nmYour'), comma: w('nmComma'), ice: w('nmIce'), x: w('nmX'),
+        v: w('nmV1'), V: w('nmV2'), to: w('nmTo'), am: w('nmAm'),
+        life: life.getBoundingClientRect().width, lifeH: life.getBoundingClientRect().height
+      };
+    }
+
+    function renderAt(t) {
+      paper(t);
+      fieldRig(t);
+      phoneRig(t);
+      SCENES.forEach(([id, start, end]) => {
+        const el = $(id);
+        const visible = t >= start && t < end;
+        el.style.display = visible ? 'block' : 'none';
+        if (!visible) return;
+        // Scenes arrive with a short fade and leave upward with a blur
+        const inP = start === 0 ? 1 : easeOut(prog(t, start, 0.45));
+        const out = end > DURATION ? 0 : easeInOut(prog(t, end - 0.45, 0.45));
+        el.style.opacity = Math.min(inP, 1 - out).toFixed(3);
+        el.style.transform = out > 0 ? `translateY(${px(-22 * out)})` : '';
+        el.style.filter = out > 0 ? `blur(${(7 * out).toFixed(2)}px)` : '';
+        RENDER[id](t);
+      });
+    }
+
+    function renderPoster() {
+      $('stage').classList.add('is-poster');
+      SCENES.forEach(([id]) => { $(id).style.display = 'none'; });
+      ['fieldA', 'fieldB', 'phoneNow', 'phoneConv', 'phoneAsk'].forEach((id) => { $(id).style.opacity = '0'; });
+      const field = $('posterField');
+      const phone = $('posterPhone');
+      field.style.opacity = '0.55';
+      phone.style.opacity = '1';
+      field.style.transform = P('translate(0, 420px) scale(1.5)', 'translate(0, 230px) scale(1.05)');
+      phone.style.transform = P('translate(0, 620px) scale(.78)', 'translate(430px, 10px) scale(.92)');
+    }
+
+    window.DURATION = DURATION;
+    window.SIZE = PORTRAIT ? [1080, 1350] : [1920, 1080];
+    window.renderAt = renderAt;
+    window.renderPoster = renderPoster;
+    window.ready = true;
+
+    const params = new URLSearchParams(location.search);
+    if (params.has('poster')) renderPoster();
+    else document.fonts.ready.then(() => renderAt(Number(params.get('t') || 0)));
+  </script>
+</body>
+
+</html>

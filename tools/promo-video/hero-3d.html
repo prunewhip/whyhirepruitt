@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hero 3D layers</title>
+<meta name="robots" content="noindex">
+<!--
+  Bakes the site's hero scene into transparent 1920×1080 stills for the video intro and outro:
+  ?layer=field (voice field only) or ?layer=devices (phone and glasses only).
+  compose.html moves the two layers at different speeds for parallax, so the video render needs no WebGL.
+-->
+<style>
+  @font-face { font-family: "Geist"; src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+  .stage { position: relative; width: 1920px; height: 1080px; }
+  canvas { display: block; width: 100%; height: 100%; }
+  /* Same anchors as compose.html */
+  #phoneAnchor { position: absolute; right: 220px; top: 150px; height: 760px; aspect-ratio: 1 / 2.16; }
+  #glassesAnchor { position: absolute; right: 480px; top: 640px; width: 460px; aspect-ratio: 2 / 1; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <canvas id="c"></canvas>
+    <div id="phoneAnchor"></div>
+    <div id="glassesAnchor"></div>
+  </div>
+  <script type="module">
+    import { mountHero } from '../../js/3d/devices-hero.js';
+    const T = 2.4;
+    const layer = new URLSearchParams(location.search).get('layer');
+    window.ready = (async () => {
+      const stage = await mountHero({
+        canvas: document.getElementById('c'),
+        phoneAnchor: document.getElementById('phoneAnchor'),
+        glassesAnchor: document.getElementById('glassesAnchor'),
+        screens: ['../../assets/app/hd/vox-now.webp'],
+        still: T
+      });
+      stage.scene.children.forEach((child) => {
+        if (!child.isGroup) return;
+        const isField = child.children.some((o) => o.isLineSegments);
+        if (layer === 'field') child.visible = isField;
+        if (layer === 'devices') child.visible = !isField;
+      });
+      stage.renderOnce(T);
+      return 'ok';
+    })().catch((e) => 'ERR ' + e.message);
+  </script>
+</body>
+</html>

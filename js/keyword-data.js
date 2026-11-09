@@ -1,11 +1,116 @@
 /**
  * Keyword Data for Portfolio Interactive Explorer
- * Maps technologies to their implementations in the Nemo_Server repository
+ * Maps technologies to their implementations in the Vox_Amelior repository
  */
 
-const GITHUB_BASE = 'https://github.com/pruittcolon/NeMo_Server/blob/main';
+const GITHUB_BASE = 'https://github.com/prunewhip/Vox_Amelior/blob/main';
+
+// The Android app lives on its own branch; links pin the exact commit so they never break
+const VOX_APP_BASE = 'https://github.com/prunewhip/Vox_Amelior/blob/631d215e7253021196b20e1a8189be653c669883/vox_mobile/lib';
 
 const keywordData = {
+    // ══════════════════════════════════════════════════════════
+    // VOICE APP (Android, Flutter/Dart): the primary project
+    // ══════════════════════════════════════════════════════════
+
+    'On-device speech-to-text': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-asr',
+        lang: 'dart',
+        summary: 'NVIDIA Parakeet TDT 0.6B running on the phone through sherpa-onnx',
+        explanation: 'Each sentence the speech detector keeps is decoded by a NeMo transducer model on the device. It writes punctuation and capitals, and word timestamps feed speaker turns.',
+        files: [
+            { name: 'sherpa_engines.dart', path: 'native/sherpa_engines.dart', size: '8KB' },
+            { name: 'segment_processor.dart', path: 'pipeline/segment_processor.dart', size: '19KB' }
+        ],
+        folder: 'vox_mobile/lib/native/'
+    },
+
+    'Voiceprints (who is speaking)': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-speaker-id',
+        lang: 'dart',
+        summary: 'TitaNet voiceprints matched with margins, patterns and “not this person” vetoes',
+        explanation: 'A line is given a name only when the best match clears a threshold and beats the runner-up by a margin. Unknown voices become recurring guests until someone names them.',
+        files: [
+            { name: 'speaker_identifier.dart', path: 'speakers/speaker_identifier.dart', size: '7KB' },
+            { name: 'voice_patterns.dart', path: 'speakers/voice_patterns.dart', size: '4KB' }
+        ],
+        folder: 'vox_mobile/lib/speakers/'
+    },
+
+    'Speaker diarization': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-diarization',
+        lang: 'dart',
+        summary: 'Sortformer frame activity turned into clean speaker turns',
+        explanation: 'Fills short pauses, drops blips, treats brief overlaps as a hand-over and marks real cross-talk, so quick back-and-forth becomes one line per person.',
+        files: [
+            { name: 'speaker_turns.dart', path: 'pipeline/speaker_turns.dart', size: '8KB' },
+            { name: 'sortformer_diarizer.dart', path: 'native/sortformer_diarizer.dart', size: '2KB' }
+        ],
+        folder: 'vox_mobile/lib/pipeline/'
+    },
+
+    'One-job scheduler': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-scheduler',
+        lang: 'dart',
+        summary: 'Transcription and the LLM share one queue and never run at once',
+        explanation: 'A question someone is waiting for goes first, then speech from the on-disk queue, then background reviews one small step at a time. Failed chunks get one retry before being set aside, never lost.',
+        files: [
+            { name: 'compute_scheduler.dart', path: 'pipeline/compute_scheduler.dart', size: '5KB' },
+            { name: 'chunk_queue.dart', path: 'pipeline/chunk_queue.dart', size: '3KB' }
+        ],
+        folder: 'vox_mobile/lib/pipeline/'
+    },
+
+    'Hybrid search (words + meaning)': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-search',
+        lang: 'dart',
+        summary: 'SQLite FTS5 and EmbeddingGemma vectors fused with Reciprocal Rank Fusion',
+        explanation: 'RRF combines the two rankings without putting their very different scores on one scale. The same search picks the lines Gemma reads before it answers (RAG).',
+        files: [
+            { name: 'hybrid_search.dart', path: 'search/hybrid_search.dart', size: '14KB' },
+            { name: 'embedding_gemma.dart', path: 'native/embedding_gemma.dart', size: '3KB' }
+        ],
+        folder: 'vox_mobile/lib/search/'
+    },
+
+    'Gemma 4 agent tools': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-agent',
+        lang: 'dart',
+        summary: 'The actions Gemma 4 can take on the phone in agent mode',
+        explanation: 'Search conversations, read a day or week timeline, save notes, set reminders, run automations or pause listening. Tool results are sized to fit the model’s measured context.',
+        files: [
+            { name: 'agent_tools.dart', path: 'assistant/agent_tools.dart', size: '8KB' },
+            { name: 'gemma_llm_engine.dart', path: 'native/gemma_llm_engine.dart', size: '8KB' }
+        ],
+        folder: 'vox_mobile/lib/assistant/'
+    },
+
+    'Time-aware questions': {
+        category: 'voice-app',
+        base: VOX_APP_BASE,
+        snippet: 'voice-time',
+        lang: 'dart',
+        summary: 'Understands “last week”, “yesterday evening”, “on Monday”, “in March”',
+        explanation: 'Calendar phrases are calendar-exact (last week is the previous Monday to Sunday), while rolling phrases count back from now. The window narrows what Gemma reads.',
+        files: [
+            { name: 'time_window.dart', path: 'assistant/time_window.dart', size: '10KB' },
+            { name: 'query_parser.dart', path: 'assistant/query_parser.dart', size: '3KB' }
+        ],
+        folder: 'vox_mobile/lib/assistant/'
+    },
+
     // ══════════════════════════════════════════════════════════
     // CORE AI/ML - Tier 1 (Most impressive for Senior AI role)
     // ══════════════════════════════════════════════════════════
@@ -370,7 +475,7 @@ const keywordData = {
         summary: 'AES-256 encrypted SQLite databases',
         explanation: 'All sensitive data (RAG memories, emails, transcripts) is stored in encrypted SQLite databases. Keys managed via Docker secrets.',
         files: [
-            { name: 'encrypted_db.py', path: 'shared/crypto/encrypted_db.py', size: '8KB' }
+            { name: 'db_encryption.py', path: 'shared/crypto/db_encryption.py', size: '13KB' }
         ],
         folder: 'shared/crypto/'
     },
@@ -385,7 +490,7 @@ const keywordData = {
         explanation: 'Each service has its own Dockerfile with multi-stage builds. Docker Compose orchestrates the full stack for local development.',
         files: [
             { name: 'docker-compose.yml', path: 'docker/docker-compose.yml', size: '8KB' },
-            { name: 'Dockerfile (API Gateway)', path: 'docker/api-gateway/Dockerfile', size: '2KB' }
+            { name: 'Dockerfile.gateway', path: 'docker/Dockerfile.gateway', size: '1KB' }
         ],
         folder: 'docker/'
     },
@@ -432,7 +537,7 @@ const keywordData = {
         explanation: 'API Gateway validates JWTs for all requests. Service-to-service communication uses short-lived tokens with Redis-backed replay protection.',
         files: [
             { name: 'auth_manager.py', path: 'services/api-gateway/src/auth/auth_manager.py', size: '12KB' },
-            { name: 'security.py', path: 'shared/security/security.py', size: '8KB' }
+            { name: 'service_auth.py', path: 'shared/security/service_auth.py', size: '18KB' }
         ],
         folder: 'services/api-gateway/src/auth/'
     },
@@ -442,7 +547,7 @@ const keywordData = {
         summary: 'At-rest encryption for all sensitive databases',
         explanation: 'SQLCipher wraps SQLite with AES-256-CBC encryption. Encryption keys loaded from Docker secrets with environment fallback.',
         files: [
-            { name: 'encrypted_db.py', path: 'shared/crypto/encrypted_db.py', size: '8KB' }
+            { name: 'db_encryption.py', path: 'shared/crypto/db_encryption.py', size: '13KB' }
         ],
         folder: 'shared/crypto/'
     },
@@ -452,7 +557,7 @@ const keywordData = {
         summary: 'Secure secrets management for production',
         explanation: 'JWT signing keys, database encryption keys, and credentials are mounted via /run/secrets. Strong-length validation rejects weak defaults.',
         files: [
-            { name: 'secrets.yaml', path: 'k8s/base/secrets.yaml', size: '2KB' }
+            { name: 'secrets.yaml.template', path: 'k8s/base/secrets.yaml.template', size: '1KB' }
         ],
         folder: 'k8s/base/'
     },
@@ -557,7 +662,7 @@ const keywordData = {
     },
 
     'System 2 Thinking': {
-        category: 'patterns',
+        category: 'ml-engines', // concept piece: not shown on the site
         summary: 'LLM outputs verified by deterministic ML engines',
         explanation: 'Gemma provides fast "System 1" responses. ML Service engines (AutoML, causal inference) provide slower "System 2" statistical verification.',
         files: [
@@ -608,7 +713,7 @@ const keywordData = {
         explanation: 'Production HTTPS with certificate management, security headers (HSTS, CSP), and load balancing. All traffic encrypted in transit.',
         files: [
             { name: 'Dockerfile.nginx', path: 'docker/Dockerfile.nginx', size: '1KB' },
-            { name: 'default.conf', path: 'docker/nginx/default.conf', size: '3KB' }
+            { name: 'nginx.conf', path: 'docker/nginx/nginx.conf', size: '10KB' }
         ],
         folder: 'docker/nginx/'
     },
@@ -618,7 +723,7 @@ const keywordData = {
         summary: 'Service mesh for microservices communication',
         explanation: 'Istio configuration for VirtualService routing, DestinationRule policies, mTLS between services, and traffic management.',
         files: [
-            { name: 'virtual-services.yaml', path: 'k8s/istio/virtual-services.yaml', size: '5KB' },
+            { name: 'istio-config.yaml', path: 'k8s/istio/istio-config.yaml', size: '3KB' },
             { name: 'destination-rules.yaml', path: 'k8s/istio/destination-rules.yaml', size: '3KB' }
         ],
         folder: 'k8s/istio/'

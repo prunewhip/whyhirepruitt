@@ -1,0 +1,1618 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>About-me film (video composition)</title>
+  <meta name="robots" content="noindex">
+  <!--
+    A 1:27 film for the About page, rendered frame by frame by tools/promo-video/render.mjs:
+      --page tools/film/story.html --name pruitt-story                                (16:9, 1920×1080, desktop)
+      --page "tools/film/story.html?format=portrait" --name pruitt-story-portrait     (4:5, 1080×1350, phones)
+    Script, facts and the reasoning behind each line: docs/STORY_SCRIPT.md.
+    Sound: tools/film/story-score.mjs; both read the chapter and scene times in story-timeline.js.
+
+    One layout for the whole film, so the eye always knows where to look:
+      words     top left: the chapter label, then the line, one beat at a time
+      pictures  stand on one road that runs across every scene; a new scene's pictures arrive along it from the right
+      route     along the bottom, a map of the five chapters with a marker that moves from stop to stop
+    Inside a scene, the words come first and the picture they name follows.
+
+    Five chapters:
+      01 The roads     seven years building networks: under the ocean, into our homes, through the air; the climb
+      02 The spark     a computer wrote back; ecstatic, still; every major model since
+      03 The question  where does it go? our words leave the house, on roads he helped build
+      04 The build     so he built an AI that stays home; the proof
+      05 What's next   the opening line comes back and turns: AI that lets them stay home; the ask
+
+    Same look and kinetic type as the commercial (film.html). Each frame is a pure function of time.
+    Preview through a local server: ?t=30 shows a moment, ?poster shows the poster; add &format=portrait.
+  -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --paper: #fcfcfa;
+      --surface: #ffffff;
+      --ink: #18201c;
+      --ink-2: #4a544e;
+      --ink-3: #5f6963;
+      --line: #e2e6e0;
+      --accent: #1e6b57;
+      --accent-soft: #e6f0ec;
+      --W: 1920px;
+      --H: 1080px;
+      /* The road's distance from the bottom of the frame, and the left edge of the words */
+      --road: 300px;
+      --edge: 150px;
+    }
+
+    .portrait {
+      --W: 1080px;
+      --H: 1350px;
+      --road: 240px;
+      --edge: 70px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html,
+    body {
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      background: var(--paper);
+    }
+
+    #stage {
+      position: relative;
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      font-family: "Geist", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: "Geist Mono", ui-monospace, monospace;
+    }
+
+    /* Line breaks for one cut only */
+    .pb {
+      display: none;
+    }
+
+    .portrait .pb {
+      display: inline;
+    }
+
+    .portrait .lb {
+      display: none;
+    }
+
+    em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    /* Words animate one by one */
+    .w {
+      display: inline-block;
+    }
+
+    .title {
+      font-weight: 620;
+      letter-spacing: -0.045em;
+      line-height: 1.04;
+    }
+
+    .label {
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 30px;
+      line-height: 1.35;
+      color: var(--ink-2);
+    }
+
+    .portrait .label {
+      font-size: 34px;
+    }
+
+    .ico {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .ico--fill {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--surface);
+      box-shadow: 0 1px 3px rgba(24, 32, 28, 0.06), 0 30px 60px -36px rgba(24, 32, 28, 0.3);
+    }
+
+    /* ── The fixed frame: words, road, route ── */
+
+    .scene,
+    .cap,
+    .stg {
+      position: absolute;
+      inset: 0;
+    }
+
+    .scene {
+      display: none;
+    }
+
+    #kicker,
+    .cap .beat {
+      position: absolute;
+      left: var(--edge);
+      right: var(--edge);
+    }
+
+    #kicker,
+    #pKick {
+      top: 92px;
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 28px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .portrait #kicker,
+    .portrait #pKick {
+      font-size: 34px;
+    }
+
+    #kicker > span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      white-space: nowrap;
+    }
+
+    .cap .beat {
+      top: 136px;
+      font-size: 80px;
+    }
+
+    .portrait .cap .beat {
+      top: 142px;
+      font-size: 76px;
+    }
+
+    /* The old line, when it comes back */
+    .beat--then {
+      color: var(--ink-3);
+    }
+
+    .road {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--W);
+      height: var(--H);
+      overflow: visible;
+    }
+
+    .road__line {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 5;
+      stroke-linecap: round;
+      opacity: 0.85;
+    }
+
+    .road__ghost {
+      fill: none;
+      stroke: none;
+    }
+
+    .road__dot {
+      fill: var(--accent);
+    }
+
+    .road__halo {
+      fill: var(--accent);
+      opacity: 0.16;
+    }
+
+    #map line {
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    #mapBase {
+      stroke: var(--line);
+    }
+
+    #mapDone {
+      stroke: var(--accent);
+    }
+
+    #map circle {
+      stroke-width: 3;
+    }
+
+    .stop {
+      position: absolute;
+      transform: translateX(-50%);
+      font-family: "Geist Mono", ui-monospace, monospace;
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--ink-3);
+    }
+
+    .portrait .stop {
+      font-size: 24px;
+    }
+
+    .stop.is-here {
+      color: var(--accent);
+    }
+
+    /* An icon in a ring, standing on the road */
+    .node {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 96px;
+      height: 96px;
+      margin: -48px 0 0 -48px;
+      border: 3px solid var(--accent);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .portrait .node {
+      width: 80px;
+      height: 80px;
+      margin: -40px 0 0 -40px;
+    }
+
+    .node svg {
+      width: 46px;
+      height: 46px;
+    }
+
+    .portrait .node svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    /* Lit: the stations he worked on, as the irony lands */
+    .node .lit {
+      position: absolute;
+      inset: -3px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      opacity: 0;
+    }
+
+    /* Anchored to the road: their bottom edge stands on it (or just above it) */
+    .on-road {
+      position: absolute;
+      bottom: var(--road);
+    }
+
+    .above-road {
+      position: absolute;
+      bottom: calc(var(--road) + 26px);
+    }
+
+    /* ── A · the roads: three stations, each named above its icon ── */
+    .station {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 520px;
+      margin-left: -260px;
+      text-align: center;
+      /* The icon's centre sits on the road */
+      bottom: calc(var(--road) - 62px);
+    }
+
+    .portrait .station {
+      width: 350px;
+      margin-left: -175px;
+      bottom: calc(var(--road) - 56px);
+    }
+
+    .station__title {
+      font-size: 60px;
+    }
+
+    .portrait .station__title {
+      font-size: 54px;
+    }
+
+    .station__label {
+      margin-top: 12px;
+    }
+
+    .station__icon {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 124px;
+      height: 124px;
+      margin-top: 26px;
+      border: 3px solid var(--accent);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .portrait .station__icon {
+      width: 112px;
+      height: 112px;
+      margin-top: 22px;
+    }
+
+    .station__icon svg {
+      width: 58px;
+      height: 58px;
+    }
+
+    .ping {
+      position: absolute;
+      inset: -3px;
+      border: 3px solid var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    /* ── B · the climb: three cards on steps that rise from the road ── */
+    .rung {
+      position: absolute;
+      width: 460px;
+      padding: 28px 34px 30px;
+    }
+
+    .portrait .rung {
+      width: 600px;
+    }
+
+    .rung b {
+      display: block;
+      font-size: 44px;
+      font-weight: 620;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+    }
+
+    .rung .label {
+      margin-top: 8px;
+    }
+
+    .rung--top {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .rung--top b {
+      color: var(--accent);
+    }
+
+    #r1 { left: 300px; bottom: var(--road); }
+    #r2 { left: 800px; bottom: calc(var(--road) + 140px); }
+    #r3 { left: 1300px; bottom: calc(var(--road) + 280px); }
+    .portrait #r1 { left: 70px; }
+    .portrait #r2 { left: 240px; bottom: calc(var(--road) + 180px); }
+    .portrait #r3 { left: 410px; bottom: calc(var(--road) + 360px); }
+
+    #stairs path {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.85;
+    }
+
+    /* ── C · the spark ── */
+    #chat {
+      left: 560px;
+      width: 800px;
+      padding: 32px 36px 34px;
+    }
+
+    .portrait #chat {
+      left: 70px;
+      width: 940px;
+    }
+
+    .chat__head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      font-size: 26px;
+      color: var(--ink-3);
+    }
+
+    .portrait .chat__head {
+      font-size: 28px;
+    }
+
+    .chat__head i {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .bubble {
+      width: fit-content;
+      max-width: 88%;
+      min-height: 1.3em;
+      padding: 20px 28px;
+      border-radius: 30px;
+      font-size: 36px;
+      line-height: 1.3;
+    }
+
+    .portrait .bubble {
+      font-size: 42px;
+    }
+
+    .bubble--me {
+      margin-left: auto;
+      border-bottom-right-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .bubble--ai {
+      margin-top: 26px;
+      border-bottom-left-radius: 8px;
+      background: var(--accent-soft);
+    }
+
+    .caret {
+      display: inline-block;
+      width: 4px;
+      height: 0.95em;
+      margin-left: 4px;
+      vertical-align: -0.1em;
+      background: currentColor;
+    }
+
+    .dots {
+      display: inline-flex;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .dots b {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    #burst {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--W);
+      height: var(--H);
+    }
+
+    #burst path {
+      stroke: var(--accent);
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    /* ── E · every major model: a grid of review notes above the road ── */
+    .review {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 380px;
+      padding: 20px 26px 24px;
+    }
+
+    .portrait .review {
+      width: 455px;
+      padding: 18px 24px 22px;
+    }
+
+    .review__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 20px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .portrait .review__head {
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .score {
+      display: inline-flex;
+      gap: 7px;
+    }
+
+    .score b {
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+    }
+
+    .score b.on {
+      background: var(--accent);
+    }
+
+    .review p {
+      font-size: 30px;
+      font-weight: 560;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .portrait .review p {
+      font-size: 32px;
+    }
+
+    .review--last {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .review--last p {
+      color: var(--accent);
+    }
+
+    /* ── F · the question: you at one end of the road, their servers at the other ── */
+    .end {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      transform: translateX(-50%);
+    }
+
+    .end .label {
+      font-size: 28px;
+      white-space: nowrap;
+    }
+
+    .portrait .end .label {
+      font-size: 30px;
+    }
+
+    /* Centred on the road */
+    #you {
+      top: calc(var(--H) - var(--road) - 75px);
+    }
+
+    .portrait #you {
+      top: calc(var(--H) - var(--road) - 60px);
+    }
+
+    #you .box {
+      display: grid;
+      place-items: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 34px;
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .portrait #you .box {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+    }
+
+    #you svg {
+      width: 72px;
+      height: 72px;
+    }
+
+    /* The cloud's base sits on the road */
+    #servers {
+      top: calc(var(--H) - var(--road) - 150px);
+    }
+
+    .portrait #servers {
+      top: calc(var(--H) - var(--road) - 100px);
+    }
+
+    #servers svg {
+      width: 300px;
+      height: 177px;
+    }
+
+    .portrait #servers svg {
+      width: 190px;
+      height: 112px;
+    }
+
+    .chip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      height: 60px;
+      padding: 0 24px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 30px;
+      color: var(--ink-2);
+      white-space: nowrap;
+      box-shadow: 0 12px 24px -16px rgba(24, 32, 28, 0.35);
+    }
+
+    .portrait .chip {
+      height: 62px;
+      font-size: 32px;
+    }
+
+    .chip i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ── H · an AI that stays home: the phone stands on the road ── */
+    .layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    .portrait .layer {
+      left: -420px;
+      top: 135px;
+    }
+
+    #hBrand {
+      position: absolute;
+      left: var(--edge);
+      top: 470px;
+    }
+
+    .portrait #hBrand {
+      left: 0;
+      right: 0;
+      top: 330px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .lockup {
+      display: inline-flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 56px;
+      font-weight: 620;
+      letter-spacing: -0.035em;
+    }
+
+    .lockup svg {
+      width: 84px;
+      height: 84px;
+    }
+
+    .portrait .lockup {
+      font-size: 40px;
+    }
+
+    .portrait .lockup svg {
+      width: 60px;
+      height: 60px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      height: 64px;
+      margin-top: 30px;
+      padding: 0 28px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 30px;
+      color: var(--ink-2);
+      white-space: nowrap;
+    }
+
+    .portrait .tag {
+      height: 62px;
+      margin-top: 0;
+      padding: 0 24px;
+    }
+
+    .tag svg {
+      width: 30px;
+      height: 30px;
+      color: var(--accent);
+    }
+
+    /* ── I · the proof: three markers standing on the road ── */
+    .proof {
+      width: 440px;
+      margin-left: -220px;
+      text-align: center;
+    }
+
+    .portrait .proof {
+      width: 330px;
+      margin-left: -165px;
+    }
+
+    .proof b {
+      display: block;
+      font-size: 150px;
+      font-weight: 620;
+      letter-spacing: -0.055em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .portrait .proof b {
+      font-size: 112px;
+    }
+
+    .proof .label {
+      margin-top: 18px;
+      font-family: "Geist", system-ui, sans-serif;
+      font-size: 34px;
+      line-height: 1.25;
+    }
+
+    .portrait .proof .label {
+      font-size: 32px;
+    }
+
+    /* ── J · home: the light runs in from both ends ── */
+    #house {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+    }
+
+    #house .node {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0;
+    }
+
+    #house .node svg {
+      width: 74px;
+      height: 74px;
+    }
+
+    #halo {
+      position: absolute;
+      inset: -70px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30, 107, 87, 0.24) 0%, rgba(30, 107, 87, 0.08) 45%, rgba(30, 107, 87, 0) 70%);
+      opacity: 0;
+    }
+
+    /* ── K · the ask ── */
+    #kPhoto {
+      left: 420px;
+      width: 380px;
+      height: 475px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: #f3f1ec;
+    }
+
+    #kPhoto img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #kText {
+      position: absolute;
+      left: 870px;
+      top: 430px;
+    }
+
+    #kName {
+      font-size: 112px;
+    }
+
+    #kRole {
+      margin-top: 18px;
+      font-size: 32px;
+    }
+
+    #kUrl {
+      display: inline-flex;
+      margin-top: 32px;
+      padding: 16px 28px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 30px;
+    }
+
+    .portrait #kPhoto {
+      left: 70px;
+      width: 360px;
+      height: 450px;
+    }
+
+    .portrait #kText {
+      left: 470px;
+      right: 70px;
+      top: 700px;
+    }
+
+    .portrait #kName {
+      font-size: 84px;
+    }
+
+    .portrait #kRole {
+      font-size: 30px;
+    }
+
+    /* ── Poster: the film's words above, the road below; the page's play button sits in the clear middle ── */
+    #poster {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    #stage.is-poster #poster {
+      display: block;
+    }
+
+    #stage.is-poster #kicker {
+      display: none;
+    }
+
+    #pKick {
+      position: absolute;
+      left: var(--edge);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Line icons, defined once and reused -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="0 0 96 96">
+      <rect width="96" height="96" rx="26" fill="#1e6b57" />
+      <g stroke="#ffffff" stroke-width="5.5" stroke-linecap="round">
+        <path d="M21 26v12M30 26v22M39 26v32M48 26v44M57 26v32M66 26v22M75 26v12" />
+      </g>
+    </symbol>
+    <symbol id="i-ocean" viewBox="0 0 24 24"><g class="ico"><path d="M2.5 6.5c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0 3.2 1.5 4.6 0" /><path d="M2.5 10.5c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0 3.2 1.5 4.6 0" /><path d="M2.5 18.5h19" /></g><rect class="ico--fill" x="9.4" y="16.4" width="5.2" height="4.2" rx="1.2" /></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><g class="ico"><path d="M3.5 11 12 4l8.5 7" /><path d="M5.8 9.4V20h12.4V9.4" /><path d="M10 20v-5.5h4V20" /></g></symbol>
+    <symbol id="i-tower" viewBox="0 0 24 24"><g class="ico"><path d="M12 9 8.2 21.5M12 9l3.8 12.5M9.5 17.2h5" /><circle cx="12" cy="7.4" r="1.3" /><path d="M8.8 4.4a4.4 4.4 0 0 0 0 6M15.2 4.4a4.4 4.4 0 0 1 0 6M6.3 2.4a7.6 7.6 0 0 0 0 10M17.7 2.4a7.6 7.6 0 0 1 0 10" /></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><g class="ico"><rect x="3" y="4" width="18" height="12.5" rx="3" /><path d="M8 16.5 6.6 20.5l5-4" /><path d="M7.5 9h9M7.5 12h6" /></g></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path class="ico--fill" d="M21.5 15.5v-2l-8-5V3.6a1.6 1.6 0 0 0-3.2 0V8.5l-8 5v2l8-2.4V18l-2.2 1.6V21l3.8-1 3.8 1v-1.4L13.5 18v-4.9z" /></symbol>
+    <symbol id="cloud" viewBox="0 0 220 130">
+      <g fill="#5f6963"><circle cx="62" cy="78" r="36" /><circle cx="112" cy="56" r="48" /><circle cx="162" cy="76" r="34" /><rect x="26" y="68" width="170" height="48" rx="24" /></g>
+      <g fill="#ffffff"><circle cx="62" cy="78" r="34" /><circle cx="112" cy="56" r="46" /><circle cx="162" cy="76" r="32" /><rect x="28" y="70" width="166" height="44" rx="22" /></g>
+    </symbol>
+  </svg>
+
+  <div id="stage">
+    <!-- The fixed frame: the road every scene stands on, the route of chapters, the chapter label -->
+    <svg class="road" id="road" aria-hidden="true"></svg>
+    <svg class="road" id="homeL" aria-hidden="true"></svg>
+    <svg class="road" id="homeR" aria-hidden="true"></svg>
+    <svg class="road" id="map" aria-hidden="true"><line id="mapBase" /><line id="mapDone" /></svg>
+    <div id="stops"></div>
+    <p id="kicker"></p>
+
+    <!-- ── 01 · The roads ── -->
+    <!-- A: seven years, three kinds of road -->
+    <section class="scene" id="A">
+      <div class="cap">
+        <h2 class="beat title" id="aLine" data-words>For seven years,<br class="pb"> I built<br class="lb"> <em>the roads<br class="pb"> our words travel.</em></h2>
+      </div>
+      <div class="stg">
+        <div class="station on-road" id="s1">
+          <p class="station__title title" data-words>Under the ocean.</p>
+          <p class="station__label label">SubCom<br>Subsea cables</p>
+          <span class="station__icon"><svg><use href="#i-ocean" /></svg><i class="ping"></i></span>
+        </div>
+        <div class="station on-road" id="s2">
+          <p class="station__title title" data-words>Into our homes.</p>
+          <p class="station__label label">Wyyerd Fiber<br>Fiber internet</p>
+          <span class="station__icon"><svg><use href="#i-home" /></svg><i class="ping"></i></span>
+        </div>
+        <div class="station on-road" id="s3">
+          <p class="station__title title" data-words>Through the air.</p>
+          <p class="station__label label">BTI Solutions<br>5G and LTE</p>
+          <span class="station__icon"><svg><use href="#i-tower" /></svg><i class="ping"></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- B: the climb, from the road up -->
+    <section class="scene" id="B">
+      <div class="cap">
+        <h2 class="beat title" id="bLine" data-words>I worked <em>my way up.</em></h2>
+      </div>
+      <div class="stg">
+        <svg class="road" id="stairs" aria-hidden="true"><path id="stairPath" /><path id="stairHead" /></svg>
+        <div class="rung card" id="r1"><b>Integration technician</b><p class="label">SubCom</p></div>
+        <div class="rung card" id="r2"><b>Fiber optic technician</b><p class="label">Wyyerd Fiber</p></div>
+        <div class="rung card rung--top" id="r3"><b>Network engineer</b><p class="label">BTI Solutions</p></div>
+      </div>
+    </section>
+
+    <!-- ── 02 · The spark ── -->
+    <!-- C: a computer writes back, and how that felt -->
+    <section class="scene" id="C">
+      <div class="cap">
+        <h2 class="beat title" id="cLine"><span id="c1" data-words>Then a computer</span><br class="pb"> <span id="c2" data-words><em>wrote back.</em></span></h2>
+        <h2 class="beat title" id="cFelt"><span id="c3" data-words>I was ecstatic.</span><br class="pb"> <span id="c4" data-words><em>I still am.</em></span></h2>
+      </div>
+      <div class="stg">
+        <svg id="burst" aria-hidden="true"></svg>
+        <div class="card above-road" id="chat">
+          <p class="chat__head mono"><i></i>New chat · one of the first GPT models</p>
+          <p class="bubble bubble--me" id="cAsk"></p>
+          <p class="bubble bubble--ai" id="cReply"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- E: every major model since (filled from REVIEWS below) -->
+    <section class="scene" id="E">
+      <div class="cap">
+        <h2 class="beat title" id="eLine" data-words>Since then, I’ve tried<br class="pb"> and reviewed<br> <em>every major model.</em></h2>
+      </div>
+      <div class="stg" id="eNotes"></div>
+    </section>
+
+    <!-- ── 03 · The question ── -->
+    <!-- F: where our words go, and who built the road -->
+    <section class="scene" id="F">
+      <div class="cap">
+        <h2 class="beat title" id="fAsk"><span id="f1" data-words>But a network engineer<br class="pb"> always asks<br class="lb"> one question:</span><br class="pb"> <span id="f2" data-words><em>Where does it go?</em></span></h2>
+        <h2 class="beat title" id="fLeft" data-words>Every word we gave them<br> <em>left the house.</em></h2>
+        <h2 class="beat title" id="fKnew"><span id="f3" data-words>I knew the road<br class="pb"> they took.</span><br> <span id="f4" data-words><em>I’d helped build it.</em></span></h2>
+      </div>
+      <div class="stg">
+        <div class="end" id="you"><span class="box"><svg><use href="#i-chat" /></svg></span><span class="label">you</span></div>
+        <div class="end" id="servers"><svg><use href="#cloud" /></svg><span class="label">their servers</span></div>
+        <span class="node" id="n1"><svg><use href="#i-ocean" /></svg><span class="lit"><svg><use href="#i-ocean" /></svg></span></span>
+        <span class="node" id="n2"><svg><use href="#i-home" /></svg><span class="lit"><svg><use href="#i-home" /></svg></span></span>
+        <span class="node" id="n3"><svg><use href="#i-tower" /></svg><span class="lit"><svg><use href="#i-tower" /></svg></span></span>
+        <div id="fChips"></div>
+      </div>
+    </section>
+
+    <!-- ── 04 · The build ── -->
+    <!-- H: an AI that stays home -->
+    <section class="scene" id="H">
+      <div class="cap">
+        <h2 class="beat title" id="hLine" data-words>So I built an AI<br class="pb"> <em>that stays home.</em></h2>
+      </div>
+      <div class="stg">
+        <img class="layer" id="phone" src="shots/phone-now.png" alt="">
+        <div id="hChips"></div>
+        <div id="hBrand">
+          <div class="lockup" id="hLock"><svg><use href="#mark" /></svg><span>Vox Amelior</span></div>
+          <div><p class="tag" id="hTag"><svg><use href="#i-plane" /></svg>Works in airplane mode</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- I: the proof -->
+    <section class="scene" id="I">
+      <div class="cap">
+        <h2 class="beat title" id="iLine"><span id="i1" data-words>Not just a fan.</span><br class="pb"> <span id="i2" data-words><em>A builder.</em></span></h2>
+      </div>
+      <div class="stg">
+        <div class="proof above-road" id="p1"><b>M.S.</b><p class="label">Software engineering, AI focus</p></div>
+        <div class="proof above-road" id="p2"><b id="p2n">3</b><p class="label">Open-source Android apps</p></div>
+        <div class="proof above-road" id="p3"><b id="p3n">500+</b><p class="label">Automated tests</p></div>
+      </div>
+    </section>
+
+    <!-- ── 05 · What's next ── -->
+    <!-- J: the opening line comes back, in the same place, and turns -->
+    <section class="scene" id="J">
+      <div class="cap">
+        <h2 class="beat title beat--then" id="jThen" data-words>For seven years,<br class="pb"> I built<br class="lb"> the roads<br class="pb"> our words travel.</h2>
+        <h2 class="beat title" id="jNow" data-words>Now I build AI<br class="pb"> that lets them<br class="lb"> <em>stay home.</em></h2>
+      </div>
+      <div class="stg">
+        <div id="house"><span id="halo"></span><span class="node"><svg><use href="#i-home" /></svg></span></div>
+      </div>
+    </section>
+
+    <!-- K: the ask -->
+    <section class="scene" id="K">
+      <div class="cap">
+        <h2 class="beat title" id="kLine" data-words>Let’s build<br class="pb"> <em>what’s next.</em></h2>
+      </div>
+      <div class="stg">
+        <figure class="on-road" id="kPhoto"><img src="../../assets/img/portrait-960.jpg" alt=""></figure>
+        <div id="kText">
+          <p class="title" id="kName" data-words>Pruitt Colon</p>
+          <p class="label" id="kRole">AI engineer ·<br class="pb"> open to full-time roles</p>
+          <p class="mono" id="kUrl">whyhirepruitt.dev</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Poster -->
+    <section id="poster">
+      <p id="pKick">About me · 1:27</p>
+      <div class="cap">
+        <h1 class="beat title">Then a computer<br class="pb"> <em>wrote back.</em></h1>
+      </div>
+      <span class="node" id="pn1"><svg><use href="#i-ocean" /></svg></span>
+      <span class="node" id="pn2"><svg><use href="#i-home" /></svg></span>
+      <span class="node" id="pn3"><svg><use href="#i-tower" /></svg></span>
+    </section>
+  </div>
+
+  <script src="story-timeline.js"></script>
+  <script>
+    const DURATION = STORY.duration;
+    // Scene start times
+    const T0 = STORY.scenes;
+    const PORTRAIT = new URLSearchParams(location.search).get('format') === 'portrait';
+    document.documentElement.classList.toggle('portrait', PORTRAIT);
+    const P = (portrait, landscape) => (PORTRAIT ? portrait : landscape);
+    const W = P(1080, 1920);
+    const H = P(1350, 1080);
+    // The road's height in the frame (the CSS --road, measured from the top)
+    const ROAD = H - P(240, 300);
+
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const lerp = (a, b, p) => a + (b - a) * p;
+    const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+    const easeIn = (p) => p * p * p;
+    const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+    // A small overshoot, for things that pop into place
+    const easeOutBack = (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2);
+    const prog = (t, start, dur) => clamp((t - start) / dur);
+    const px = (v) => `${v.toFixed(1)}px`;
+
+    // `base` is a transform the element keeps underneath, such as centring on its position
+    function enter(el, t, start, { dur = 0.8, y = 30, scale = 1, base = '' } = {}) {
+      const p = easeOut(prog(t, start, dur));
+      el.style.opacity = p.toFixed(3);
+      el.style.transform = `${base}translateY(${px(y * (1 - p))}) scale(${lerp(scale, 1, p).toFixed(4)})`;
+      return p;
+    }
+
+    // Leaves upward with a blur
+    function leave(el, t, start, { dur = 0.4, y = -20, blur = 7 } = {}) {
+      const p = easeInOut(prog(t, start, dur));
+      el.style.opacity = (1 - p).toFixed(3);
+      el.style.transform = p > 0 ? `translateY(${px(y * p)})` : '';
+      el.style.filter = p > 0 ? `blur(${(blur * p).toFixed(2)}px)` : '';
+      return p;
+    }
+
+    // Pops in with a small overshoot
+    function pop(el, t, start, { dur = 0.55, from = 0.4, base = '' } = {}) {
+      const p = easeOutBack(prog(t, start, dur));
+      el.style.opacity = easeOut(prog(t, start, 0.25)).toFixed(3);
+      el.style.transform = `${base}scale(${lerp(from, 1, p).toFixed(4)})`;
+      return p;
+    }
+
+    // A ring that swells out of an icon and fades
+    function ping(el, t, start) {
+      const p = prog(t, start, 0.9);
+      el.style.opacity = p > 0 && p < 1 ? (0.6 * (1 - p)).toFixed(3) : '0';
+      el.style.transform = `scale(${lerp(1, 1.9, easeOut(p)).toFixed(4)})`;
+    }
+
+    /* Kinetic type: [data-words] elements are split into words that rise in one by one */
+    function splitWords(root) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        if (!node.textContent.trim()) return;
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            frag.appendChild(document.createTextNode(part));
+          } else {
+            const s = document.createElement('span');
+            s.className = 'w';
+            s.textContent = part;
+            frag.appendChild(s);
+          }
+        });
+        node.replaceWith(frag);
+      });
+      root.words = [...root.querySelectorAll('.w')];
+    }
+    document.querySelectorAll('[data-words]').forEach(splitWords);
+
+    // Words arrive about 8 a second, settle in half a second, then hold still to be read
+    function words(el, t, start, { stagger = 0.11, dur = 0.55, y = 22, blur = 5 } = {}) {
+      el.words.forEach((w, i) => {
+        const p = easeOut(prog(t, start + i * stagger, dur));
+        w.style.opacity = p.toFixed(3);
+        w.style.transform = `translateY(${px(y * (1 - p))})`;
+        w.style.filter = blur && p < 1 ? `blur(${(blur * (1 - p)).toFixed(2)}px)` : '';
+      });
+    }
+
+    // A caption beat: on screen from `from` until `to` (seconds into its scene), leaving upward just before `to`.
+    // Its words rise in through words(); a beat that runs to the end of its scene leaves with the scene.
+    function beat(el, r, from, to = Infinity) {
+      el.style.visibility = r >= from - 0.05 && r < to ? 'visible' : 'hidden';
+      leave(el, r, to - 0.4);
+    }
+
+    const place = (el, x, y, s = 1, extra = '') => {
+      el.style.transform = `translate(${px(x)}, ${px(y)}) translate(-50%, -50%) scale(${s.toFixed(4)})${extra}`;
+    };
+    const at = (el, x, y) => {
+      el.style.left = px(x);
+      if (y !== undefined) el.style.top = px(y);
+    };
+
+    /* ── The road ──────────────────────────────────────── */
+
+    const SVG = 'http://www.w3.org/2000/svg';
+
+    // A road: a path that draws itself, with pulses of light riding the drawn part, evenly spaced, at `speed` px/s.
+    // A ghost road has no line, only its light.
+    function makeRoad(svg, d, { pulses = 5, ghost = false } = {}) {
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      const path = document.createElementNS(SVG, 'path');
+      path.setAttribute('class', ghost ? 'road__ghost' : 'road__line');
+      path.setAttribute('d', d);
+      svg.appendChild(path);
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = `${len.toFixed(1)} ${len.toFixed(1)}`;
+      const dots = Array.from({ length: pulses }, () => {
+        const g = document.createElementNS(SVG, 'g');
+        g.innerHTML = '<circle class="road__halo" r="20" /><circle class="road__dot" r="8" />';
+        svg.appendChild(g);
+        return g;
+      });
+      const gap = len / Math.max(1, pulses);
+      return {
+        draw(drawn, r, { from = 0, speed = 380, fade = 70, level = 1 } = {}) {
+          path.style.strokeDashoffset = (len * (1 - drawn)).toFixed(1);
+          dots.forEach((g, i) => {
+            const travelled = (r - from) * speed - i * gap;
+            const s = travelled < 0 ? -1 : travelled % len;
+            const o = s < 0 || s > len * drawn ? 0 : Math.min(1, s / fade, (len - s) / fade) * level;
+            g.style.opacity = o.toFixed(3);
+            if (o > 0) {
+              const pt = path.getPointAtLength(s);
+              g.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+            }
+          });
+        }
+      };
+    }
+
+    // Where things sit along the road, per cut
+    const GEO = P({
+      stations: [190, 540, 890], nodes: [370, 540, 710], you: 110, servers: 945, chips: [190, 870], chipLift: 52,
+      stairs: 'M 670 1110 V 930 H 840 V 750 H 1040 V 680', stairTip: [1040, 660],
+      chat: [540, 830], burst: [500, 330], notes: { cols: [292, 788], rows: [540, 695, 850, 1005] },
+      phone: 'translate(-2px, 131px) scale(0.73)', phoneIn: [542, 640], proofs: [190, 540, 890], house: 540
+    }, {
+      stations: [420, 960, 1500], nodes: [700, 960, 1220], you: 230, servers: 1700, chips: [320, 1560], chipLift: 58,
+      stairs: 'M 760 780 V 640 H 1260 V 500 H 1810 V 420', stairTip: [1810, 400],
+      chat: [960, 520], burst: [520, 230], notes: { cols: [348, 756, 1164, 1572], rows: [465, 645] },
+      phone: 'translate(418px, 9px) scale(0.56)', phoneIn: [1380, 420], proofs: [420, 960, 1500], house: 960
+    });
+
+    const road = makeRoad($('road'), `M -60 ${ROAD} L ${W + 60} ${ROAD}`, { pulses: 7 });
+    const homeL = makeRoad($('homeL'), `M -60 ${ROAD} L ${GEO.house} ${ROAD}`, { pulses: 3, ghost: true });
+    const homeR = makeRoad($('homeR'), `M ${W + 60} ${ROAD} L ${GEO.house} ${ROAD}`, { pulses: 3, ghost: true });
+
+    ['s1', 's2', 's3'].forEach((id, k) => at($(id), GEO.stations[k]));
+    ['n1', 'n2', 'n3'].forEach((id, k) => at($(id), GEO.nodes[k], ROAD));
+    ['pn1', 'pn2', 'pn3'].forEach((id, k) => at($(id), GEO.stations[k], ROAD));
+    ['p1', 'p2', 'p3'].forEach((id, k) => at($(id), GEO.proofs[k]));
+    at($('you'), GEO.you);
+    at($('servers'), GEO.servers);
+    at($('house'), GEO.house, ROAD);
+    $('stairs').setAttribute('viewBox', `0 0 ${W} ${H}`);
+    $('stairPath').setAttribute('d', GEO.stairs);
+    const stairLen = $('stairPath').getTotalLength();
+    $('stairPath').style.strokeDasharray = `${stairLen.toFixed(1)} ${stairLen.toFixed(1)}`;
+    {
+      const [x, y] = GEO.stairTip;
+      $('stairHead').setAttribute('d', `M ${x - 22} ${y + 22} L ${x} ${y} L ${x + 22} ${y + 22}`);
+    }
+
+    /* ── The route: the five chapters as stops along the bottom ── */
+
+    const MAP = P({ y: 1272, x0: 100, step: 220 }, { y: 1000, x0: 150, step: 405 });
+    const CHAPTERS = STORY.chapters.map(([name, start], k) => ({ name, start, x: MAP.x0 + k * MAP.step }));
+    const mapLine = (id, x1, x2) => {
+      const l = $(id);
+      l.setAttribute('x1', x1);
+      l.setAttribute('x2', x2);
+      l.setAttribute('y1', MAP.y);
+      l.setAttribute('y2', MAP.y);
+    };
+    $('map').setAttribute('viewBox', `0 0 ${W} ${H}`);
+    mapLine('mapBase', CHAPTERS[0].x, CHAPTERS[CHAPTERS.length - 1].x);
+    CHAPTERS.forEach((c, k) => {
+      c.dot = document.createElementNS(SVG, 'circle');
+      c.dot.setAttribute('cx', c.x);
+      c.dot.setAttribute('cy', MAP.y);
+      c.dot.setAttribute('r', 8);
+      $('map').appendChild(c.dot);
+      c.label = document.createElement('span');
+      c.label.className = 'stop';
+      c.label.textContent = c.name;
+      c.label.style.left = px(c.x);
+      c.label.style.top = px(MAP.y + 20);
+      $('stops').appendChild(c.label);
+      c.kicker = document.createElement('span');
+      c.kicker.textContent = `${String(k + 1).padStart(2, '0')} · ${c.name}`;
+      $('kicker').appendChild(c.kicker);
+      splitWords(c.kicker);
+    });
+    const marker = document.createElementNS(SVG, 'g');
+    marker.innerHTML = '<circle class="road__halo" r="22" /><circle class="road__dot" r="11" />';
+    $('map').appendChild(marker);
+
+    // The chapter you're in: its stop is lit and the marker sits on it, then moves on in the chapter's last second.
+    // The chapter label rises in as the chapter starts and leaves just before the next.
+    function routeAt(t) {
+      const shown = easeOut(prog(t, 0.6, 0.8));
+      $('map').style.opacity = shown.toFixed(3);
+      $('stops').style.opacity = shown.toFixed(3);
+      let c = 0;
+      CHAPTERS.forEach((ch, k) => { if (t >= ch.start) c = k; });
+      const next = CHAPTERS[c + 1];
+      const x = next ? lerp(CHAPTERS[c].x, next.x, easeInOut(prog(t, next.start - 1, 1))) : CHAPTERS[c].x;
+      marker.setAttribute('transform', `translate(${x.toFixed(1)} ${MAP.y})`);
+      mapLine('mapDone', CHAPTERS[0].x, x);
+      CHAPTERS.forEach((ch, k) => {
+        ch.dot.style.fill = k <= c ? 'var(--accent)' : 'var(--paper)';
+        ch.dot.style.stroke = k <= c ? 'var(--accent)' : 'var(--line)';
+        ch.label.classList.toggle('is-here', k === c);
+        ch.kicker.style.visibility = k === c ? 'visible' : 'hidden';
+      });
+      const now = CHAPTERS[c];
+      words(now.kicker, t, now.start + (c ? 0.1 : 0.3), { stagger: 0.08 });
+      leave(now.kicker, t, next ? next.start - 0.4 : Infinity);
+    }
+
+    // The light on the road runs while the story travels. It gives way to our words in "The question", stays off
+    // while the words stay home, runs home from both ends in "What's next", and comes back for the last scene.
+    function roadAt(t) {
+      const drawn = easeInOut(prog(t, 0.2, 2.2));
+      const level = Math.min(prog(t, 1.4, 0.6), 1 - prog(t, T0.F, 0.8)) + prog(t, T0.K + 0.5, 1);
+      road.draw(drawn, t, { from: 1.4, speed: 380, level: clamp(level) });
+      const home = Math.min(prog(t, T0.J + 0.8, 0.5), 1 - prog(t, T0.K, 0.5));
+      homeL.draw(1, t - T0.J, { from: 0.8, speed: 320, fade: 90, level: home });
+      homeR.draw(1, t - T0.J, { from: 0.8, speed: 320, fade: 90, level: home });
+    }
+
+    /* ── Content (illustrative) ─────────────────────────── */
+
+    const ASK = 'How does fiber optic cable carry light?';
+    const REPLY = 'Light bounces along a glass core thinner than a hair, kept inside by total internal reflection.';
+
+    // Review notes: what trying every major model is like. The last one sets up the app.
+    const REVIEWS = [
+      ['Writes a sonnet. Misses the question.', 3],
+      ['Great at code. Shaky at math.', 4],
+      ['Cited a paper that doesn’t exist.', 2],
+      ['Finally remembers the whole thread.', 4],
+      ['Reads images now.', 4],
+      ['Fast. Forgetful.', 3],
+      ['Thinks before it answers.', 5],
+      ['Runs on a phone!', 5]
+    ];
+    const TILT = [-1.2, 1, 0.8, -1, -0.8, 1.2, 1, 0];
+    const reviews = REVIEWS.map(([text, score], i) => {
+      const el = document.createElement('div');
+      el.className = `review card${i === REVIEWS.length - 1 ? ' review--last' : ''}`;
+      const dots = Array.from({ length: 5 }, (_, k) => `<b${k < score ? ' class="on"' : ''}></b>`).join('');
+      el.innerHTML = `<p class="review__head mono"><span>Review · ${String(i + 1).padStart(2, '0')}</span><span class="score">${dots}</span></p><p>${text}</p>`;
+      $('eNotes').appendChild(el);
+      return el;
+    });
+    // Reading order: left to right, then down
+    const noteAt = (i) => {
+      const { cols, rows } = GEO.notes;
+      return [cols[i % cols.length], rows[Math.floor(i / cols.length)]];
+    };
+
+    // What we hand to AI in the cloud: they ride the road away in F, and fall into the phone in H
+    const CHIPS = ['my code', 'my resume', 'a health question', 'my 2 a.m. thoughts', 'my kid’s name', 'my business plan'];
+    const chipEl = (text, parent) => {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.innerHTML = `<i></i>${text}`;
+      parent.appendChild(el);
+      return el;
+    };
+    const fChips = CHIPS.map((c) => chipEl(c, $('fChips')));
+    const hChips = CHIPS.slice(0, 4).map((c) => chipEl(c, $('hChips')));
+
+    // The burst around the chat card when the feeling lands: short rays on an ellipse
+    $('burst').setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const rays = Array.from({ length: 16 }, (_, k) => {
+      const el = document.createElementNS(SVG, 'path');
+      $('burst').appendChild(el);
+      return { el, a: (k / 16) * Math.PI * 2 + 0.2 };
+    });
+
+    /* ── Scenes ────────────────────────────────────────── */
+
+    // [id, start, end] from story-timeline.js; the last scene holds to the end
+    const ORDER = Object.keys(T0);
+    const SCENES = ORDER.map((id, i) => [id, T0[id], i < ORDER.length - 1 ? T0[ORDER[i + 1]] : DURATION + 1]);
+
+    // Typed text: characters appear at `rate` seconds each, with a caret while typing
+    function type(el, text, r, start, rate) {
+      const n = Math.floor(clamp((r - start) / (rate * text.length)) * text.length);
+      const typing = r >= start && n < text.length;
+      el.innerHTML = `${text.slice(0, n)}${typing ? '<span class="caret"></span>' : ''}`;
+      el.style.opacity = r >= start ? '1' : '0';
+    }
+
+    // When the question finishes typing, and when the reply starts (story-score.mjs uses the same arithmetic)
+    const ASKED = 1.2 + ASK.length * 0.034;
+    const REPLY_AT = ASKED + 0.85;
+
+    const RENDER = {
+      A(t) {
+        const r = t - T0.A;
+        words($('aLine'), r, 0.5, { stagger: 0.12 });
+        // The stations arrive after the line that introduces them, left to right along the road
+        [4.8, 7.3, 9.8].forEach((s, k) => {
+          const station = $(`s${k + 1}`);
+          const icon = station.querySelector('.station__icon');
+          pop(icon, r, s);
+          ping(icon.querySelector('.ping'), r, s + 0.15);
+          words(station.querySelector('.station__title'), r, s + 0.3, { stagger: 0.13 });
+          enter(station.querySelector('.station__label'), r, s + 0.9, { dur: 0.6, y: 12 });
+        });
+      },
+
+      B(t) {
+        const r = t - T0.B;
+        words($('bLine'), r, 0.4);
+        // The cards climb from the road, one step at a time, and the steps draw up behind them
+        [1.0, 1.9, 2.8].forEach((s, k) => enter($(`r${k + 1}`), r, s, { dur: 0.7, y: 46, scale: 0.95 }));
+        $('stairPath').style.strokeDashoffset = (stairLen * (1 - easeInOut(prog(r, 1.2, 2.6)))).toFixed(1);
+        $('stairHead').style.opacity = easeOut(prog(r, 3.7, 0.4)).toFixed(3);
+      },
+
+      C(t) {
+        const r = t - T0.C;
+        beat($('cLine'), r, 0, 7.0);
+        words($('c1'), r, 0.4);
+        enter($('chat'), r, 0.8, { dur: 0.7, y: 30, scale: 0.97 });
+        type($('cAsk'), ASK, r, 1.2, 0.034);
+        // A beat of thinking dots, then the reply streams in, faster than anyone types
+        const think = ASKED + 0.25;
+        const reply = $('cReply');
+        if (r < REPLY_AT) {
+          reply.style.opacity = easeOut(prog(r, think, 0.2)).toFixed(3);
+          const k = Math.floor((r - think) * 6) % 3;
+          reply.innerHTML = `<span class="dots">${[0, 1, 2].map((i) => `<b style="opacity:${i === k ? 1 : 0.35}"></b>`).join('')}</span>`;
+        } else {
+          type(reply, REPLY, r, REPLY_AT, 0.022);
+        }
+        words($('c2'), r, REPLY_AT + 0.1, { stagger: 0.16 });
+        // How that felt: the next beat, and a burst of rays around the reply
+        beat($('cFelt'), r, 7.2);
+        words($('c3'), r, 7.2, { stagger: 0.16 });
+        words($('c4'), r, 8.8, { stagger: 0.16 });
+        const p = prog(r, 7.7, 0.9);
+        const [cx, cy] = GEO.chat;
+        const [rx, ry] = GEO.burst;
+        rays.forEach(({ el, a }) => {
+          const k = easeOut(p);
+          const pt = (s) => `${(cx + Math.cos(a) * rx * s).toFixed(1)} ${(cy + Math.sin(a) * ry * s).toFixed(1)}`;
+          el.setAttribute('d', `M ${pt(lerp(0.9, 1.04, k))} L ${pt(lerp(0.94, 1.2, k))}`);
+          el.style.opacity = p > 0 && p < 1 ? (1 - easeIn(p)).toFixed(3) : '0';
+        });
+      },
+
+      E(t) {
+        const r = t - T0.E;
+        words($('eLine'), r, 0.4);
+        // One note every half second, in reading order; the last ("Runs on a phone!") lands bigger, and the rest
+        // step back
+        const lastAt = 1.2 + 7 * 0.5 + 0.4;
+        const back = easeOut(prog(r, lastAt, 0.5));
+        reviews.forEach((el, i) => {
+          const last = i === reviews.length - 1;
+          const s = last ? lastAt : 1.2 + i * 0.5;
+          const p = easeOutBack(prog(r, s, last ? 0.6 : 0.5));
+          const [x, y] = noteAt(i);
+          el.style.opacity = (easeOut(prog(r, s, 0.2)) * (last ? 1 : lerp(1, 0.5, back))).toFixed(3);
+          place(el, x, y + 36 * (1 - Math.min(1, p)), lerp(0.85, last ? 1.08 : 1, p), ` rotate(${TILT[i]}deg)`);
+        });
+      },
+
+      F(t) {
+        const r = t - T0.F;
+        // The question, then its route: you at one end, their servers at the other, his three roads between
+        beat($('fAsk'), r, 0, 5.8);
+        words($('f1'), r, 0.4);
+        words($('f2'), r, 2.4, { stagger: 0.18 });
+        pop($('you'), r, 2.6, { base: 'translateX(-50%) ' });
+        ['n1', 'n2', 'n3'].forEach((id, k) => {
+          pop($(id), r, 2.8 + k * 0.15);
+          // As the irony lands, the stations he worked on light up
+          $(id).querySelector('.lit').style.opacity = easeOut(prog(r, 12.9 + k * 0.15, 0.4)).toFixed(3);
+        });
+        enter($('servers'), r, 3.3, { dur: 0.7, y: 0, scale: 0.8, base: 'translateX(-50%) ' });
+        // Our words ride the road away and vanish into the cloud
+        beat($('fLeft'), r, 6.0, 10.8);
+        words($('fLeft'), r, 6.0);
+        const [x0, x1] = GEO.chips;
+        fChips.forEach((el, i) => {
+          const s = 6.6 + i * 0.6;
+          const p = easeInOut(prog(r, s, 2.6));
+          const away = prog(p, 0.8, 0.2);
+          el.style.opacity = Math.min(easeOut(prog(r, s, 0.25)), 1 - away).toFixed(3);
+          place(el, lerp(x0, x1, p), ROAD - GEO.chipLift, lerp(1, 0.5, away) * P(0.9, 1));
+        });
+        beat($('fKnew'), r, 11.0);
+        words($('f3'), r, 11.0);
+        words($('f4'), r, 12.9, { stagger: 0.16 });
+      },
+
+      H(t) {
+        const r = t - T0.H;
+        words($('hLine'), r, 0.4);
+        const p = easeOut(prog(r, 0.6, 1.0));
+        $('phone').style.opacity = p.toFixed(3);
+        $('phone').style.transform = `${GEO.phone} translateY(${px(60 * (1 - p))})`;
+        // The same words fall into the phone this time, and stay there
+        const [x0, y0] = GEO.phoneIn;
+        hChips.forEach((el, i) => {
+          const s = 1.4 + i * 0.45;
+          const q = prog(r, s, 1.1);
+          const into = prog(q, 0.7, 0.3);
+          el.style.opacity = q > 0 ? (1 - into).toFixed(3) : '0';
+          place(el, x0 + [-60, 50, -30, 40][i] * (1 - q), lerp(-140, y0 + 120, easeIn(q)), lerp(1, 0.4, into) * P(0.9, 1));
+        });
+        enter($('hLock'), r, 3.2, { dur: 0.7, y: 16 });
+        enter($('hTag'), r, 3.8, { dur: 0.7, y: 16 });
+      },
+
+      I(t) {
+        const r = t - T0.I;
+        words($('i1'), r, 0.3);
+        words($('i2'), r, 1.3, { stagger: 0.16 });
+        [1.9, 2.4, 2.9].forEach((s, k) => enter($(`p${k + 1}`), r, s, { dur: 0.7, y: 30 }));
+        $('p2n').textContent = String(Math.round(3 * easeOut(prog(r, 2.4, 0.6))));
+        $('p3n').textContent = `${Math.round(easeOut(prog(r, 2.9, 1.2)) * 50) * 10}+`;
+      },
+
+      J(t) {
+        const r = t - T0.J;
+        // The opening line returns where it first stood, then gives way to the new one
+        beat($('jThen'), r, 0, 2.4);
+        words($('jThen'), r, 0.2, { stagger: 0.05 });
+        pop($('house').querySelector('.node'), r, 1.0);
+        $('halo').style.opacity = easeOut(prog(r, 2.4, 1.6)).toFixed(3);
+        $('halo').style.transform = `scale(${(1 + 0.05 * Math.sin(r * 2.4)).toFixed(4)})`;
+        beat($('jNow'), r, 2.6);
+        words($('jNow'), r, 2.6, { stagger: 0.13 });
+      },
+
+      K(t) {
+        const r = t - T0.K;
+        words($('kLine'), r, 0.5, { stagger: 0.13 });
+        enter($('kPhoto'), r, 0.3, { dur: 0.9, y: 30, scale: 0.96 });
+        words($('kName'), r, 1.0, { stagger: 0.14 });
+        enter($('kRole'), r, 1.6, { dur: 0.7, y: 14 });
+        enter($('kUrl'), r, 2.3, { dur: 0.7, y: 14, scale: 0.96 });
+      }
+    };
+
+    function renderAt(t) {
+      roadAt(t);
+      routeAt(t);
+      SCENES.forEach(([id, start, end]) => {
+        const el = $(id);
+        const visible = t >= start && t < end;
+        el.style.display = visible ? 'block' : 'none';
+        if (!visible) return;
+        // Words leave upward with a blur; pictures move on along the road to the left, and the next scene's
+        // arrive from the right
+        const inP = start === 0 ? 1 : easeOut(prog(t, start, 0.7));
+        const out = end > DURATION ? 0 : easeInOut(prog(t, end - 0.5, 0.5));
+        const cap = el.querySelector('.cap');
+        const stg = el.querySelector('.stg');
+        cap.style.opacity = (1 - out).toFixed(3);
+        cap.style.transform = out > 0 ? `translateY(${px(-20 * out)})` : '';
+        cap.style.filter = out > 0 ? `blur(${(7 * out).toFixed(2)}px)` : '';
+        stg.style.opacity = Math.min(inP, 1 - out).toFixed(3);
+        stg.style.transform = `translateX(${px(160 * (1 - inP) - 160 * out)})`;
+        RENDER[id](t);
+      });
+    }
+
+    function renderPoster() {
+      $('stage').classList.add('is-poster');
+      SCENES.forEach(([id]) => { $(id).style.display = 'none'; });
+      road.draw(1, 4.2, { speed: 380 });
+      routeAt(1.5);
+    }
+
+    window.DURATION = DURATION;
+    window.SIZE = PORTRAIT ? [1080, 1350] : [1920, 1080];
+    window.renderAt = renderAt;
+    window.renderPoster = renderPoster;
+    window.ready = true;
+
+    const params = new URLSearchParams(location.search);
+    if (params.has('poster')) renderPoster();
+    else document.fonts.ready.then(() => renderAt(Number(params.get('t') || 0)));
+  </script>
+</body>
+
+</html>

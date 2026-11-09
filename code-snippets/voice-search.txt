@@ -1,0 +1,83 @@
+// vox_mobile/lib/search/hybrid_search.dart (excerpt, Vox Amelior for Android)
+
+/// Search over every line: full-text (SQLite FTS5, BM25) and meaning
+/// (EmbeddingGemma vectors), combined with Reciprocal Rank Fusion. RRF only
+/// uses each list's ranks, so the two very different scores never have to
+/// be put on one scale. Also picks the lines Gemma reads for a question (RAG).
+class HybridSearch {
+  HybridSearch({
+    required this._db,
+    required this.transcripts,
+    required this.vectors,
+    required this.embedder,
+    required this.modelId,
+  });
+
+  final AppDatabase _db;
+  final TranscriptRepository transcripts;
+  final VectorStore vectors;
+
+  /// The embedder, or null when meaning search is off or not installed.
+  final AsyncEmbedder? Function() embedder;
+
+  /// The model whose vectors are searched (it can change: each has its own).
+  final String Function() modelId;
+
+  /// RRF's constant: the usual 60 keeps one list's top hit from drowning the other.
+  static const int rrfK = 60;
+
+  /// Below this cosine similarity a line is never considered related.
+  static const double minSimilarity = 0.30;
+
+  /// Lines more than this below the best match are left out. EmbeddingGemma's
+  /// scores are compressed (in CI: related lines 0.44–0.62, unrelated up to
+  /// 0.43), so a cut relative to the best match separates them better than
+  /// any fixed threshold.
+  static const double relativeMargin = 0.12;
+
+
+  // …
+
+  /// Reciprocal Rank Fusion of several best-first id lists: each id scores
+  /// the sum of 1 / ([k] + rank) over the lists it appears in.
+  static List<(int, double)> fuse(List<List<int>> rankings, {int k = rrfK}) {
+    final scores = <int, double>{};
+    for (final list in rankings) {
+      for (var r = 0; r < list.length; r++) {
+        scores[list[r]] = (scores[list[r]] ?? 0) + 1 / (k + r + 1);
+      }
+    }
+    final out = scores.entries.map((e) => (e.key, e.value)).toList()
+      ..sort((a, b) => b.$2 != a.$2 ? b.$2.compareTo(a.$2) : b.$1.compareTo(a.$1));
+    return out;
+  }
+
+  /// Searches in [mode]. Without meaning search, smart is words only.
+  Future<List<SearchHit>> search(String query, SearchFilters f, {SearchMode mode = SearchMode.smart, int limit = 50}) async {
+    final byWords = mode == SearchMode.meaning ? const <SegmentView>[] : words(query, f, limit: limit);
+    var byMeaning = const <(int, double)>[];
+    if (mode != SearchMode.words) {
+      try {
+        byMeaning = await meaning(query, f, limit: limit);
+      } on Object {
+        // The model failed: words still work.
+        if (mode == SearchMode.meaning) rethrow;
+      }
+    }
+    final wordIds = {for (final s in byWords) s.id};
+    final similarity = {for (final (id, s) in byMeaning) id: s};
+    final ranked = fuse([
+      [for (final s in byWords) s.id],
+      [for (final (id, _) in byMeaning) id],
+    ]).take(limit).map((e) => e.$1).toList();
+    final known = {for (final s in byWords) s.id: s};
+    final missing = [for (final id in ranked) if (!known.containsKey(id)) id];
+    for (final s in transcripts.segmentsByIds(missing)) {
+      known[s.id] = s;
+    }
+    return [
+      for (final id in ranked)
+        if (known[id] case final s?)
+          SearchHit(s, byWords: wordIds.contains(id), byMeaning: similarity.containsKey(id), similarity: similarity[id]),
+    ];
+  }

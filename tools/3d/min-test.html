@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>min</title></head><body style="margin:0;background:#101318">
+<canvas id="c" width="400" height="300"></canvas>
+<script type="module">
+import * as THREE from '../../assets/vendor/three/three.module.min.js';
+const errs=[]; const oe=console.error; console.error=(...a)=>{errs.push(String(a[0]).slice(0,80)); oe(...a);};
+const r=new THREE.WebGLRenderer({canvas:document.getElementById('c')});
+const s=new THREE.Scene(); const cam=new THREE.PerspectiveCamera(40,4/3,0.1,100); cam.position.z=4;
+const kind=new URLSearchParams(location.search).get('m')||'basic';
+const mat= kind==='basic'? new THREE.MeshBasicMaterial({color:0xff6b2c}) : kind==='std'? new THREE.MeshStandardMaterial({color:0xff6b2c}) : new THREE.MeshPhysicalMaterial({color:0xff6b2c, clearcoat:1});
+s.add(new THREE.AmbientLight(0xffffff,1)); s.add(new THREE.Mesh(new THREE.BoxGeometry(1,1,1),mat));
+r.render(s,cam);
+const px=new Uint8Array(4); const gl=r.getContext(); gl.readPixels(200,150,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);
+window.ready = Promise.resolve(kind+' px='+Array.from(px).join(',')+' errs='+errs.length);
+</script></body></html>

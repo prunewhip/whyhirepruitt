@@ -1,0 +1,97 @@
+// vox_mobile/lib/pipeline/speaker_turns.dart (excerpt, Vox Amelior for Android)
+
+/// Turns frame-level speaker activity into clean speaker turns.
+class SpeakerTurns {
+  const SpeakerTurns({
+    this.threshold = 0.5,
+    this.minBurstSeconds = 0.24,
+    this.minGapSeconds = 0.24,
+    this.minTurnSeconds = 1.5,
+    this.minOverlapSeconds = 0.24,
+  });
+
+  /// Activity above this counts as talking.
+  final double threshold;
+
+  /// Shorter blips of activity are ignored.
+  final double minBurstSeconds;
+
+  /// Shorter pauses inside one person's talk are filled in.
+  final double minGapSeconds;
+
+  /// Shorter turns are merged into a neighbour (too short to be a real turn).
+  final double minTurnSeconds;
+
+  /// Two voices must overlap at least this long to be marked.
+  final double minOverlapSeconds;
+
+  /// Turns in time order. Covers the whole audio: pauses belong to the turn
+  /// around them, so no speech falls between turns.
+  List<SpeakerTurn> turns(SpeakerActivity a, {required double totalSeconds}) {
+    if (a.frames == 0 || a.speakers == 0) return [SpeakerTurn(start: 0, end: totalSeconds, slot: 0)];
+    final fs = a.frameSeconds;
+    final burst = math.max(1, (minBurstSeconds / fs).round());
+    final gap = math.max(1, (minGapSeconds / fs).round());
+
+    // Per speaker: threshold, fill short gaps, drop short bursts.
+    final active = List.generate(a.speakers, (s) {
+      final row = List<bool>.generate(a.frames, (t) => a.at(t, s) > threshold);
+      _fillGaps(row, gap);
+      _dropBursts(row, burst);
+      return row;
+    });
+
+    // Frame labels: -1 silence, slot index for one voice, -2 for overlap.
+    final label = List<int>.filled(a.frames, -1);
+    final loudest = List<int>.filled(a.frames, -1);
+    for (var t = 0; t < a.frames; t++) {
+      var count = 0;
+      var best = -1;
+      var bestP = -1.0;
+      for (var s = 0; s < a.speakers; s++) {
+        if (!active[s][t]) continue;
+        count++;
+        if (a.at(t, s) > bestP) {
+          bestP = a.at(t, s);
+          best = s;
+        }
+      }
+      label[t] = count == 0 ? -1 : (count == 1 ? best : -2);
+      loudest[t] = best;
+    }
+    final overlapFrames = math.max(1, (minOverlapSeconds / fs).round());
+    // Short overlaps are just a hand-over: treat as the louder voice.
+    var t = 0;
+    while (t < a.frames) {
+      if (label[t] != -2) {
+        t++;
+        continue;
+      }
+      var e = t;
+      while (e < a.frames && label[e] == -2) {
+        e++;
+      }
+      if (e - t < overlapFrames) {
+        for (var i = t; i < e; i++) {
+          label[i] = loudest[i];
+        }
+      }
+      t = e;
+    }
+
+    // Runs of single-voice frames become turns; overlap and silence join the
+    // current turn.
+    final out = <SpeakerTurn>[];
+    int? slot;
+    var start = 0;
+    var overlap = false;
+    for (var i = 0; i < a.frames; i++) {
+      final l = label[i];
+      if (l >= 0 && l != slot) {
+        if (slot != null) {
+          out.add(SpeakerTurn(start: start * fs, end: i * fs, slot: slot, overlap: overlap));
+          overlap = false;
+        }
+        slot = l;
+        start = out.isEmpty ? 0 : i;
+      } else if (l == -2) {

@@ -1,0 +1,331 @@
+/*
+ * Video band and player, shared by the home page (concept film), "How it's built" (product tour) and "About" (story).
+ * Depends on css/design-system.css tokens; behaviour in js/player.js.
+ */
+
+/* ══════════════════════════════════════════════════════════
+   VIDEO BAND AND PLAYER (concept film, product tour)
+   ══════════════════════════════════════════════════════════ */
+
+.tour {
+  position: relative;
+  padding-block: var(--section);
+  background: var(--theater);
+  border-block: 1px solid var(--line);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.tour::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: none;
+}
+
+.player__frame {
+  overflow: hidden;
+  border: 1px solid var(--theater-line);
+  border-radius: var(--r-lg);
+  background: var(--theater-2);
+  box-shadow: var(--shadow-3);
+}
+
+.player__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--theater-2);
+}
+
+.player__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  color: #fff;
+  background: rgba(24, 32, 28, 0.04);
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+
+.player__play-icon {
+  --size: clamp(64px, 9vw, 92px);
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--btn-fill);
+  color: var(--btn-ink);
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.7), 0 12px 30px -12px rgba(24, 32, 28, 0.4);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.player__play-icon svg {
+  width: calc(var(--size) * 0.36);
+  height: calc(var(--size) * 0.36);
+  margin-left: calc(var(--size) * 0.06);
+}
+
+.player__play-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--r-pill);
+  background: rgba(21, 23, 27, 0.72);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.player__play-label .mono {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--fs-xs);
+}
+
+.player__hint {
+  display: none;
+  margin-top: var(--space-3);
+  font-size: var(--fs-xs);
+  color: var(--theater-ink-2);
+}
+
+/* No playable source: point to the transcript instead of a dead frame */
+.player__unavailable {
+  display: none;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--r-pill);
+  background: rgba(21, 23, 27, 0.72);
+  font-size: var(--fs-sm);
+}
+
+.player.is-unavailable .player__play-label {
+  display: none;
+}
+
+.player.is-unavailable .player__unavailable {
+  display: inline-flex;
+}
+
+.player__play:hover .player__play-icon {
+  transform: scale(1.06);
+}
+
+.player.is-started .player__play {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* While the silent preview loops, the button sits in the bottom corner so the film's words stay readable;
+   a tap anywhere on the video still starts it */
+.player.is-previewing .player__play {
+  flex-flow: row wrap;
+  align-content: flex-end;
+  justify-content: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.player.is-previewing .player__play-icon {
+  --size: 52px;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.7), 0 10px 24px -12px rgba(24, 32, 28, 0.4);
+}
+
+.player .chapters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.player .chapters--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.chapter {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "num title time"
+    "desc desc desc";
+  align-items: baseline;
+  column-gap: var(--space-2);
+  row-gap: var(--space-1);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  overflow: hidden;
+  border: 1px solid var(--theater-line);
+  border-radius: var(--r-md);
+  background: var(--tint);
+  color: var(--theater-ink);
+  text-align: left;
+  transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+
+.chapter:hover {
+  background: var(--tint-2);
+  border-color: var(--line-hover);
+}
+
+.chapter__num {
+  grid-area: num;
+  font-size: var(--fs-2xs);
+  color: var(--accent);
+}
+
+.chapter__title {
+  grid-area: title;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.chapter__time {
+  grid-area: time;
+  font-size: var(--fs-2xs);
+  color: var(--theater-ink-2);
+}
+
+.chapter__desc {
+  grid-area: desc;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--theater-ink-2);
+}
+
+.chapter__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+}
+
+.chapter.is-active {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+@media (max-width: 860px) {
+  .player .chapters {
+    display: flex;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 0 var(--gutter) var(--space-2);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .player .chapters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .player .chapters li {
+    flex: 0 0 min(220px, 62%);
+    scroll-snap-align: start;
+  }
+
+  .player__frame {
+    border-radius: var(--r-md);
+  }
+}
+
+/* Phones: the commercial switches to its 4:5 cut; the landscape-only tour says it opens full screen */
+@media (max-width: 699px) {
+  .player--portrait-on-phones .player__stage {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* The phone poster has a headline above and a phone below; button and label sit side by side in the gap */
+  .player--portrait-on-phones .player__play {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: 16%;
+  }
+
+  /* If the phone turns mid-play, letterbox instead of cropping */
+  .player--portrait-on-phones .player__video {
+    object-fit: contain;
+  }
+
+  .player--fullscreen-on-phones .player__hint {
+    display: block;
+  }
+
+  /* A 16:9 poster is small on a phone: a smaller button in the gap between the poster's
+     headline and phone, and the label kept for screen readers only (the length is in the heading) */
+  .player--fullscreen-on-phones .player__play {
+    padding-left: 10%;
+  }
+
+  .player--fullscreen-on-phones .player__play-icon {
+    --size: 56px;
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.7), 0 10px 24px -12px rgba(24, 32, 28, 0.4);
+  }
+
+  .player--fullscreen-on-phones .player__play-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.transcript {
+  margin-top: var(--space-8);
+  max-width: 760px;
+  color: var(--theater-ink-2);
+}
+
+.transcript summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--theater-ink);
+  list-style: none;
+}
+
+.transcript summary::-webkit-details-marker {
+  display: none;
+}
+
+.transcript summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.transcript[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.transcript__body {
+  padding: var(--space-4) 0 0 var(--space-5);
+  border-left: 1px solid var(--theater-line);
+  font-size: var(--fs-sm);
+}

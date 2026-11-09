@@ -1,0 +1,62 @@
+// vox_mobile/lib/assistant/time_window.dart (excerpt, Vox Amelior for Android)
+
+/// Finds the time span a question refers to. Weeks start on Monday.
+///
+/// Calendar phrases are calendar-exact: "last week" is the previous
+/// Monday–Sunday, "this week" is Monday until now. Rolling phrases
+/// ("the past week", "last 3 days") count back from now.
+class TimeWindowParser {
+  const TimeWindowParser();
+
+  /// Returns the window and the matched text, or null if none is mentioned.
+  (TimeWindow, String)? parse(String question, DateTime now) {
+    final q = question.toLowerCase().replaceAll('\u2019', "'");
+    final today = DateTime(now.year, now.month, now.day);
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+    final soon = now.add(const Duration(minutes: 1));
+
+    (TimeWindow, String) w(DateTime from, DateTime to, String label, String matched) =>
+        (TimeWindow(from, to, label), matched);
+
+    RegExpMatch? m;
+
+    // Rolling windows: "past/last N hours|days|weeks|months", "in the last week".
+    m = RegExp(r'\b(?:in the |over the |during the |for the )?(?:past|last|previous)\s+(\d+|a|one|two|three|four|five|six|seven|eight|nine|ten|couple of|few)\s+(hour|day|week|month)s?\b')
+        .firstMatch(q);
+    if (m != null) {
+      final n = _number(m.group(1)!);
+      final unit = m.group(2)!;
+      final from = switch (unit) {
+        'hour' => now.subtract(Duration(hours: n)),
+        'day' => today.subtract(Duration(days: n - 1)),
+        'week' => today.subtract(Duration(days: 7 * n - 1)),
+        _ => DateTime(now.year, now.month - n, now.day),
+      };
+      return w(from, soon, 'the last $n ${unit}s', m.group(0)!);
+    }
+    m = RegExp(r'\b(?:in|over|during|for) the (?:past|last) (hour|day|week|month|year)\b').firstMatch(q) ??
+        RegExp(r'\bthe past (hour|day|week|month|year)\b').firstMatch(q) ??
+        RegExp(r'\b(?:past|last) (24 hours|7 days|30 days)\b').firstMatch(q);
+    if (m != null) {
+      final unit = m.group(1)!;
+      final from = switch (unit) {
+        'hour' => now.subtract(const Duration(hours: 1)),
+        'day' || '24 hours' => now.subtract(const Duration(hours: 24)),
+        'week' || '7 days' => today.subtract(const Duration(days: 6)),
+        'month' || '30 days' => today.subtract(const Duration(days: 29)),
+        _ => DateTime(now.year - 1, now.month, now.day),
+      };
+      return w(from, soon, 'the past $unit', m.group(0)!);
+    }
+
+    // "N days ago", "N weeks ago".
+    m = RegExp(r'\b(\d+|a|one|two|three|four|five|six|seven|eight|nine|ten|couple of|few) (day|week|month)s? ago\b').firstMatch(q);
+    if (m != null) {
+      final n = _number(m.group(1)!);
+      switch (m.group(2)) {
+        case 'day':
+          final d = today.subtract(Duration(days: n));
+          return w(d, d.add(const Duration(days: 1)), '$n days ago', m.group(0)!);
+        case 'week':
+          final start = monday.subtract(Duration(days: 7 * n));
+          return w(start, start.add(const Duration(days: 7)), '$n weeks ago', m.group(0)!);
