@@ -44,7 +44,9 @@ await browser.close();
 server.close();
 
 const out = path.join(ROOT, `assets/img/${kind}-devices.webp`);
-const done = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', png, '-c:v', 'libwebp', '-pix_fmt', 'yuva420p', '-quality', '88', out], { stdio: 'inherit' });
+// The glasses' scene is trimmed to the devices, so the still fills its column
+const crop = kind === 'interface' ? ['-vf', 'crop=950:880:110:50'] : [];
+const done = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', png, ...crop, '-c:v', 'libwebp', '-pix_fmt', 'yuva420p', '-quality', '88', out], { stdio: 'inherit' });
 if (done.status !== 0) process.exit(done.status);
 fs.copyFileSync(png, path.join(ROOT, `tools/brand/${kind}-devices.png`));
 console.log(`devices → ${path.relative(ROOT, out)}`);

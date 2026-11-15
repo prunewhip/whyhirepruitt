@@ -79,10 +79,12 @@
         <p class="eyebrow">How it’s built</p>
         <h1 class="h1 arch-hero__title" id="arch-title">Under the <em>hood.</em></h1>
         <p class="lead arch-hero__lead">
-          How speech, voice and language models fit on a phone, and how each app is tested.
+          How speech, voice and language models fit on a phone, how a phone drives a pair of smart glasses, and how
+          each app is tested.
         </p>
         <nav class="toc" aria-label="On this page">
           <a href="#tour"><span class="mono">00</span>See them run</a>
+          <a href="#glasses"><span class="mono">New</span>Vox, the glasses</a>
           <a href="#vox"><span class="mono">01</span>Vox Amelior</a>
           <a href="#narrator"><span class="mono">02</span>Narrator Studio</a>
           <a href="#even-suite"><span class="mono">03</span>Even Suite</a>
@@ -140,6 +142,71 @@
             <p><strong>0:32 Even Suite.</strong> Say “Claude” and talk; the answer appears on Even Realities G1 glasses.</p>
           </div>
         </details>
+      </div>
+    </section>
+
+    <!-- ══════════ Vox: the glasses ══════════ -->
+    <section class="section" id="glasses" aria-labelledby="glasses-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">New · Vox, the glasses</p>
+            <h2 class="h2" id="glasses-title">The phone thinks. <em>The glasses draw.</em></h2>
+          </div>
+          <p class="lead">Vox runs every model on the phone and sends the Even Realities G1 only what to draw. Its
+            arms run ScouterKit, open-source firmware by Marek; Vox is the Android app on top.</p>
+        </div>
+
+        <ol class="pipeline reveal" role="list">
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">01</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Sources</h3>
+              <p class="pipeline__text">A terminal on the phone or a laptop over SSH, kept alive by mosh as the phone moves between networks; the phone’s screen through Android’s screen sharing; a laptop’s screen; the glasses’ own microphone.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">mosh</li><li class="chip chip--mono">JSch</li><li class="chip chip--mono">MediaProjection</li><li class="chip chip--mono">LC3</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">02</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">One microphone</h3>
+              <p class="pipeline__text">One shared microphone feeds every feature. A speech detector keeps only voice, with a second, keener pass for soft voices, and everything heard waits in a queue on disk.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Silero VAD</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">03</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Understand</h3>
+              <p class="pipeline__text">Each phrase is written down with word times, matched to a voiceprint, split into turns and tagged with its tone, on the phone.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Parakeet TDT 0.6B</li><li class="chip chip--mono">WeSpeaker</li><li class="chip chip--mono">pyannote</li><li class="chip chip--mono">SenseVoice</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage pipeline__stage--accent">
+            <span class="pipeline__num mono">04</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Think, taking turns</h3>
+              <p class="pipeline__text">Liquid’s LFM2.5 answers on the phone through llama.cpp, reading more than it can hold in parts with a time left; while a model thinks, transcription waits and catches up after. Claude runs in the phone’s own terminal.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">llama.cpp</li><li class="chip chip--mono">LFM2.5</li><li class="chip chip--mono">EmbeddingGemma</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">05</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">Draw for the lens</h3>
+              <p class="pipeline__text">Terminal cells, screen frames and panels are drawn for a 640 × 480 display per eye and sent to both arms at once over Bluetooth LE.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">ScouterKit</li><li class="chip chip--mono">Bluetooth LE</li></ul>
+            </div>
+          </li>
+          <li class="pipeline__stage">
+            <span class="pipeline__num mono">06</span>
+            <div class="pipeline__body">
+              <h3 class="pipeline__title">On the glasses</h3>
+              <p class="pipeline__text">ScouterKit’s open firmware runs small programs on each arm: the terminal fades in as you look up and out as you look down, and both eyes keep one brightness.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">ScouterKit VM</li></ul>
+            </div>
+          </li>
+        </ol>
       </div>
     </section>
 

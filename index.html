@@ -320,7 +320,47 @@
         <figure class="showcase showcase--still reveal">
           <div class="showcase__stage" aria-hidden="true">
             <canvas class="showcase__canvas" data-showcase="interface"></canvas>
-            <img class="showcase__still" src="assets/img/interface-devices.webp" alt="" width="1200" height="1000" loading="lazy">
+            <img class="showcase__still" src="assets/img/interface-devices.webp" alt="" width="950" height="880" loading="lazy">
+          </div>
+        </figure>
+      </div>
+
+      <!-- The signal path: what reaches the lenses, through the phone, and how -->
+      <div class="container">
+        <figure class="flow reveal" aria-labelledby="flow-cap">
+          <figcaption class="flow__cap" id="flow-cap"><span class="mono">Signal path</span> Everything runs on the
+            phone; the glasses draw.</figcaption>
+          <div class="flow__grid">
+            <div class="flow__col">
+              <p class="flow__kicker mono">In</p>
+              <ul class="flow__list" role="list">
+                <li><b>Claude Code</b><span>any terminal AI · SSH + mosh</span></li>
+                <li><b>Any phone app</b><span>the phone’s screen</span></li>
+                <li><b>A laptop</b><span>its screen or terminal</span></li>
+                <li><b>Your voice</b><span>the glasses’ microphone</span></li>
+                <li><b>The room</b><span>the phone’s microphone</span></li>
+              </ul>
+            </div>
+            <div class="flow__wire" aria-hidden="true"><span></span></div>
+            <div class="flow__col flow__col--hub">
+              <p class="flow__kicker mono">Vox · Android</p>
+              <p class="flow__hub-title">One phone, every model</p>
+              <ul class="flow__chips" role="list">
+                <li>Parakeet · speech</li><li>WeSpeaker · who</li><li>LFM2.5 · thinks</li><li>EmbeddingGemma · finds</li>
+                <li>Kokoro · speaks</li><li>Screen encoder</li>
+              </ul>
+              <p class="flow__note">One shared microphone. Models take turns; what’s heard waits on disk.</p>
+            </div>
+            <div class="flow__wire" aria-hidden="true"><span></span></div>
+            <div class="flow__col">
+              <p class="flow__kicker mono">Out · Even Realities G1</p>
+              <ul class="flow__list" role="list">
+                <li><b>Bluetooth LE</b><span>both arms at once</span></li>
+                <li><b>640 × 480</b><span>per eye, up to 30 fps</span></li>
+                <li><b>ScouterKit</b><span>open firmware, programs on each arm</span></li>
+                <li><b>Look up to see it</b><span>dark until you glance</span></li>
+              </ul>
+            </div>
           </div>
         </figure>
       </div>
@@ -484,6 +524,14 @@
           <div class="cta-band__actions">
             <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
           </div>
+          <dl class="spec">
+            <div><dt class="mono">Focus</dt><dd>On-device AI, smart glasses, voice, AI products</dd></div>
+            <div><dt class="mono">Builds in</dt><dd>Kotlin, C++ over JNI, Flutter and Dart, Python</dd></div>
+            <div><dt class="mono">Runs on</dt><dd>sherpa-onnx, ONNX Runtime, llama.cpp, LiteRT-LM, Bluetooth LE</dd></div>
+            <div><dt class="mono">Background</dt><dd>7 years in telecom and fiber · M.S. Software Engineering, AI</dd></div>
+            <div><dt class="mono">Status</dt><dd><span class="status-dot" aria-hidden="true"></span> Open to full-time
+                roles · Casa Grande, Arizona</dd></div>
+          </dl>
         </div>
       </div>
     </section>

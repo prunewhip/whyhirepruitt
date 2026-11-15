@@ -1015,6 +1015,259 @@ html:not(.has-webgl) .case__shots .device {
   font-size: var(--fs-lead);
 }
 
+.glasses__rule {
+  line-height: var(--lh-snug);
+  letter-spacing: -0.012em;
+}
+
+/* The signal path: in → Vox on the phone → out to the lenses. Hairlines and mono labels; a pulse runs along each
+   wire (still with reduced motion). Stacks on phones. */
+.flow {
+  margin: clamp(var(--space-10), 5vw, var(--space-16)) 0 0;
+}
+
+.flow__cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+.flow__cap .mono {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.flow__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1.15fr) 56px minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.flow__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--edge);
+}
+
+.flow__col--hub {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.flow__kicker {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.flow__list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow__list li {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--paper);
+}
+
+.flow__list b {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.flow__list span {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--ink-3);
+}
+
+.flow__hub-title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: var(--lh-tight);
+}
+
+.flow__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow__chips li {
+  padding: 0.25em 0.7em;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--ink);
+}
+
+.flow__note {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--accent-line);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+
+/* A wire: a hairline with an arrowhead, and a pulse travelling along it */
+.flow__wire {
+  position: relative;
+  align-self: center;
+  height: 2px;
+  margin: 0 6px;
+  background: var(--accent-line);
+}
+
+.flow__wire::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.flow__wire span {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 14px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .flow__wire span {
+    animation: flow-pulse 1.8s var(--ease-out) infinite;
+  }
+
+  .flow__wire + .flow__col + .flow__wire span {
+    animation-delay: 0.9s;
+  }
+}
+
+@keyframes flow-pulse {
+  from { transform: translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  to { transform: translateX(28px); opacity: 0; }
+}
+
+@media (max-width: 960px) {
+  .flow__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flow__wire {
+    justify-self: center;
+    width: 2px;
+    height: 36px;
+    margin: 6px 0;
+  }
+
+  .flow__wire::after {
+    top: auto;
+    right: 50%;
+    bottom: -2px;
+    transform: translateX(50%) rotate(135deg);
+  }
+
+  .flow__wire span {
+    top: 0;
+    left: -2px;
+    width: 6px;
+    height: 12px;
+  }
+
+  @keyframes flow-pulse {
+    from { transform: translateY(0); opacity: 0; }
+    20% { opacity: 1; }
+    to { transform: translateY(20px); opacity: 0; }
+  }
+}
+
+/* The hiring card's spec sheet: at the right of the card on wide screens, under it on phones */
+.spec {
+  display: grid;
+  gap: 0;
+  margin: var(--space-10) 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.spec > div {
+  display: grid;
+  grid-template-columns: 8.5em 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.spec dt {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.spec dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+
+.spec .status-dot {
+  display: inline-block;
+  margin-right: var(--space-1);
+  vertical-align: middle;
+}
+
+@media (min-width: 1024px) {
+  #contact .cta-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    column-gap: clamp(var(--space-10), 5vw, var(--space-16));
+    align-items: start;
+  }
+
+  #contact .cta-band > :not(.spec) {
+    grid-column: 1;
+  }
+
+  #contact .spec {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+  }
+}
+
 .glasses .case__actions {
   margin-top: var(--space-8);
 }
