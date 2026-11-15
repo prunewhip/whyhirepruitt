@@ -325,6 +325,27 @@
         </figure>
       </div>
 
+      <!-- The screen is anywhere: the glasses' green projection, an arrow to the computer at home, the same session on
+           both (js/3d/anywhere.js). Stills, wide and tall, without WebGL. -->
+      <div class="container">
+        <figure class="anywhere" data-anywhere>
+          <div class="anywhere__head reveal">
+            <p class="eyebrow eyebrow--plain">Your screen, anywhere</p>
+            <h3 class="h2 anywhere__title">Your computer at home. <em>In your glasses, wherever you are.</em></h3>
+            <p class="lead">Vox reaches your own computer over SSH, and mosh keeps the session alive as your phone moves
+              between Wi-Fi and cell. Its terminal, Claude Code included, or its whole screen shows in your glasses,
+              anywhere your phone can reach it.</p>
+          </div>
+          <div class="anywhere__stage" aria-hidden="true">
+            <canvas class="anywhere__canvas" data-anywhere-canvas></canvas>
+            <picture class="anywhere__still">
+              <source media="(max-width: 700px)" srcset="assets/img/anywhere-tall.webp" width="800" height="1400">
+              <img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy">
+            </picture>
+          </div>
+        </figure>
+      </div>
+
       <!-- The signal path: what reaches the lenses, through the phone, and how -->
       <div class="container">
         <figure class="flow reveal" aria-labelledby="flow-cap">

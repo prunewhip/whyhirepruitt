@@ -16,6 +16,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const t = process.argv[2] || '0.6';
 const kind = process.argv[3] || 'hero';
+// Optional: the viewport (WIDTHxHEIGHT) and the output's name (default: <kind>-devices)
+const [vw, vh] = (process.argv[4] || '1200x1000').split('x').map(Number);
+const name = process.argv[5] || `${kind}-devices`;
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png' };
 const server = http.createServer((req, res) => {
   const file = path.join(ROOT, decodeURIComponent(new URL(req.url, 'http://x').pathname));
@@ -33,20 +36,21 @@ const browser = await chromium.launch({
   args: ['--no-sandbox', '--use-gl=angle', '--use-angle=gl-egl', '--ignore-gpu-blocklist', '--enable-unsafe-swiftshader'],
   env: { ...process.env, GALLIUM_DRIVER: 'llvmpipe', LIBGL_ALWAYS_SOFTWARE: '1', EGL_PLATFORM: 'surfaceless' }
 });
-const page = await browser.newPage({ viewport: { width: 1200, height: 1000 } });
+// BAKE_DPR=2 renders at twice the pixels (a close look at the detail)
+const page = await browser.newPage({ viewport: { width: vw, height: vh }, deviceScaleFactor: Number(process.env.BAKE_DPR || 1) });
 page.on('pageerror', (err) => console.error('pageerror:', err.message));
 await page.goto(`http://127.0.0.1:${server.address().port}/tools/brand/devices.html?kind=${kind}&t=${t}`, { waitUntil: 'networkidle' });
 const status = await page.evaluate(() => window.ready);
 if (status !== 'ok') throw new Error(status);
-const png = path.join(os.tmpdir(), `${kind}-devices.png`);
+const png = path.join(os.tmpdir(), `${name}.png`);
 await page.screenshot({ path: png, omitBackground: true });
 await browser.close();
 server.close();
 
-const out = path.join(ROOT, `assets/img/${kind}-devices.webp`);
+const out = path.join(ROOT, `assets/img/${name}.webp`);
 // The glasses' scene is trimmed to the devices, so the still fills its column
 const crop = kind === 'interface' ? ['-vf', 'crop=950:880:110:50'] : [];
 const done = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', png, ...crop, '-c:v', 'libwebp', '-pix_fmt', 'yuva420p', '-quality', '88', out], { stdio: 'inherit' });
 if (done.status !== 0) process.exit(done.status);
-fs.copyFileSync(png, path.join(ROOT, `tools/brand/${kind}-devices.png`));
+fs.copyFileSync(png, path.join(ROOT, `tools/brand/${name}.png`));
 console.log(`devices → ${path.relative(ROOT, out)}`);

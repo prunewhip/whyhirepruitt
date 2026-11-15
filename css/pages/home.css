@@ -1020,6 +1020,71 @@ html:not(.has-webgl) .case__shots .device {
   letter-spacing: -0.012em;
 }
 
+/* The screen is anywhere: a wide scene (the glasses left, the house right), stacked on phones */
+.anywhere {
+  margin: clamp(var(--space-12), 7vw, var(--space-20)) 0 0;
+  padding-top: clamp(var(--space-10), 5vw, var(--space-16));
+  border-top: 1px solid var(--line);
+}
+
+.anywhere__head {
+  max-width: 46rem;
+}
+
+.anywhere__head .lead {
+  margin-top: var(--space-4);
+}
+
+.anywhere__stage {
+  position: relative;
+  aspect-ratio: 1600 / 860;
+  margin-top: var(--space-6);
+  touch-action: pan-y;
+}
+
+.anywhere__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+}
+
+.anywhere.is-3d .anywhere__canvas {
+  opacity: 1;
+}
+
+.anywhere.is-3d .anywhere__stage {
+  cursor: grab;
+}
+
+.anywhere__still,
+.anywhere__still img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.anywhere__still {
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.anywhere.is-3d .anywhere__still {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 700px) {
+  .anywhere__stage {
+    aspect-ratio: 800 / 1400;
+    max-height: 760px;
+    margin-inline: auto;
+  }
+}
+
 /* The signal path: in → Vox on the phone → out to the lenses. Hairlines and mono labels; a pulse runs along each
    wire (still with reduced motion). Stacks on phones. */
 .flow {

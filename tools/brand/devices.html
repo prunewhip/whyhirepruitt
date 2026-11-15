@@ -14,6 +14,12 @@
       font-weight: 100 900;
     }
 
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
     html,
     body {
       margin: 0;
@@ -38,17 +44,21 @@
   <div class="wrap"><canvas id="c"></canvas></div>
   <script type="module">
     import { mountShowcase } from '../../js/3d/showcase.js';
+    import { mountAnywhere } from '../../js/3d/anywhere.js';
 
     const SCREENS = {
       hero: ['assets/app/hd/vox-now.webp', 'assets/app/hd/narr-reader.webp', 'assets/app/hd/even-chat.webp'],
       vox: ['assets/app/hd/vox-ask.webp'],
       glasses: ['assets/app/hd/even-chat.webp'],
       narrator: ['assets/app/hd/narr-reader.webp'],
-      interface: []
+      interface: [],
+      anywhere: []
     };
     const params = new URLSearchParams(location.search);
     const kind = params.get('kind') || 'hero';
-    window.ready = mountShowcase({
+    window.ready = kind === 'anywhere'
+      ? mountAnywhere({ canvas: document.getElementById('c'), still: Number(params.get('t') || 5.5) }).then(() => 'ok', (error) => String(error))
+      : mountShowcase({
       canvas: document.getElementById('c'),
       kind,
       screens: SCREENS[kind].map((u) => `../../${u}`),

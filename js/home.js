@@ -73,6 +73,23 @@ function scrubWithScroll(section, stage) {
   update();
 }
 
+// The screen is anywhere: the glasses' projection and the computer at home (js/3d/anywhere.js)
+function initAnywhere() {
+  const figure = document.querySelector('[data-anywhere]');
+  if (!figure || !hasWebGL) return;
+  const canvas = figure.querySelector('[data-anywhere-canvas]');
+  whenNear(canvas, async () => {
+    try {
+      const { mountAnywhere } = await import('./3d/anywhere.js');
+      await mountAnywhere({ canvas, dragTarget: canvas.parentElement });
+      figure.classList.add('is-3d');
+    } catch (error) {
+      // The still stays in place
+      console.warn('Anywhere 3D unavailable:', error);
+    }
+  });
+}
+
 function initShowcases() {
   if (!hasWebGL) return;
   document.querySelectorAll('[data-showcase]').forEach((canvas) => {
@@ -226,3 +243,4 @@ initListen();
 initRail();
 initDevices3D();
 initShowcases();
+initAnywhere();
