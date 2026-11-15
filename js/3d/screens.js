@@ -324,3 +324,154 @@ export function narratorScreen(ep) {
     ctx.fill();
   });
 }
+
+/* ── Vox (the glasses app): its home screen, with the source on the glasses lit ─────────── */
+
+// Vox's own colours: a dark app (the glasses' picture reads best against it), one teal-to-indigo accent
+const VG = { bg: '#07090d', surface: '#10141b', raised: '#171c25', stroke: '#242b38', text: '#f3f5f9', muted: '#8d96a8',
+  faint: '#5b6475', teal: '#5eead4', indigo: '#818cf8', onAccent: '#05110f', good: '#34d399', glass: '#12b25c' };
+
+// What each tile is; `lit` names the one on the glasses now
+const VOX_TILES = [['terminal', 'Phone', 'terminal'], ['screen', 'Phone', 'screen'], ['laptop', 'Laptop', 'terminal'], ['look', 'Look up', 'glance']];
+const VOX_APPS = [['listen', 'Listen'], ['voice', 'Voice'], ['car', 'Car'], ['ask', 'Ask']];
+
+/**
+ * @param {{lit: string, lens: string[]}} state  lit: a tile or app key; lens: the lines the glasses show
+ */
+export function voxGlassesScreen(state) {
+  return canvasTexture((ctx) => {
+    ctx.fillStyle = VG.bg;
+    ctx.fillRect(0, 0, W, H);
+    statusBar(ctx, VG.text, '9:41');
+
+    // Title, the link and the power
+    const grad = ctx.createLinearGradient(40, 0, 170, 0);
+    grad.addColorStop(0, VG.teal);
+    grad.addColorStop(1, VG.indigo);
+    ctx.fillStyle = grad;
+    ctx.font = `700 64px ${SANS}`;
+    ctx.fillText('Vox', 40, 168);
+    roundRect(ctx, 400, 122, 220, 58, 29);
+    ctx.fillStyle = VG.raised;
+    ctx.fill();
+    ctx.strokeStyle = VG.stroke;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = VG.good;
+    ctx.beginPath();
+    ctx.arc(430, 151, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = VG.text;
+    ctx.font = `600 26px ${SANS}`;
+    ctx.fillText('Connected', 450, 160);
+    roundRect(ctx, 636, 122, 58, 58, 29);
+    ctx.fillStyle = VG.teal;
+    ctx.fill();
+
+    // The glasses, live: a dark lens with what they show now
+    roundRect(ctx, 40, 216, W - 80, 380, 34);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.strokeStyle = VG.stroke;
+    ctx.stroke();
+    ctx.fillStyle = VG.muted;
+    ctx.font = `600 22px ${SANS}`;
+    ctx.fillText('ON THE GLASSES', 76, 264);
+    ctx.fillStyle = VG.good;
+    ctx.fillText('84%  ·  81%', W - 230, 264);
+    ctx.shadowColor = 'rgba(18, 178, 92, 0.5)';
+    ctx.shadowBlur = 10;
+    state.lens.slice(0, 5).forEach((row, i) => {
+      ctx.fillStyle = i === 0 ? '#5fd394' : VG.glass;
+      ctx.font = `${i === 0 ? 600 : 500} 36px ${SANS}`;
+      ctx.fillText(row, 76, 330 + i * 54);
+    });
+    ctx.shadowBlur = 0;
+
+    // The sources: what the glasses can show, the one on them lit
+    ctx.fillStyle = VG.muted;
+    ctx.font = `600 22px ${SANS}`;
+    ctx.fillText('SWITCH', 44, 660);
+    VOX_TILES.forEach(([key, name, sub], i) => {
+      const x = 40 + (i % 2) * 326;
+      const y = 688 + Math.floor(i / 2) * 168;
+      const on = key === state.lit;
+      roundRect(ctx, x, y, 314, 150, 30);
+      if (on) {
+        const g = ctx.createLinearGradient(x, y, x + 314, y + 150);
+        g.addColorStop(0, VG.teal);
+        g.addColorStop(1, VG.indigo);
+        ctx.fillStyle = g;
+      } else ctx.fillStyle = VG.raised;
+      ctx.fill();
+      if (!on) {
+        ctx.strokeStyle = VG.stroke;
+        ctx.stroke();
+      }
+      ctx.fillStyle = on ? VG.onAccent : VG.text;
+      ctx.font = `600 34px ${SANS}`;
+      ctx.fillText(name, x + 28, y + 84);
+      ctx.fillStyle = on ? VG.onAccent : VG.muted;
+      ctx.font = `500 26px ${SANS}`;
+      ctx.fillText(sub, x + 28, y + 122);
+      ctx.fillStyle = on ? VG.onAccent : VG.good;
+      ctx.beginPath();
+      ctx.arc(x + 280, y + 36, 8, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // The apps, as round buttons
+    ctx.fillStyle = VG.muted;
+    ctx.font = `600 22px ${SANS}`;
+    ctx.fillText('APPS', 44, 1048);
+    VOX_APPS.forEach(([key, name], i) => {
+      const cx = 112 + i * 166;
+      const cy = 1140;
+      const on = key === state.lit;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 58, 0, Math.PI * 2);
+      if (on) {
+        const g = ctx.createLinearGradient(cx - 58, cy - 58, cx + 58, cy + 58);
+        g.addColorStop(0, VG.teal);
+        g.addColorStop(1, VG.indigo);
+        ctx.fillStyle = g;
+      } else ctx.fillStyle = VG.raised;
+      ctx.fill();
+      if (!on) {
+        ctx.strokeStyle = VG.stroke;
+        ctx.stroke();
+      }
+      // A simple glyph: sound bars
+      ctx.strokeStyle = on ? VG.onAccent : VG.text;
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      [-18, -6, 6, 18].forEach((dx, k) => {
+        const h = [12, 26, 20, 10][k];
+        ctx.beginPath();
+        ctx.moveTo(cx + dx, cy - h);
+        ctx.lineTo(cx + dx, cy + h);
+        ctx.stroke();
+      });
+      ctx.lineWidth = 2;
+      ctx.fillStyle = on ? VG.text : VG.muted;
+      ctx.font = `600 26px ${SANS}`;
+      ctx.textAlign = 'center';
+      ctx.fillText(name, cx, cy + 100);
+      ctx.textAlign = 'left';
+    });
+
+    // The status line under it all
+    roundRect(ctx, 40, 1300, W - 80, 120, 30);
+    ctx.fillStyle = VG.surface;
+    ctx.fill();
+    ctx.strokeStyle = VG.stroke;
+    ctx.stroke();
+    ctx.fillStyle = VG.good;
+    ctx.beginPath();
+    ctx.arc(84, 1360, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = VG.text;
+    ctx.font = `600 28px ${SANS}`;
+    ctx.fillText('Everything is on', 110, 1370);
+  });
+}

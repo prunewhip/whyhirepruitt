@@ -9,6 +9,9 @@
  *   glasses   the G1 glasses turning on their own, a question to Claude on one turn and its answer on the next,
  *             with the phone running Even Suite behind them
  *   narrator  the phone reading aloud: every turn shows a new episode, its words flowing in and sound rippling out
+ *   interface the G1 glasses as a second screen, with Vox on the phone behind them: each turn brings another source
+ *             to the lens (Claude Code in a terminal, the look-up glance, live captions, your voice into the prompt),
+ *             and the phone lights the source that's on the glasses
  *
  * Content changes while a device's back is to you, so you never see it switch; the text then types in as it turns
  * back. Each device stands on a glossy floor that reflects it, with a soft contact shadow. Devices rise into place the
@@ -19,7 +22,7 @@
 import { THREE, createStage, loadTexture, anchorToWorld, damp, reducedMotion, createContactShadow, createMirrorFloor } from './stage.js';
 import { createPhone, createGlasses, hudCard, roundedSlab } from './devices.js';
 import { createVoiceField } from './voice-field.js';
-import { voxAskScreen, narratorScreen } from './screens.js';
+import { voxAskScreen, narratorScreen, voxGlassesScreen } from './screens.js';
 
 // Asked in Vox Amelior: answered from conversations on the phone
 const VOX_QA = [
@@ -35,6 +38,19 @@ const CLAUDE_QA = [
   { question: ['You:', 'How do I say thank', 'you in Japanese?'], answer: ['Claude:', 'Arigatō gozaimasu.', 'Arigatō on its own', 'is more casual.'] },
   { question: ['You:', 'What’s an 18% tip', 'on $64?'], answer: ['Claude:', '$11.52, so $75.52', 'in total.'] },
   { question: ['You:', 'Spanish for', '“Where’s the station?”'], answer: ['Claude:', '¿Dónde está', 'la estación?'] }
+];
+
+// What Vox puts on the glasses, one source per pair of turns (a moment, then the next one); `lit` is the source the
+// phone shows as on. Examples of what each source looks like; the lens fits about 22 characters a line.
+const INTERFACE = [
+  { lit: 'terminal', question: ['Claude Code · phone', '> why does the', '  login test fail?'],
+    answer: ['Claude Code · phone', 'The token expires', 'before the retry.', 'Fixed: 12 tests pass.'] },
+  { lit: 'look', question: ['Look up · 9:41', '72° and sunny', 'Next: 1:1 with Sam', 'Mom: call me back'],
+    answer: ['Look up · 9:44', '72° and sunny', 'In 15 min: 1:1, Sam', 'Battery 84% · 81%'] },
+  { lit: 'listen', question: ['Live · kitchen', 'Dana: hold reset', 'until it blinks', 'amber.'],
+    answer: ['Ask · from Monday', 'Dana’s reset steps:', 'Breaker off, wait 30 s,', 'hold reset till amber.'] },
+  { lit: 'voice', question: ['You, out loud:', '“Add a test for', 'the expired token.”'],
+    answer: ['Claude Code · phone', '> add a test for', '  the expired token', 'Added. 13 tests pass.'] }
 ];
 
 // Made in Narrator Studio from text you choose (the first is the app's own sample episode)
@@ -81,7 +97,8 @@ const KINDS = {
   // On tall, narrow canvases (phones) the stack pulls its labels in over the layers so everything renders larger
   vox: { turn: 0, phone: { x: -1.3, y: 0.04, z: 0, s: 1 }, stack: true, size: [4.7, 2.8], narrow: { phoneX: -0.78, signX: 0.92, size: [3.25, 2.8] } },
   glasses: { turn: 12, lead: 'glasses', phone: { x: 0.8, y: 0.25, z: -1.0, s: 0.82 }, glasses: { x: -0.38, y: -0.55, z: 0.25, s: 0.8 }, size: [3.0, 2.45] },
-  narrator: { turn: 12, lead: 'phone', phone: { x: 0.35, y: 0.04, z: 0, s: 1 }, rings: true, words: true, size: [3.1, 2.55] }
+  narrator: { turn: 12, lead: 'phone', phone: { x: 0.35, y: 0.04, z: 0, s: 1 }, rings: true, words: true, size: [3.1, 2.55] },
+  interface: { turn: 12, lead: 'glasses', phone: { x: 0.98, y: 0.4, z: -1.0, s: 0.82 }, glasses: { x: -0.4, y: -0.58, z: 0.3, s: 0.9 }, size: [3.2, 2.6] }
 };
 
 const FLOOR_GAP = 0.06;
@@ -512,6 +529,12 @@ export async function mountShowcase({ canvas, kind = 'vox', screens = [], anchor
     return voxScreens.get(key);
   };
   const episodeScreens = kind === 'narrator' ? EPISODES.map((ep) => narratorScreen(ep)) : [];
+  const interfaceScreens = new Map();
+  const interfaceScreen = (i, mode, s, lines) => {
+    const key = `${i}:${mode}`;
+    if (!interfaceScreens.has(key)) interfaceScreens.set(key, voxGlassesScreen({ lit: s.lit, lens: lines }));
+    return interfaceScreens.get(key);
+  };
   // Only Even Suite's phone uses the real screenshots; the others draw their screens
   const realScreens = kind === 'glasses' ? await Promise.all(screens.map((url) => loadTexture(url, renderer))) : [];
   // A reduced-motion still shows an answer, the more telling half of the pair
@@ -528,6 +551,13 @@ export async function mountShowcase({ canvas, kind = 'vox', screens = [], anchor
       words.setWords(EPISODES[ep].words);
     }
     if (kind === 'glasses' && realScreens.length) phone.show(realScreens[pair % realScreens.length], { instant: true });
+    if (kind === 'interface') {
+      const s = INTERFACE[pair % INTERFACE.length];
+      const lines = mode === 'answer' ? s.answer : s.question;
+      phone.show(interfaceScreen(pair % INTERFACE.length, mode, s, lines), { instant: true });
+      hud.show(lines, t);
+      return;
+    }
     if (hud) {
       const qa = CLAUDE_QA[claudeOrder[pair % CLAUDE_QA.length]];
       hud.show(mode === 'answer' ? qa.answer : qa.question, t);

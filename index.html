@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Pruitt Colon · AI engineer</title>
   <meta name="description"
-    content="Pruitt Colon is building the first steps toward a human–AI interface: AI that hears you, shows you and speaks to you, on your phone and in your glasses.">
+    content="Pruitt Colon builds a new interface for AI from the best open software: smart glasses that show any AI, a phone that hears and remembers, and voices that read to you.">
   <link rel="canonical" href="https://whyhirepruitt.dev/">
 
   <meta name="theme-color" content="#fcfcfa">
@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="Pruitt Colon">
   <meta property="og:title" content="Pruitt Colon · AI engineer">
   <meta property="og:description"
-    content="The first steps toward a human–AI interface. Three open-source Android apps: a private conversation memory, Claude in smart glasses, and a podcast studio.">
+    content="Every AI, one glance away. Vox turns smart glasses into a second screen for any AI, built on open firmware and fifteen open models and libraries, alongside a private conversation memory and a podcast studio.">
   <meta property="og:url" content="https://whyhirepruitt.dev/">
   <meta property="og:image" content="https://whyhirepruitt.dev/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -56,7 +56,7 @@
       { "@type": "CollegeOrUniversity", "name": "Western Governors University" },
       { "@type": "CollegeOrUniversity", "name": "University of the People" }
     ],
-    "knowsAbout": ["On-device AI", "Speech recognition", "Speech synthesis", "Large language models", "Android", "Flutter", "ONNX Runtime", "Bluetooth Low Energy"],
+    "knowsAbout": ["On-device AI", "Smart glasses", "Speech recognition", "Speech synthesis", "Large language models", "Android", "Kotlin", "Flutter", "ONNX Runtime", "llama.cpp", "Bluetooth Low Energy"],
     "sameAs": ["https://github.com/prunewhip", "https://www.linkedin.com/in/pruitt-colon-b3a73128a"]
   }
   </script>
@@ -102,9 +102,10 @@
   <main id="main">
     <nav class="rail" aria-label="On this page" data-rail>
       <a href="#idea"><span class="mono">01</span><span class="rail__label">The idea</span></a>
-      <a href="#vox"><span class="mono">02</span><span class="rail__label">Vox Amelior</span></a>
-      <a href="#more"><span class="mono">03</span><span class="rail__label">Other apps</span></a>
-      <a href="#contact"><span class="mono">04</span><span class="rail__label">Contact</span></a>
+      <a href="#glasses"><span class="mono">02</span><span class="rail__label">Vox, the glasses</span></a>
+      <a href="#vox"><span class="mono">03</span><span class="rail__label">Vox Amelior</span></a>
+      <a href="#more"><span class="mono">04</span><span class="rail__label">Other apps</span></a>
+      <a href="#contact"><span class="mono">05</span><span class="rail__label">Contact</span></a>
     </nav>
     <!-- ══════════ Hero: the pitch and the film ══════════ -->
     <section class="hero" aria-labelledby="hero-title" data-hero>
@@ -121,8 +122,8 @@
             <span>Open to full-time roles</span>
           </p>
           <h1 class="display hero__title" id="hero-title">
-            <span class="line"><span>The first steps toward</span></span>
-            <span class="line"><span><em>a <span class="nowrap">human–AI</span> interface.</em></span></span>
+            <span class="line"><span>Every AI,</span></span>
+            <span class="line"><span><em>one glance away.</em></span></span>
           </h1>
         </div>
 
@@ -130,9 +131,10 @@
              Phones get a 4:5 cut with larger type below 700px. -->
         <figure class="hero__film">
           <div class="hero__film-intro">
-            <p class="eyebrow">The main app · concept film · 2:55</p>
-            <p><strong>Vox Amelior</strong> is an AI that listens, remembers and answers on your phone, so your
-              conversations stay there. The film shows what it could do for you; most of it runs in the app today.</p>
+            <p class="eyebrow">Where it started · concept film · 2:55</p>
+            <p><strong>Vox Amelior</strong>, my first app: an AI that listens, remembers and answers on your phone, so
+              your conversations stay there. Its listening now runs in the glasses app too. The film shows what it
+              could do for you; most of it runs in the app today.</p>
           </div>
           <div class="player player--portrait-on-phones" data-player>
             <div class="player__frame">
@@ -197,20 +199,22 @@
 
         <div class="hero__more">
           <p class="lead hero__lead">
-            AI keeps getting smarter, yet most of us still reach it through a text box, on someone else’s terms.
-            I’m building the other way in: AI that hears what you say, shows you what you need and speaks in a voice
-            you choose. On your phone, in your glasses, on your terms.
+            AI gets better every month. The way we reach it hasn’t: a text box, on a phone, in your hand. So I find
+            the best new open software and wire it into one interface you wear: glasses that show any AI, a phone
+            that hears and remembers, voices that read to you. When the next AI ships, from any company, it already
+            has a place in your glasses.
           </p>
           <div class="hero__actions">
             <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
+            <a class="btn btn--secondary btn--lg" href="#glasses">See the glasses</a>
           </div>
         </div>
       </div>
 
       <div class="container">
         <dl class="proof">
-          <div class="proof__item"><dt>Open-source Android apps with public builds</dt><dd>3</dd></div>
-          <div class="proof__item"><dt>Automated tests across the three apps</dt><dd>500+</dd></div>
+          <div class="proof__item"><dt>Open-source Android apps with public builds</dt><dd>4</dd></div>
+          <div class="proof__item"><dt>Open models and libraries working together in Vox</dt><dd>15</dd></div>
           <div class="proof__item"><dt>Years in telecom and fiber before software</dt><dd>7</dd></div>
         </dl>
       </div>
@@ -222,10 +226,11 @@
         <div class="section-head section-head--split reveal">
           <div>
             <p class="eyebrow">01 · The idea</p>
-            <h2 class="h2" id="ways-title">Three ways in. <em>You stay in charge.</em></h2>
+            <h2 class="h2" id="ways-title">One interface. <em>Any AI.</em></h2>
           </div>
-          <p class="lead">Each app is one sense of the same interface: it hears you, it shows you, it speaks to you.
-            And each one hands back a choice the usual apps make for you.</p>
+          <p class="lead">Reaching AI shouldn’t mean stopping to type. I’m building the way around the text box, one
+            sense at a time: it shows you, it hears you, it speaks to you. Each piece is made from the best open
+            software I can find, and each one hands back a choice the usual apps make for you.</p>
         </div>
 
         <!-- The real devices on a turntable: the phone runs the apps, the glasses show Even Suite's display.
@@ -241,20 +246,20 @@
 
         <ol class="ways__list" role="list">
           <li class="way reveal">
-            <p class="way__num mono">01 · Hears you</p>
+            <p class="way__num mono">01 · Shows you</p>
+            <h3 class="way__title">Vox</h3>
+            <p class="way__text">Turns Even Realities G1 glasses into a second screen for any AI: Claude Code, your
+              phone, your laptop, live captions.</p>
+            <p class="way__choice"><b>Your choice:</b> which AI is in your glasses.</p>
+            <a class="link-arrow" href="#glasses">The glasses app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </li>
+          <li class="way reveal">
+            <p class="way__num mono">02 · Hears you</p>
             <h3 class="way__title">Vox Amelior</h3>
             <p class="way__text">Listens and remembers on your phone, then helps you hear yourself. Your conversations
               stay on the phone.</p>
             <p class="way__choice"><b>Your choice:</b> what stays private.</p>
-            <a class="link-arrow" href="#vox">The main app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-          </li>
-          <li class="way reveal">
-            <p class="way__num mono">02 · Shows you</p>
-            <h3 class="way__title">Even Suite</h3>
-            <p class="way__text">Puts Claude in your glasses for the questions that need the most capable AI, and only
-              when you ask.</p>
-            <p class="way__choice"><b>Your choice:</b> when to call on the best model.</p>
-            <a class="link-arrow" href="apps.html#even-suite">In other apps <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+            <a class="link-arrow" href="#vox">The memory app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
           </li>
           <li class="way reveal">
             <p class="way__num mono">03 · Speaks to you</p>
@@ -266,7 +271,109 @@
           </li>
         </ol>
 
-        <a class="next-link" href="#vox"><span class="mono">Next</span> 02 · Vox Amelior, the main app <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#glasses"><span class="mono">Next</span> 02 · Vox, a second screen for every AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
+    <!-- ══════════ Vox: the glasses ══════════ -->
+    <section class="section vox glasses" id="glasses" aria-labelledby="glasses-title">
+      <div class="container vox__grid">
+        <div class="vox__copy reveal">
+          <p class="eyebrow">02 · New · Vox · Android + Even Realities G1</p>
+          <h2 class="h2" id="glasses-title">A second screen <em>for every AI.</em></h2>
+          <p class="lead">Smart glasses usually come locked to one maker’s apps. ScouterKit, open-source firmware by
+            Marek, unlocks the G1’s whole 640 × 480 display at up to 30 frames a second. On top of it I built Vox, the
+            Android app that makes those lenses a screen any AI can use.</p>
+
+          <dl class="vox__features">
+            <div><dt>Any terminal AI</dt><dd>Claude Code in your glasses, on the phone or a laptop. Any AI with a command
+                line works the same way.</dd></div>
+            <div><dt>Any app</dt><dd>Your phone’s screen, or your laptop’s, mirrored and tuned to read well on the
+                lenses.</dd></div>
+            <div><dt>Your voice</dt><dd>Speak into the glasses’ microphone; NVIDIA Parakeet, on the phone, types it into
+                any prompt.</dd></div>
+            <div><dt>The room</dt><dd>Live captions and an all-day transcript that knows who’s speaking, carried over
+                from Vox Amelior.</dd></div>
+            <div><dt>On the road</dt><dd>Ask Claude from the steering wheel. The answer is read aloud; the lenses stay
+                dark while you drive.</dd></div>
+            <div><dt>At a glance</dt><dd>Look up for the time, the weather, your next event and the notifications that
+                matter.</dd></div>
+          </dl>
+
+          <p class="imperatives glasses__rule">If it runs on your phone or in a terminal, it can be in your glasses.
+            The next AI needs no new app to get there.</p>
+
+          <div class="case__actions">
+            <a class="btn btn--primary" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener">
+              <svg aria-hidden="true"><use href="#i-download" /></svg>
+              Android build
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/prunewhip/scouter_kit/tree/phone-termux-screen/examples/ssh" rel="noopener">
+              <svg aria-hidden="true"><use href="#i-github" /></svg>
+              Source
+            </a>
+          </div>
+        </div>
+
+        <!-- The glasses turning with Vox on the phone behind them: each turn brings another source to the lens
+             (js/3d/showcase.js, kind "interface"). The still shows without WebGL. -->
+        <figure class="showcase showcase--still reveal">
+          <div class="showcase__stage" aria-hidden="true">
+            <canvas class="showcase__canvas" data-showcase="interface"></canvas>
+            <img class="showcase__still" src="assets/img/interface-devices.webp" alt="" width="1200" height="1000" loading="lazy">
+          </div>
+        </figure>
+      </div>
+
+      <!-- How the pieces come together: the method, and what it's built from -->
+      <div class="container">
+        <div class="method">
+          <div class="section-head section-head--split reveal">
+            <div>
+              <p class="eyebrow eyebrow--plain">How I build</p>
+              <h3 class="h2 method__title">Find it. Fit it. <em>Ship it.</em></h3>
+            </div>
+            <p class="lead">Better open software ships every month. The work is knowing which pieces win, and making
+              them run together on a phone you carry all day.</p>
+          </div>
+          <ol class="ways__list" role="list">
+            <li class="way reveal">
+              <p class="way__num mono">01 · Find</p>
+              <p class="way__text">I test the candidates on a real phone and keep what wins: Parakeet for speech,
+                Liquid’s LFM2.5 for thinking on the phone, Kokoro for voices.</p>
+            </li>
+            <li class="way reveal">
+              <p class="way__num mono">02 · Fit</p>
+              <p class="way__text">Then I make them share one phone: one microphone for every feature, a queue on disk
+                so nothing said is lost, models that take turns instead of fighting for the chip.</p>
+            </li>
+            <li class="way reveal">
+              <p class="way__num mono">03 · Ship</p>
+              <p class="way__text">Every change builds in the open and runs its tests, and the result goes on the phone
+                and glasses I use every day.</p>
+            </li>
+          </ol>
+
+          <div class="built reveal">
+            <p class="built__label mono">Built on</p>
+            <ul class="built__list" role="list">
+              <li>ScouterKit</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+              <li>pyannote</li><li>SenseVoice</li><li>llama.cpp</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
+              <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>JSch</li><li>LC3</li>
+            </ul>
+          </div>
+
+          <ul class="tiers next reveal" role="list">
+            <li class="tiers__next"><b>Copilot <span class="tag-next">In testing</span></b><span>Claude hears a
+                meeting with you and cues an answer, in your glasses, only when a question needs you.</span></li>
+            <li class="tiers__next"><b>Podcasts <span class="tag-next">In testing</span></b><span>Narrator Studio’s
+                voices inside Vox: any text, read aloud in several voices.</span></li>
+            <li class="tiers__next"><b>Tools for AI <span class="tag-next">Next</span></b><span>Any AI can search your
+                day, put a note in your glasses or set a reminder.</span></li>
+          </ul>
+        </div>
+
+        <a class="next-link" href="#vox"><span class="mono">Next</span> 03 · Vox Amelior, where it started <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -274,10 +381,11 @@
     <section class="section vox" id="vox" aria-labelledby="vox-title">
       <div class="container vox__grid">
         <div class="vox__copy reveal">
-          <p class="eyebrow">02 · The main app · Vox Amelior · Android</p>
+          <p class="eyebrow">03 · Where it started · Vox Amelior · Android</p>
           <h2 class="h2" id="vox-title">A private memory <em>for your conversations.</em></h2>
           <p class="lead">It writes down what’s said nearby, learns who’s speaking and answers when you ask. Then it
-            does something a feed never will: it helps you hear yourself.</p>
+            does something a feed never will: it helps you hear yourself. Its listening is what Vox now brings to the
+            glasses.</p>
 
           <dl class="vox__features">
             <div data-at="0.12"><dt>Remembers</dt><dd>Speech to text and speaker recognition, on the phone (NVIDIA Parakeet,
@@ -321,7 +429,7 @@
       </div>
 
       <div class="container">
-        <a class="next-link" href="#more"><span class="mono">Next</span> 03 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#more"><span class="mono">Next</span> 04 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -330,10 +438,11 @@
       <div class="container">
         <div class="section-head section-head--split reveal">
           <div>
-            <p class="eyebrow">03 · Other apps</p>
+            <p class="eyebrow">04 · Other apps</p>
             <h2 class="h2" id="more-title">Two more <em>ways in.</em></h2>
           </div>
-          <p class="lead">Vox Amelior hears you. These two show you and speak to you.</p>
+          <p class="lead">They came first, and they still ship: the first app to put Claude in the G1, and the studio
+            whose voices now read inside Vox.</p>
         </div>
 
         <div class="more__grid">
@@ -342,7 +451,8 @@
             <div class="more__body">
               <p class="way__num mono">Even Suite · Android + smart glasses</p>
               <h3 class="more__title">Private when it can be. <em>Powerful when you need it.</em></h3>
-              <p>Claude in your Even Realities G1 glasses, for the questions where accuracy matters most.</p>
+              <p>Claude in your Even Realities G1 glasses on their own firmware, for the questions where accuracy
+                matters most.</p>
               <span class="link-arrow">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
             </div>
           </a>
@@ -357,7 +467,7 @@
           </a>
         </div>
 
-        <a class="next-link" href="#contact"><span class="mono">Next</span> 04 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#contact"><span class="mono">Next</span> 05 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -365,10 +475,12 @@
     <section class="section section--tight" id="contact" aria-labelledby="cta-title">
       <div class="container">
         <div class="cta-band reveal">
-          <p class="eyebrow">04 · Hiring?</p>
+          <p class="eyebrow">05 · Hiring?</p>
           <h2 class="h2" id="cta-title">Let’s <em>talk.</em></h2>
-          <p class="cta-band__text">I’m looking for full-time work in on-device AI, mobile AI features or AI solutions.
-            Before software I spent seven years in telecom and fiber. <a class="link" href="about.html">More about me</a>.</p>
+          <p class="cta-band__text">I’m looking for full-time work on how people reach AI: on-device AI, wearables,
+            voice and AI products. What I bring is the habit behind this site: find the best new software early, then
+            make it work for people. Before software I spent seven years in telecom and fiber.
+            <a class="link" href="about.html">More about me</a>.</p>
           <div class="cta-band__actions">
             <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
           </div>
@@ -382,7 +494,7 @@
       <div class="site-footer__grid">
         <div>
           <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true">PC</span><span>Pruitt Colon</span></a>
-          <p class="site-footer__blurb">AI engineer building the first steps toward a human–AI interface.
+          <p class="site-footer__blurb">AI engineer building a second screen for every AI.
             Casa Grande, Arizona.</p>
         </div>
         <nav aria-label="Footer">

@@ -985,6 +985,127 @@ html:not(.has-webgl) .case__shots .device {
 }
 
 /* ══════════════════════════════════════════════════════════
+   VOX: THE GLASSES (a second screen for every AI)
+   ══════════════════════════════════════════════════════════ */
+
+/* The glasses' showcase: one transparent still until the 3D is ready (or instead of it) */
+.showcase__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.showcase.is-3d .showcase__still {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* The copy sits left of the glasses on wide screens, the glasses first on phones */
+.glasses .vox__grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.glasses__rule {
+  margin-top: var(--space-8);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--accent);
+  font-size: var(--fs-lead);
+}
+
+.glasses .case__actions {
+  margin-top: var(--space-8);
+}
+
+/* How it's built: the method, the parts list, what's next */
+.method {
+  margin-top: clamp(var(--space-12), 7vw, var(--space-20));
+  padding-top: clamp(var(--space-10), 5vw, var(--space-16));
+  border-top: 1px solid var(--line);
+}
+
+.method .section-head {
+  margin-bottom: var(--space-8);
+}
+
+.method .way {
+  gap: var(--space-2);
+}
+
+.built {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-8);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--tint);
+}
+
+.built__label {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.built__list {
+  display: flex;
+  flex: 1 1 30em;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.built__list li {
+  padding: 0.2em 0.75em;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+
+.tiers.next {
+  margin-top: var(--space-5);
+}
+
+.tiers.next li {
+  grid-template-columns: 13em 1fr;
+  align-items: baseline;
+}
+
+.tiers.next .tag-next {
+  margin-left: var(--space-1);
+}
+
+@media (max-width: 960px) {
+  .glasses .vox__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .glasses .showcase {
+    order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .tiers.next li {
+    grid-template-columns: 1fr;
+  }
+
+  .built {
+    padding: var(--space-4);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
    OTHER APPS: teaser on the home page
    ══════════════════════════════════════════════════════════ */
 
