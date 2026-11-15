@@ -39,7 +39,7 @@ const browser = await chromium.launch({
 // BAKE_DPR=2 renders at twice the pixels (a close look at the detail)
 const page = await browser.newPage({ viewport: { width: vw, height: vh }, deviceScaleFactor: Number(process.env.BAKE_DPR || 1) });
 page.on('pageerror', (err) => console.error('pageerror:', err.message));
-await page.goto(`http://127.0.0.1:${server.address().port}/tools/brand/devices.html?kind=${kind}&t=${t}`, { waitUntil: 'networkidle' });
+await page.goto(`http://127.0.0.1:${server.address().port}/tools/brand/devices.html?kind=${kind}&t=${t}${process.env.BAKE_QUERY || ''}`, { waitUntil: 'networkidle' });
 const status = await page.evaluate(() => window.ready);
 if (status !== 'ok') throw new Error(status);
 const png = path.join(os.tmpdir(), `${name}.png`);

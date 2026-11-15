@@ -57,7 +57,7 @@
     const params = new URLSearchParams(location.search);
     const kind = params.get('kind') || 'hero';
     window.ready = kind === 'anywhere'
-      ? mountAnywhere({ canvas: document.getElementById('c'), still: Number(params.get('t') || 5.5) }).then(() => 'ok', (error) => String(error))
+      ? mountAnywhere({ canvas: document.getElementById('c'), still: Number(params.get('t') || 5.5), startSession: Number(params.get('s') || 0) }).then(() => 'ok', (error) => String(error))
       : mountShowcase({
       canvas: document.getElementById('c'),
       kind,

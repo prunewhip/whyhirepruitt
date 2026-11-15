@@ -101,11 +101,12 @@
 
   <main id="main">
     <nav class="rail" aria-label="On this page" data-rail>
-      <a href="#idea"><span class="mono">01</span><span class="rail__label">The idea</span></a>
-      <a href="#glasses"><span class="mono">02</span><span class="rail__label">Vox, the glasses</span></a>
-      <a href="#vox"><span class="mono">03</span><span class="rail__label">Vox Amelior</span></a>
-      <a href="#more"><span class="mono">04</span><span class="rail__label">Other apps</span></a>
-      <a href="#contact"><span class="mono">05</span><span class="rail__label">Contact</span></a>
+      <a href="#anywhere"><span class="mono">01</span><span class="rail__label">Anywhere</span></a>
+      <a href="#idea"><span class="mono">02</span><span class="rail__label">The idea</span></a>
+      <a href="#glasses"><span class="mono">03</span><span class="rail__label">Vox, the glasses</span></a>
+      <a href="#vox"><span class="mono">04</span><span class="rail__label">Vox Amelior</span></a>
+      <a href="#more"><span class="mono">05</span><span class="rail__label">Other apps</span></a>
+      <a href="#contact"><span class="mono">06</span><span class="rail__label">Contact</span></a>
     </nav>
     <!-- ══════════ Hero: the pitch and the film ══════════ -->
     <section class="hero" aria-labelledby="hero-title" data-hero>
@@ -206,7 +207,7 @@
           </p>
           <div class="hero__actions">
             <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
-            <a class="btn btn--secondary btn--lg" href="#glasses">See the glasses</a>
+            <a class="btn btn--secondary btn--lg" href="#anywhere">See it anywhere</a>
           </div>
         </div>
       </div>
@@ -220,12 +221,39 @@
       </div>
     </section>
 
+    <!-- ══════════ 01 · The screen is anywhere: the glasses' green projection, an arrow to a computer at home or at the
+         office, the same session on both (js/3d/anywhere.js). Stills, wide and tall, without WebGL. ══════════ -->
+    <section class="section section--tight" id="anywhere" aria-labelledby="anywhere-title">
+      <div class="container">
+        <figure class="anywhere" data-anywhere>
+          <div class="anywhere__head reveal">
+            <p class="eyebrow">01 · Your screen, anywhere</p>
+            <h2 class="h2 anywhere__title" id="anywhere-title">Your computer, at home or at the office. <em>In your glasses,
+                wherever you are.</em></h2>
+            <p class="lead">Vox reaches your own computer over SSH inside Tailscale, a private network where every
+              connection is encrypted and nothing on your computer is open to the internet. mosh keeps the session
+              alive as your phone moves between Wi-Fi and cell. Its terminal, with Claude Code building whatever you
+              ask, or its whole screen shows in your glasses.</p>
+          </div>
+          <div class="anywhere__stage" aria-hidden="true">
+            <canvas class="anywhere__canvas" data-anywhere-canvas></canvas>
+            <picture class="anywhere__still">
+              <source media="(max-width: 700px)" srcset="assets/img/anywhere-tall.webp" width="800" height="1400">
+              <img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy">
+            </picture>
+          </div>
+        </figure>
+
+        <a class="next-link" href="#idea"><span class="mono">Next</span> 02 · One interface, any AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
     <!-- ══════════ The idea ══════════ -->
     <section class="section section--tight ways" id="idea" aria-labelledby="ways-title">
       <div class="container">
         <div class="section-head section-head--split reveal">
           <div>
-            <p class="eyebrow">01 · The idea</p>
+            <p class="eyebrow">02 · The idea</p>
             <h2 class="h2" id="ways-title">One interface. <em>Any AI.</em></h2>
           </div>
           <p class="lead">Reaching AI shouldn’t mean stopping to type. I’m building the way around the text box, one
@@ -271,7 +299,7 @@
           </li>
         </ol>
 
-        <a class="next-link" href="#glasses"><span class="mono">Next</span> 02 · Vox, a second screen for every AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#glasses"><span class="mono">Next</span> 03 · Vox, a second screen for every AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -279,7 +307,7 @@
     <section class="section vox glasses" id="glasses" aria-labelledby="glasses-title">
       <div class="container vox__grid">
         <div class="vox__copy reveal">
-          <p class="eyebrow">02 · New · Vox · Android + Even Realities G1</p>
+          <p class="eyebrow">03 · New · Vox · Android + Even Realities G1</p>
           <h2 class="h2" id="glasses-title">A second screen <em>for every AI.</em></h2>
           <p class="lead">Smart glasses usually come locked to one maker’s apps. ScouterKit, open-source firmware by
             Marek, unlocks the G1’s whole 640 × 480 display at up to 30 frames a second. On top of it I built Vox, the
@@ -321,28 +349,6 @@
           <div class="showcase__stage" aria-hidden="true">
             <canvas class="showcase__canvas" data-showcase="interface"></canvas>
             <img class="showcase__still" src="assets/img/interface-devices.webp" alt="" width="950" height="880" loading="lazy">
-          </div>
-        </figure>
-      </div>
-
-      <!-- The screen is anywhere: the glasses' green projection, an arrow to the computer at home, the same session on
-           both (js/3d/anywhere.js). Stills, wide and tall, without WebGL. -->
-      <div class="container">
-        <figure class="anywhere" data-anywhere>
-          <div class="anywhere__head reveal">
-            <p class="eyebrow eyebrow--plain">Your screen, anywhere</p>
-            <h3 class="h2 anywhere__title">Your computer at home. <em>In your glasses, wherever you are.</em></h3>
-            <p class="lead">Vox reaches your own computer over SSH inside Tailscale, a private network where every
-              connection is encrypted and nothing on your computer is open to the internet. mosh keeps the session
-              alive as your phone moves between Wi-Fi and cell. Its terminal, with Claude Code building whatever you
-              ask, or its whole screen shows in your glasses, wherever you are.</p>
-          </div>
-          <div class="anywhere__stage" aria-hidden="true">
-            <canvas class="anywhere__canvas" data-anywhere-canvas></canvas>
-            <picture class="anywhere__still">
-              <source media="(max-width: 700px)" srcset="assets/img/anywhere-tall.webp" width="800" height="1400">
-              <img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy">
-            </picture>
           </div>
         </figure>
       </div>
@@ -435,7 +441,7 @@
           </ul>
         </div>
 
-        <a class="next-link" href="#vox"><span class="mono">Next</span> 03 · Vox Amelior, where it started <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#vox"><span class="mono">Next</span> 04 · Vox Amelior, where it started <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -443,7 +449,7 @@
     <section class="section vox" id="vox" aria-labelledby="vox-title">
       <div class="container vox__grid">
         <div class="vox__copy reveal">
-          <p class="eyebrow">03 · Where it started · Vox Amelior · Android</p>
+          <p class="eyebrow">04 · Where it started · Vox Amelior · Android</p>
           <h2 class="h2" id="vox-title">A private memory <em>for your conversations.</em></h2>
           <p class="lead">It writes down what’s said nearby, learns who’s speaking and answers when you ask. Then it
             does something a feed never will: it helps you hear yourself. Its listening is what Vox now brings to the
@@ -491,7 +497,7 @@
       </div>
 
       <div class="container">
-        <a class="next-link" href="#more"><span class="mono">Next</span> 04 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#more"><span class="mono">Next</span> 05 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -500,7 +506,7 @@
       <div class="container">
         <div class="section-head section-head--split reveal">
           <div>
-            <p class="eyebrow">04 · Other apps</p>
+            <p class="eyebrow">05 · Other apps</p>
             <h2 class="h2" id="more-title">Two more <em>ways in.</em></h2>
           </div>
           <p class="lead">They came first, and they still ship: the first app to put Claude in the G1, and the studio
@@ -529,7 +535,7 @@
           </a>
         </div>
 
-        <a class="next-link" href="#contact"><span class="mono">Next</span> 05 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#contact"><span class="mono">Next</span> 06 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -537,7 +543,7 @@
     <section class="section section--tight" id="contact" aria-labelledby="cta-title">
       <div class="container">
         <div class="cta-band reveal">
-          <p class="eyebrow">05 · Hiring?</p>
+          <p class="eyebrow">06 · Hiring?</p>
           <h2 class="h2" id="cta-title">Let’s <em>talk.</em></h2>
           <p class="cta-band__text">I’m looking for full-time work on how people reach AI: on-device AI, wearables,
             voice and AI products. What I bring is the habit behind this site: find the best new software early, then

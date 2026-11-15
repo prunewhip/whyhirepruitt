@@ -1022,9 +1022,7 @@ html:not(.has-webgl) .case__shots .device {
 
 /* The screen is anywhere: a wide scene (the glasses left, the house right), stacked on phones */
 .anywhere {
-  margin: clamp(var(--space-12), 7vw, var(--space-20)) 0 0;
-  padding-top: clamp(var(--space-10), 5vw, var(--space-16));
-  border-top: 1px solid var(--line);
+  margin: 0;
 }
 
 .anywhere__head {

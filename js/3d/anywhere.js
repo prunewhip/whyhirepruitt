@@ -2,8 +2,9 @@
  * "The screen is anywhere": the G1 glasses, projecting a green screen, turn on one turntable; a computer inside a
  * wire-frame house turns on another; an arrow runs from the glasses over to the computer, with pulses along it and
  * a tag saying how the link is made (SSH over Tailscale, encrypted). Like the other showcases, the content moves on
- * while the devices' backs are turned: each time they come round, Claude Code on the computer at home is building
- * another app, typed on the computer first and echoed in the glasses a moment later. Drag to turn them yourself.
+ * while the devices' backs are turned: each time they come round the building has changed (a house, then an office
+ * tower) and Claude Code on that computer is building another app, typed on the computer first and echoed in the
+ * glasses a moment later. Drag to turn them yourself.
  * Wide canvases set the scene left to right; tall ones (phones) stack it, the glasses above the house.
  * The sessions are examples.
  */
@@ -12,13 +13,13 @@ import { THREE, createStage, damp, reducedMotion, createContactShadow, createMir
 import { createGlasses, hudCard, roundedSlab, glassCoat } from './devices.js';
 import { RoundedBoxGeometry } from '../../assets/vendor/three/RoundedBoxGeometry.js';
 
-// Claude Code on the computer at home, building apps: the first line is the window's title. About 25 characters a
-// line, so it fits the lens too.
+// Claude Code building apps, on the computer at home and then the one at the office, turn by turn: the first line is
+// the window's title. About 25 characters a line, so it fits the lens too.
 const SESSIONS = [
-  ['home-pc · Claude Code', '> build a habit tracker', 'Created 9 files.', '18 tests pass.', 'Preview is running.'],
-  ['home-pc · Claude Code', '> add dark mode', 'Updated 4 screens.', 'Contrast checked.', 'Ready to ship.'],
-  ['home-pc · Claude Code', '> make an Android build', 'Gradle build passed.', 'APK signed: 6.2 MB.', 'Sent to your phone.'],
-  ['home-pc · Claude Code', '> write a recipe app', 'Created 12 files.', 'Search and favorites.', '24 tests pass.']
+  { at: 'home', lines: ['home-pc · Claude Code', '> build a habit tracker', 'Created 9 files.', '18 tests pass.', 'Preview is running.'] },
+  { at: 'office', lines: ['work-pc · Claude Code', '> build a sales dashboard', 'Created 14 files.', 'Charts from live data.', '32 tests pass.'] },
+  { at: 'home', lines: ['home-pc · Claude Code', '> write a recipe app', 'Created 12 files.', 'Search and favorites.', '24 tests pass.'] },
+  { at: 'office', lines: ['work-pc · Claude Code', '> make an Android build', 'Gradle build passed.', 'APK signed: 6.2 MB.', 'Sent to your phone.'] }
 ];
 const TURN_S = 14; // seconds per turn
 const CPS = 24; // characters typed per second
@@ -36,14 +37,14 @@ const LAYOUTS = {
   wide: {
     away: [-2.1, 0, 0.3], home: [2.1, 0, -0.35],
     from: [-2.1, 1.86, 0.3], bend: [0.0, 3.0, 0.4], to: [2.1, 0.95, -0.35],
-    awayTag: [-2.1, -0.98, 1.25], homeTag: [2.1, 2.2, -0.35],
-    size: [7.6, 4.6], center: 0.42
+    awayTag: [-2.1, -0.98, 1.25], homeTag: [2.1, 2.2, -0.35], officeTag: [2.1, 2.78, -0.35],
+    size: [7.6, 4.7], center: 0.55
   },
   tall: {
-    away: [0, 3.55, 0.3], home: [0, 0, -0.35],
-    from: [1.25, 2.8, 0.3], bend: [2.1, 1.9, 0.4], to: [0.2, 0.95, -0.35],
-    awayTag: [-1.0, 2.62, 1.0], homeTag: [-1.05, 1.62, 0.6], linkTag: [0.45, 2.3, 0.7],
-    size: [3.9, 7.6], center: 1.95
+    away: [0, 3.95, 0.3], home: [0, 0, -0.35],
+    from: [1.25, 3.2, 0.3], bend: [2.15, 2.1, 0.4], to: [0.2, 0.95, -0.35],
+    awayTag: [-1.0, 3.02, 1.0], homeTag: [-1.05, 1.62, 0.6], officeTag: [-0.95, 2.52, 0.6], linkTag: [0.6, 2.72, 0.7],
+    size: [3.9, 8.0], center: 2.05
   }
 };
 
@@ -309,25 +310,60 @@ function createHome() {
   top.position.set(0, FLOOR + 0.041, 0.5);
   turn.add(top);
 
-  // The house: a wire-frame model with depth, front and back gables joined at every corner, in the glasses' lacquer
+  // The building around it, a wire-frame model with depth in the glasses' lacquer: a house, or an office tower
   const line = new THREE.MeshPhysicalMaterial({ color: 0x16181b, metalness: 0, roughness: 0.5, clearcoat: 0.8, clearcoatRoughness: 0.08, envMapIntensity: 1.2 });
   const R = 0.012;
-  const gable = (z) => [[-1.45, FLOOR], [-1.45, 0.92], [0, 1.88], [1.45, 0.92], [1.45, FLOOR]].map(([x, y]) => new THREE.Vector3(x, y, z));
-  const front = gable(1.0);
-  const back = gable(-1.0);
   const tubes = [];
-  const edge = (a, b) => tubes.push(new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(a, b), 24, R, 12, false), line));
-  [front, back].forEach((g) => {
-    for (let i = 0; i < g.length - 1; i++) edge(g[i], g[i + 1]);
-    edge(g[g.length - 1], g[0]);
-  });
-  front.forEach((p, i) => edge(p, back[i]));
-  [...front, ...back].forEach((p) => {
-    const j = new THREE.Mesh(new THREE.SphereGeometry(R * 1.15, 16, 12), line);
-    j.position.copy(p);
-    tubes.push(j);
-  });
-  tubes.forEach((t) => turn.add(t));
+  const wire = () => {
+    const group = new THREE.Group();
+    const corners = new Set();
+    const v = (x, y, z) => new THREE.Vector3(x, y, z);
+    const edge = (a, b) => {
+      const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.LineCurve3(a, b), 24, R, 12, false), line);
+      group.add(m);
+      tubes.push(m);
+      [a, b].forEach((p) => corners.add(`${p.x},${p.y},${p.z}`));
+    };
+    const loop = (pts) => pts.forEach((p, i) => edge(p, pts[(i + 1) % pts.length]));
+    const finish = () => corners.forEach((k) => {
+      const j = new THREE.Mesh(new THREE.SphereGeometry(R * 1.15, 16, 12), line);
+      j.position.set(...k.split(',').map(Number));
+      group.add(j);
+      tubes.push(j);
+    });
+    return { group, v, edge, loop, finish };
+  };
+  // The house: front and back gables joined at every corner
+  const house = wire();
+  {
+    const { v, edge, loop } = house;
+    const gable = (z) => [[-1.45, FLOOR], [-1.45, 0.92], [0, 1.88], [1.45, 0.92], [1.45, FLOOR]].map(([x, y]) => v(x, y, z));
+    const front = gable(1.0);
+    const back = gable(-1.0);
+    loop(front);
+    loop(back);
+    front.forEach((p, i) => edge(p, back[i]));
+    house.finish();
+  }
+  // The office: a flat-roofed tower, its upper floors marked out with floor lines and mullions, a plant room on top
+  const office = wire();
+  {
+    const { v, edge, loop } = office;
+    const top = 2.2;
+    const box = (x0, x1, y0, y1, z0, z1) => {
+      loop([v(x0, y0, z0), v(x1, y0, z0), v(x1, y0, z1), v(x0, y0, z1)]);
+      loop([v(x0, y1, z0), v(x1, y1, z0), v(x1, y1, z1), v(x0, y1, z1)]);
+      [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].forEach(([x, z]) => edge(v(x, y0, z), v(x, y1, z)));
+    };
+    box(-1.45, 1.45, FLOOR, top, -1.0, 1.0);
+    [1.05, 1.62].forEach((y) => loop([v(-1.45, y, -1.0), v(1.45, y, -1.0), v(1.45, y, 1.0), v(-1.45, y, 1.0)]));
+    [-0.48, 0.48].forEach((x) => [1.0, -1.0].forEach((z) => edge(v(x, 1.05, z), v(x, top, z))));
+    [-0.33, 0.33].forEach((z) => [1.45, -1.45].forEach((x) => edge(v(x, 1.05, z), v(x, top, z))));
+    box(-0.55, 0.15, top, top + 0.3, -0.45, 0.25);
+    office.finish();
+  }
+  turn.add(house.group, office.group);
+  office.group.visible = false;
 
   const shadow = createContactShadow({ opacity: 0.3 });
   shadow.position.set(0, FLOOR + 0.001, 0.1);
@@ -337,7 +373,14 @@ function createHome() {
   ring.position.y = FLOOR + 0.002;
   group.add(ring);
 
-  return { group, turn, screen, reflectables: [display, neck, base, kb, ...tubes] };
+  return {
+    group, turn, screen, reflectables: [display, neck, base, kb, ...tubes],
+    // Which building stands around the computer
+    setPlace(at) {
+      house.group.visible = at === 'home';
+      office.group.visible = at === 'office';
+    }
+  };
 }
 
 /* ── The glasses and their projection, on a turntable ───── */
@@ -401,7 +444,7 @@ function createAway(hud) {
 
 /* ── The scene ───── */
 
-export async function mountAnywhere({ canvas, dragTarget = null, still = null }) {
+export async function mountAnywhere({ canvas, dragTarget = null, still = null, startSession = 0 }) {
   const calm = reducedMotion();
   const stage = createStage(canvas, { fov: 26, maxDpr: 2, manual: still !== null, honorReducedMotion: false });
   const { scene, camera, renderer } = stage;
@@ -429,10 +472,15 @@ export async function mountAnywhere({ canvas, dragTarget = null, still = null })
   // Placards in front of each turntable
   const awayTag = tag('ANYWHERE');
   const homeTag = tag('AT HOME');
-  [awayTag, homeTag].forEach((t) => {
-    t.scale.setScalar(1.0);
-    content.add(t);
-  });
+  const officeTag = tag('AT THE OFFICE', { width: 900 });
+  officeTag.scale.setScalar(900 / 640);
+  officeTag.visible = false;
+  [awayTag, homeTag, officeTag].forEach((t) => content.add(t));
+  const setPlace = (at) => {
+    home.setPlace(at);
+    homeTag.visible = at === 'home';
+    officeTag.visible = at === 'office';
+  };
 
   // The arrow: a glossy spruce tube with a sculpted head, pulses running along it, and the link's tag at its middle
   const arrowMat = new THREE.MeshPhysicalMaterial({ color: 0x1e6b57, metalness: 0.2, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.1 });
@@ -459,6 +507,7 @@ export async function mountAnywhere({ canvas, dragTarget = null, still = null })
     home.group.position.set(...L.home);
     awayTag.position.set(...L.awayTag);
     homeTag.position.set(...L.homeTag);
+    officeTag.position.set(...L.officeTag);
     // On a tall canvas the glasses float above the house: no floor under them
     away.shadow.visible = away.ring.visible = name === 'wide';
     curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(...L.from), new THREE.Vector3(...L.bend), new THREE.Vector3(...L.to));
@@ -514,10 +563,11 @@ export async function mountAnywhere({ canvas, dragTarget = null, still = null })
   const ease = (p) => 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 3);
   const frozen = still !== null;
   // The session on screen, and when it began typing; it moves on while the computer's back is turned
-  let session = 0;
+  let session = startSession % SESSIONS.length;
   let begun = frozen ? -100 : 0;
   let front = true;
-  hud.show(SESSIONS[0], begun + ECHO);
+  setPlace(SESSIONS[session].at);
+  hud.show(SESSIONS[session].lines, begun + ECHO);
   let homeShown = '';
   let projShown = '';
 
@@ -542,15 +592,17 @@ export async function mountAnywhere({ canvas, dragTarget = null, still = null })
     if (!frozen) {
       const facing = Math.cos(angle);
       if (front && facing < -0.35) {
+        // The back is turned: the next app, and with it, home becomes the office (or back)
         front = false;
         session = (session + 1) % SESSIONS.length;
+        setPlace(SESSIONS[session].at);
       } else if (!front && facing > 0.2) {
         front = true;
         begun = t;
-        hud.show(SESSIONS[session], t + ECHO);
+        hud.show(SESSIONS[session].lines, t + ECHO);
       }
     }
-    const lines = SESSIONS[session];
+    const lines = SESSIONS[session].lines;
     const local = t - begun;
     const homeRows = front || frozen ? typed(lines, local * CPS) : typed(lines, 0);
     const awayRows = front || frozen ? typed(lines, (local - ECHO) * CPS) : typed(lines, 0);
