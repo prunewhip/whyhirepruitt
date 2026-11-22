@@ -430,7 +430,7 @@ export function hudTexture(lines) {
  * in a blocky paddle angled down. The paddles are the battery and electronics; they sit behind the ears, with a
  * lighter touch panel on the outside. The front faces +z; the arms reach back to about z = -1.85.
  */
-export function createGlasses({ hud } = {}) {
+export function createGlasses({ hud, materials = {}, hudGain = 1 } = {}) {
   const group = new THREE.Group();
   const lensW = 0.6;
   const lensH = 0.56;
@@ -438,7 +438,7 @@ export function createGlasses({ hud } = {}) {
   const cx = lensW / 2 + gap / 2;
 
   // A dark frame under a glossy lacquer, polished metal hinges, and clear lenses that catch the light
-  const frame = new THREE.MeshPhysicalMaterial({
+  const frame = materials.frame || new THREE.MeshPhysicalMaterial({
     color: 0x16181b,
     metalness: 0,
     roughness: 0.55,
@@ -446,9 +446,9 @@ export function createGlasses({ hud } = {}) {
     clearcoatRoughness: 0.09,
     envMapIntensity: 1.2
   });
-  const hingeMetal = new THREE.MeshPhysicalMaterial({ color: 0xa7adb3, metalness: 1, roughness: 0.24, envMapIntensity: 1.25 });
-  const touch = new THREE.MeshPhysicalMaterial({ color: 0x5f646a, metalness: 0.3, roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.1 });
-  const glass = new THREE.MeshPhysicalMaterial({
+  const hingeMetal = materials.hinge || new THREE.MeshPhysicalMaterial({ color: 0xa7adb3, metalness: 1, roughness: 0.24, envMapIntensity: 1.25 });
+  const touch = materials.touch || new THREE.MeshPhysicalMaterial({ color: 0x5f646a, metalness: 0.3, roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.1 });
+  const glass = materials.lens || new THREE.MeshPhysicalMaterial({
     color: 0xb9c6d4,
     metalness: 0,
     roughness: 0.04,
@@ -456,7 +456,8 @@ export function createGlasses({ hud } = {}) {
     opacity: 0.1,
     depthWrite: false
   });
-  const coat = glassCoat({ intensity: 0.85 });
+  // materials.coat: null leaves the lenses to their own material (a refracting glass needs no extra coat)
+  const coat = materials.coat === null ? null : materials.coat || glassCoat({ intensity: 0.85 });
 
   // The front: two rims, the lenses, the bridge and the nose pads. Each rim is a flat-fronted band with rounded
   // edges, swept around the lens, so its face and edges each carry a clean highlight
@@ -480,14 +481,17 @@ export function createGlasses({ hud } = {}) {
     const lens = new THREE.Mesh(lensGeometry, glass);
     lens.position.x = side * cx;
     group.add(lens);
-    const lensCoat = new THREE.Mesh(lensGeometry, coat);
-    lensCoat.position.set(side * cx, 0, 0.004);
-    lensCoat.renderOrder = 2;
-    group.add(lensCoat);
+    if (coat) {
+      const lensCoat = new THREE.Mesh(lensGeometry, coat);
+      lensCoat.position.set(side * cx, 0, 0.004);
+      lensCoat.renderOrder = 2;
+      group.add(lensCoat);
+    }
     if (hud) {
       const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(lensW * 0.84, lensW * 0.84 * (320 / 512)),
-        new THREE.MeshBasicMaterial({ map: hud, transparent: true, depthWrite: false, toneMapped: false })
+        // hudGain above 1 makes the display brighter than white, so a bloom pass can make it glow
+        new THREE.MeshBasicMaterial({ map: hud, transparent: true, depthWrite: false, toneMapped: false, color: new THREE.Color().setScalar(hudGain), blending: hudGain > 1 ? THREE.AdditiveBlending : THREE.NormalBlending })
       );
       plane.position.set(side * cx, 0.02, 0.012);
       plane.renderOrder = 3;

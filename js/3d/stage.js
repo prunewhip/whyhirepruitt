@@ -15,7 +15,7 @@ export const REFLECTED = 1;
  * box are what draw the long, crisp highlights down a phone's edges and across glass, the look of a product shot.
  * The walls stay dark so glossy black stays deep and only the lights show in it (pale walls read as grey plastic).
  */
-function studioEnvironment() {
+export function studioEnvironment() {
   const scene = new THREE.Scene();
   const sweep = new THREE.SphereGeometry(20, 48, 24);
   const position = sweep.attributes.position;

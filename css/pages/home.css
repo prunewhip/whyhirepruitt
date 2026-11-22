@@ -552,7 +552,7 @@ html:not(.has-webgl) .case__shots .device {
   height: 52px;
   border-radius: 50%;
   background: var(--accent);
-  color: #ffffff;
+  color: var(--btn-ink);
   box-shadow: none;
   transition: transform var(--dur-1) var(--ease-out);
 }
@@ -1932,7 +1932,7 @@ html:not(.js) .made__panel + .made__panel {
   padding: 2px 8px;
   border-radius: var(--r-pill);
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-ink);
   letter-spacing: 0.06em;
 }
 
@@ -2023,7 +2023,7 @@ html:not(.js) .made__panel + .made__panel {
 .made__arrow:hover {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-ink);
 }
 
 .made__arrow svg {

@@ -56,7 +56,12 @@
     };
     const params = new URLSearchParams(location.search);
     const kind = params.get('kind') || 'hero';
-    window.ready = kind === 'anywhere'
+    // kind=real: the home page's photoreal opening scene (js/3d/hero-real.js), one still at t
+    if (kind === 'real') {
+      window.ready = import('../../js/3d/hero-real.js')
+        .then(({ mountHeroReal }) => mountHeroReal({ canvas: document.getElementById('c'), manual: true, screensBase: '../../', center: params.has('center') }))
+        .then((hero) => { hero.renderAt(Number(params.get('t') || 3)); return 'ok'; }, (error) => String(error));
+    } else window.ready = kind === 'anywhere'
       ? mountAnywhere({ canvas: document.getElementById('c'), still: Number(params.get('t') || 5.5), startSession: Number(params.get('s') || 0) }).then(() => 'ok', (error) => String(error))
       : mountShowcase({
       canvas: document.getElementById('c'),

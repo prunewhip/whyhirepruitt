@@ -24,7 +24,7 @@
 
     One layout for the whole film: words on the left (on top in the phone cut), the picture on the right (below).
     The picture box is 940×820 in both cuts, so every move is written once. Each frame is a pure function of time.
-    Preview through a local server: ?t=30 shows a moment, ?poster shows the poster; add &format=portrait.
+    Preview through a local server: ?t=30 shows a moment, ?poster shows the poster; add &format=portrait and &theme=dark.
     Facts: every feature shown runs today (phone desktop, glasses desktop at 640×480, keyboard, head-turn tabs, Chrome
     on the glasses). Claude Code's lines are an example session.
   -->
@@ -1272,6 +1272,65 @@
     .portrait .end-by {
       font-size: 34px;
     }
+    /* ── Dark theme (?theme=dark): the site's dark high-tech look; the drawings switch through their attributes ── */
+    .dark {
+      --paper: #050807;
+      --surface: #0c1210;
+      --ink: #eef5f1;
+      --ink-2: #b2c0b8;
+      --ink-3: #8a9891;
+      --line: rgba(255, 255, 255, 0.1);
+      --accent: #6ff0a6;
+      --accent-soft: rgba(111, 240, 166, 0.12);
+    }
+
+    .dark #stage {
+      background: radial-gradient(1100px 700px at 68% 52%, #0d1a15 0%, #070c0a 55%, #040706 100%);
+    }
+
+    .dark svg [stroke="#18201c"] { stroke: #dbe6e0; }
+    .dark svg [fill="#18201c"] { fill: #000; }
+    .dark svg ellipse[fill="#18201c"] { opacity: 0.45; }
+    .dark svg [fill="#fff"] { fill: #0d1512; }
+    .dark svg [fill="#f1f4f1"] { fill: #111a17; }
+    .dark svg [fill="#e6f0ec"] { fill: rgba(111, 240, 166, 0.13); }
+    .dark svg [fill="#1e6b57"] { fill: #6ff0a6; }
+    .dark svg [stroke="#1e6b57"] { stroke: #6ff0a6; }
+    .dark svg [fill="#eef3f0"] { fill: rgba(190, 230, 215, 0.07); }
+    .dark svg [fill="#5d6661"] { fill: #8d9893; }
+    .dark svg [stroke="#9aa39e"] { stroke: #6f7a75; }
+    .dark svg [stroke="#0e9c58"] { stroke: #6ff0a6; }
+    .dark svg [stroke="#e2e6e0"] { stroke: rgba(255, 255, 255, 0.14); }
+    .dark #glasses .lit { filter: drop-shadow(0 0 10px rgba(111, 240, 166, 0.55)); }
+
+    .dark .hud-glass {
+      box-shadow: 0 50px 90px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(124, 249, 176, 0.3) inset, 0 0 0 7px rgba(255, 255, 255, 0.05), 0 0 80px -10px rgba(111, 240, 166, 0.28);
+    }
+
+    .dark .ph-body {
+      box-shadow: 0 40px 70px -26px rgba(0, 0, 0, 0.85), inset 0 0 0 2px #46524c, inset 0 0 0 4px #121815, 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .dark .chip {
+      color: var(--ink-2);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.12);
+    }
+
+    .dark .chip.on {
+      color: #03140b;
+      background: var(--accent);
+      box-shadow: 0 0 30px -4px rgba(111, 240, 166, 0.6);
+    }
+
+    .dark .hud-label i {
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(111, 240, 166, 0.2), 0 0 14px rgba(111, 240, 166, 0.8);
+    }
+
+    .dark em {
+      text-shadow: 0 0 28px rgba(111, 240, 166, 0.35);
+    }
   </style>
 </head>
 
@@ -1647,6 +1706,10 @@
     const DURATION = LINUX.duration;
     const PORTRAIT = new URLSearchParams(location.search).get('format') === 'portrait';
     document.documentElement.classList.toggle('portrait', PORTRAIT);
+    const DARK = new URLSearchParams(location.search).get('theme') === 'dark';
+    document.documentElement.classList.toggle('dark', DARK);
+    // Keyboard colours, which the script sets per frame: [key, key edge, label, pressed (r,g,b)]
+    const KEYC = DARK ? ['#111a17', '#2a3631', '#8a9891', '111,240,166'] : ['#f4f6f3', '#c9d0cb', '#5f6963', '30,107,87'];
 
     const $ = (id) => document.getElementById(id);
     const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -1741,12 +1804,12 @@
         return el;
       };
       svg.appendChild(mk('ellipse', { cx: 380, cy: 222, rx: 340, ry: 8, fill: '#18201c', opacity: '.07' }));
-      svg.appendChild(mk('rect', { x: 2, y: 2, width: 756, height: 210, rx: 24, fill: '#fff', stroke: '#18201c', 'stroke-width': 3 }));
+      svg.appendChild(mk('rect', { x: 2, y: 2, width: 756, height: 210, rx: 24, fill: DARK ? '#0b1210' : '#fff', stroke: DARK ? '#3a4842' : '#18201c', 'stroke-width': 3 }));
       const rows = [['qwertyuiop', 62, 22], ['asdfghjkl', 84, 72], ['zxcvbnm', 116, 122]];
       const key = (id, x, y, w, label) => {
         const g = mk('g', {});
-        const r = mk('rect', { x, y, width: w, height: 42, rx: 9, fill: '#f4f6f3', stroke: '#c9d0cb', 'stroke-width': 2 });
-        const tx = mk('text', { x: x + w / 2, y: y + 27, 'text-anchor': 'middle', 'font-family': 'Geist Mono', 'font-size': 15, fill: '#5f6963' });
+        const r = mk('rect', { x, y, width: w, height: 42, rx: 9, fill: KEYC[0], stroke: KEYC[1], 'stroke-width': 2 });
+        const tx = mk('text', { x: x + w / 2, y: y + 27, 'text-anchor': 'middle', 'font-family': 'Geist Mono', 'font-size': 15, fill: KEYC[2] });
         tx.textContent = label;
         g.appendChild(r);
         g.appendChild(tx);
@@ -1772,10 +1835,10 @@
       for (const k in KEYS) {
         const v = lit[k] || 0;
         const { r, tx } = KEYS[k];
-        r.setAttribute('fill', v > 0 ? `rgba(30,107,87,${(0.25 + 0.75 * v).toFixed(3)})` : '#f4f6f3');
-        r.setAttribute('stroke', v > 0 ? '#1e6b57' : '#c9d0cb');
+        r.setAttribute('fill', v > 0 ? `rgba(${KEYC[3]},${(0.25 + 0.75 * v).toFixed(3)})` : KEYC[0]);
+        r.setAttribute('stroke', v > 0 ? `rgb(${KEYC[3]})` : KEYC[1]);
         r.setAttribute('transform', v > 0 ? `translate(0 ${(2 * v).toFixed(2)})` : '');
-        tx.setAttribute('fill', v > 0.4 ? '#fff' : '#5f6963');
+        tx.setAttribute('fill', v > 0.4 ? (DARK ? '#03140b' : '#fff') : KEYC[2]);
         tx.setAttribute('transform', v > 0 ? `translate(0 ${(2 * v).toFixed(2)})` : '');
       }
     }
@@ -1909,7 +1972,7 @@
       const tabNow = kf(t, F.tab).v;
       $('arcLabels').querySelectorAll('text').forEach((tx, i) => {
         const on = 1 - clamp(Math.abs(tabNow - i));
-        tx.setAttribute('fill', on > 0.5 ? '#1e6b57' : '#5f6963');
+        tx.setAttribute('fill', on > 0.5 ? (DARK ? '#6ff0a6' : '#1e6b57') : (DARK ? '#8a9891' : '#5f6963'));
         tx.setAttribute('font-weight', on > 0.5 ? '650' : '500');
       });
 

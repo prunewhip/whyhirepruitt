@@ -1,6 +1,6 @@
 /*
  * whyhirepruitt.dev — Design System v6 "Field notes"
- * Near-white paper, green-black ink, hairlines and one spruce accent. Flat: no gradients, glows or glass.
+ * Dark high-tech: a near-black studio, cool white ink, glass panels and the glasses’ green as the one light.
  * Type is Geist throughout (no serif, no italics) with Geist Mono for technical labels.
  *
  * Contents
@@ -43,56 +43,59 @@
    ══════════════════════════════════════════════════════════ */
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* Color: near-white paper, green-black ink, one spruce accent. Flat, no glows or gradients. */
-  --paper: #fcfcfa;
-  --paper-2: #f2f4f0;
-  --surface: #ffffff;
-  --surface-2: #f2f4f0;
-  --glass: #ffffff;
-  --glass-strong: #f2f4f0;
-  --ink: #18201c;
-  --ink-2: #4a544e;
-  --ink-3: #5f6963;
-  --line: #e2e6e0;
-  --line-strong: #cdd3cb;
-  --line-hover: #9aa49d;
-  --tint: #f6f7f4;
-  --tint-2: #eef1ec;
-  --accent: #1e6b57;
-  --accent-strong: #175a49;
-  --accent-bright: #2a7d66;
-  --accent-soft: #e6f0ec;
-  --accent-line: #a9c9bd;
-  --live: #1e6b57;
-  --live-soft: #e6f0ec;
+  /* Color: a near-black studio, cool white ink, and the glasses' green as the one light source.
+     Glass panels (faint white over black) and glows are allowed, but only where something is "lit". */
+  --paper: #050807;
+  --paper-2: #0a0f0d;
+  --surface: #0c1210;
+  --surface-2: #111916;
+  --glass: rgba(255, 255, 255, 0.035);
+  --glass-strong: rgba(255, 255, 255, 0.07);
+  --ink: #eef5f1;
+  --ink-2: #b4c2ba;
+  --ink-3: #8b9992;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --line-hover: rgba(111, 240, 166, 0.5);
+  --tint: rgba(255, 255, 255, 0.025);
+  --tint-2: rgba(255, 255, 255, 0.05);
+  --accent: #6ff0a6;
+  --accent-strong: #a3f7c6;
+  --accent-bright: #8ff5b9;
+  --accent-soft: rgba(111, 240, 166, 0.11);
+  --accent-line: rgba(111, 240, 166, 0.35);
+  --accent-2: #5eead4;
+  --glow: 0 0 32px -6px rgba(111, 240, 166, 0.55);
+  --live: #6ff0a6;
+  --live-soft: rgba(111, 240, 166, 0.12);
   --ok: var(--live);
   --ok-soft: var(--live-soft);
-  --btn-bg: #18201c;
-  --btn-ink: #ffffff;
-  --nav-bg: rgba(252, 252, 250, 0.92);
-  --pill-bg: #ffffff;
-  --selection: #cfe3db;
-  --spot: transparent;
+  --btn-bg: #6ff0a6;
+  --btn-ink: #03140b;
+  --nav-bg: rgba(5, 8, 7, 0.6);
+  --pill-bg: rgba(255, 255, 255, 0.05);
+  --selection: rgba(111, 240, 166, 0.32);
+  --spot: rgba(111, 240, 166, 0.09);
 
-  /* Fills (kept as tokens so components stay flat in one place) */
+  /* Fills */
   --head-fill: none;
-  --btn-fill: #18201c;
-  --btn-shadow: none;
-  --btn-shadow-hover: none;
-  --card-fill: #ffffff;
-  --grid-line: #eef1ec;
+  --btn-fill: linear-gradient(180deg, #8af5b8 0%, #5ee89a 100%);
+  --btn-shadow: 0 0 0 1px rgba(111, 240, 166, 0.55), 0 10px 30px -10px rgba(111, 240, 166, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --btn-shadow-hover: 0 0 0 1px rgba(111, 240, 166, 0.9), 0 14px 44px -8px rgba(111, 240, 166, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  --card-fill: rgba(255, 255, 255, 0.03);
+  --grid-line: rgba(255, 255, 255, 0.05);
 
-  /* Code blocks: light, like the rest of the page */
-  --code-bg: #f6f7f4;
-  --code-ink: #18201c;
-  --code-ink-3: #5f6963;
-  --code-line: #e2e6e0;
+  /* Code blocks */
+  --code-bg: #0b1210;
+  --code-ink: #dbe7e0;
+  --code-ink-3: #8b9992;
+  --code-line: rgba(255, 255, 255, 0.08);
 
   /* Theater band (video) */
-  --theater: #f2f4f0;
-  --theater-2: #e9ede7;
+  --theater: #0a0f0d;
+  --theater-2: #0e1512;
   --theater-ink: var(--ink);
   --theater-ink-2: var(--ink-2);
   --theater-line: var(--line);
@@ -145,9 +148,9 @@
 
   /* Depth: hairlines first, shadows only to lift what floats */
   --edge: none;
-  --shadow-1: 0 1px 2px rgba(24, 32, 28, 0.05);
-  --shadow-2: 0 1px 2px rgba(24, 32, 28, 0.05), 0 12px 32px -18px rgba(24, 32, 28, 0.18);
-  --shadow-3: 0 1px 3px rgba(24, 32, 28, 0.06), 0 30px 60px -36px rgba(24, 32, 28, 0.28);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(0, 0, 0, 0.7);
+  --shadow-3: 0 1px 3px rgba(0, 0, 0, 0.5), 0 40px 80px -30px rgba(0, 0, 0, 0.85);
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -698,7 +701,7 @@ html:not(.js) .nav-toggle {
 
 .btn--accent {
   background: var(--accent);
-  color: #ffffff;
+  color: var(--btn-ink);
   box-shadow: none;
 }
 
@@ -1220,4 +1223,108 @@ html:not(.js) .nav-toggle {
   width: 1em;
   height: 1em;
   flex: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   12. HIGH-TECH LAYER (2026-11): glass, light and motion over the dark tokens
+   Motion budget: hovers 160 ms, UI 240–320 ms, reveals 700 ms, all ease-out; exits run about 3/4 of entrances.
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur-1: 160ms;
+  --dur-2: 280ms;
+  --dur-3: 700ms;
+}
+
+html {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+/* The studio behind every page: a faint grid fading out below the fold, and two pools of light */
+body {
+  background: transparent;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 520px at 80% -10%, rgba(111, 240, 166, 0.09), transparent 62%),
+    radial-gradient(760px 480px at -8% 26%, rgba(94, 234, 212, 0.05), transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px) 0 0 / 64px 64px;
+  -webkit-mask-image: radial-gradient(1400px 900px at 50% 0%, #000 25%, transparent 80%);
+  mask-image: radial-gradient(1400px 900px at 50% 0%, #000 25%, transparent 80%);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Glass navigation */
+.site-nav {
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.site-nav.is-scrolled {
+  border-bottom-color: var(--line);
+}
+
+.brand__mark {
+  background: linear-gradient(135deg, #a8f8cb, #5ee89a 55%, #3fcf8e);
+  box-shadow: 0 0 0 1px rgba(111, 240, 166, 0.6), 0 0 22px -4px rgba(111, 240, 166, 0.7);
+}
+
+/* Lit words: a gradient of the display's green, glowing faintly */
+.display em,
+.h1 em,
+.h2 em {
+  background: linear-gradient(100deg, #c6ffe0 0%, #6ff0a6 42%, #5eead4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 22px rgba(111, 240, 166, 0.22));
+}
+
+.eyebrow {
+  color: var(--ink-2);
+}
+
+.eyebrow::before {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(111, 240, 166, 0.16), 0 0 12px rgba(111, 240, 166, 0.9);
+}
+
+.btn--secondary {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.btn--secondary:hover {
+  box-shadow: 0 0 24px -8px rgba(111, 240, 166, 0.55);
+}
+
+.card {
+  background: var(--card-fill);
+  border-color: var(--line);
+}
+
+/* Reveals rise out of a soft blur */
+@media (prefers-reduced-motion: no-preference) {
+  .js .reveal {
+    filter: blur(6px);
+    transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out), filter var(--dur-3) var(--ease-out);
+  }
+
+  .js .reveal.is-visible {
+    filter: none;
+  }
 }

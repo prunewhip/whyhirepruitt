@@ -9,7 +9,7 @@
     content="Pruitt Colon builds a new interface for AI from the best open software: smart glasses that show any AI, a phone that hears and remembers, and voices that read to you.">
   <link rel="canonical" href="https://whyhirepruitt.dev/">
 
-  <meta name="theme-color" content="#fcfcfa">
+  <meta name="theme-color" content="#050807">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Pruitt Colon">
   <meta property="og:title" content="Pruitt Colon · AI engineer">
@@ -30,9 +30,12 @@
   <link rel="stylesheet" href="css/design-system.css">
   <link rel="stylesheet" href="css/pages/home.css">
   <link rel="stylesheet" href="css/components/player.css">
+  <link rel="stylesheet" href="css/pages/hx.css">
 
   <script>
     document.documentElement.classList.add('js');
+    // The entrance waits for js/hx.js; if that never runs, show everything anyway
+    setTimeout(() => document.documentElement.classList.add('is-ready'), 1800);
     // Feature check for the 3D scenes; without WebGL the page shows real screenshots instead
     try {
       if (document.createElement('canvas').getContext('webgl2')) document.documentElement.classList.add('has-webgl');
@@ -40,7 +43,7 @@
   </script>
   <script src="js/main.js" defer></script>
   <script src="js/player.js" defer></script>
-  <script src="js/home.js" type="module"></script>
+  <script src="js/hx.js" type="module"></script>
 
   <script type="application/ld+json">
   {
@@ -76,6 +79,27 @@
     <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16a8 8 0 1 1 16 0" /><path d="m12 16 4-5" /><circle cx="12" cy="16" r="1.25" /></symbol>
     <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 5 6v5.5c0 4.3 2.9 7.8 7 9 4.1-1.2 7-4.7 7-9V6Z" /><path d="m9 12 2.2 2.2L15.5 10" /></symbol>
     <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z" /><path d="M14 3.5V8h4.5M9 13h6M9 16.5h4" /></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" /></symbol>
+    <symbol id="i-glasses" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="26" r="9" /><circle cx="33" cy="26" r="9" /><path d="M22.5 23.5q1.5-2 3 0M6 24l-2.5-6M42 24l2.5-6" /><path d="M10.5 24.5h6M28.5 24.5h6" stroke-width="2" opacity=".7" /></symbol>
+    <symbol id="i-monitor" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="38" height="25" rx="3" /><path d="M18 40h12M24 33v7M11 15l5 4-5 4M19 23h8" /></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="m7 9 3 3-3 3M12.5 15H17" /></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="13" height="10" rx="2" /><rect x="15" y="9" width="6.5" height="11" rx="1.6" /><path d="M6 18h6" /></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></symbol>
+    <symbol id="i-captions" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M7 11h6M15 11h2M7 14.5h3M12 14.5h5" /></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="2.2" /><path d="M3.8 10.5h5.9M14.3 10.5h5.9M12 14.2v6" /></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="3" /></symbol>
+    <!-- Card art: glasses, an encrypted link, a computer -->
+    <symbol id="art-anywhere" viewBox="0 0 320 120">
+      <g fill="none" stroke="#6ff0a6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="34" cy="62" r="17" /><circle cx="72" cy="62" r="17" /><path d="M48 58q5-5 10 0M17 58l-6-10M89 58l6-10" />
+        <rect x="226" y="34" width="72" height="48" rx="5" /><path d="M250 96h24M262 82v14M236 46l8 6-8 6M248 60h14" />
+      </g>
+      <rect x="104" y="54" width="112" height="16" rx="8" fill="rgba(111,240,166,.08)" stroke="rgba(111,240,166,.5)" stroke-width="1.5" />
+      <path d="M110 62H210" stroke="#6ff0a6" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round" />
+      <circle cx="160" cy="62" r="13" fill="#07100d" stroke="#6ff0a6" stroke-width="1.8" />
+      <g fill="none" stroke="#6ff0a6" stroke-width="1.8" stroke-linecap="round"><rect x="154" y="61" width="12" height="8" rx="1.5" /><path d="M156.5 61v-2.5a3.5 3.5 0 0 1 7 0V61" /></g>
+    </symbol>
   </svg>
 
   <header class="site-nav">
@@ -100,41 +124,306 @@
   </header>
 
   <main id="main">
-    <nav class="rail" aria-label="On this page" data-rail>
-      <a href="#made"><span class="mono">01</span><span class="rail__label">Things I’ve made</span></a>
-      <a href="#anywhere"><span class="mono">02</span><span class="rail__label">Anywhere</span></a>
-      <a href="#glasses"><span class="mono">03</span><span class="rail__label">Vox, the glasses</span></a>
-      <a href="#vox"><span class="mono">04</span><span class="rail__label">Vox Amelior</span></a>
-      <a href="#contact"><span class="mono">05</span><span class="rail__label">Contact</span></a>
-    </nav>
-    <!-- ══════════ Hero: the pitch and the film ══════════ -->
-    <section class="hero" id="film" aria-labelledby="hero-title" data-hero>
-      <div class="container hero__grid">
-        <div class="hero__copy">
-          <p class="hero__status">
-            <picture class="hero__avatar">
-              <source srcset="assets/img/avatar-96.webp" type="image/webp">
-              <img src="assets/img/avatar-96.jpg" alt="" width="48" height="48">
-            </picture>
-            <span class="hero__status-name">Pruitt Colon · AI engineer</span>
-            <span class="hero__status-sep" aria-hidden="true"></span>
-            <span class="status-dot" aria-hidden="true"></span>
-            <span>Open to full-time roles</span>
-          </p>
-          <h1 class="display hero__title" id="hero-title">
-            <span class="line"><span>Every AI,</span></span>
-            <span class="line"><span><em>one glance away.</em></span></span>
-          </h1>
-        </div>
+    <!-- ══════════ Hero: a photoreal studio scene (js/3d/hero-real.js) behind the pitch. The still shows first and
+         stays without WebGL; the live scene fades in over it once its first frame is drawn. ══════════ -->
+    <section class="hx-hero" aria-labelledby="hero-title">
+      <div class="hx-hero__stage" aria-hidden="true" data-hero-stage>
+        <picture class="hx-hero__still">
+          <source media="(max-width: 760px)" srcset="assets/img/hero-real-tall.webp" width="900" height="1600">
+          <img src="assets/img/hero-real.webp" alt="" width="1920" height="1080" fetchpriority="high">
+        </picture>
+        <canvas class="hx-hero__canvas" data-hero-canvas></canvas>
+        <div class="hx-hero__scrim"></div>
+      </div>
 
-        <!-- The new film: a silent loop of its best moments plays here until someone presses play (js/player.js).
-             Phones get a 4:5 cut with larger type below 700px. Made by tools/film/linux.html. -->
-        <figure class="hero__film">
-          <div class="hero__film-intro">
-            <p class="eyebrow">New · Linux in your glasses · film · 1:10</p>
-            <p>My phone runs a full Linux desktop, and <strong>Vox</strong>, my glasses app, puts it in Even Realities G1
-              glasses. Everything in the film runs today; Claude’s lines are an example session.</p>
-          </div>
+      <div class="container hx-hero__inner">
+        <p class="hx-status hx-in" style="--d:0">
+          <img src="assets/img/avatar-96.webp" alt="" width="28" height="28">
+          <b>Pruitt Colon</b> <span class="hx-role">AI engineer</span>
+          <span class="hx-sep" aria-hidden="true"></span>
+          <span class="status-dot" aria-hidden="true"></span> Open to full-time roles
+        </p>
+        <h1 class="hx-title" id="hero-title">
+          <span class="hx-line"><span style="--l:0">Every AI,</span></span>
+          <span class="hx-line"><span style="--l:1"><em>one glance away.</em></span></span>
+        </h1>
+        <p class="hx-lead hx-in" style="--d:3">I build the interface for AI: smart glasses that show <b>any AI</b>, and
+          a <b>whole Linux computer</b>, running on the phone in your pocket.</p>
+        <div class="hx-actions hx-in" style="--d:4">
+          <a class="btn btn--primary btn--lg" href="#made">See what I’ve made <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          <a class="btn btn--secondary btn--lg" href="#film" data-play="film"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the film <span class="mono">1:10</span></a>
+        </div>
+        <dl class="hx-stats hx-in" style="--d:5">
+          <div class="hx-stat"><dt>Open-source Android apps</dt><dd data-count="4">4</dd></div>
+          <div class="hx-stat"><dt>Open models in one app</dt><dd data-count="15">15</dd></div>
+          <div class="hx-stat"><dt>Automated tests</dt><dd data-count="500" data-suffix="+">500+</dd></div>
+          <div class="hx-stat"><dt>Years in telecom first</dt><dd data-count="7">7</dd></div>
+        </dl>
+      </div>
+      <a class="hx-scroll" href="#made" aria-label="Scroll to what I’ve made"><span></span></a>
+    </section>
+
+    <!-- ══════════ Built on ══════════ -->
+    <div class="hx-marquee" role="region" aria-label="Built on">
+      <p class="hx-marquee__label mono">Built on</p>
+      <div class="hx-marquee__window">
+        <div class="hx-marquee__track">
+          <ul role="list">
+            <li>ScouterKit</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+            <li>pyannote</li><li>SenseVoice</li><li>llama.cpp</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
+            <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>JSch</li><li>LC3</li><li>Three.js</li>
+          </ul>
+          <ul role="list" aria-hidden="true">
+            <li>ScouterKit</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+            <li>pyannote</li><li>SenseVoice</li><li>llama.cpp</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
+            <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>JSch</li><li>LC3</li><li>Three.js</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ 01 · Things I've made: a bento of cards; each opens the viewer (js/hx.js), where the arrows,
+         the dots, the arrow keys and a swipe move through all seven. Each card's details live in its <template>. ══════════ -->
+    <section class="section hx-made" id="made" aria-labelledby="made-title">
+      <div class="container">
+        <header class="hx-head reveal">
+          <p class="eyebrow">01 · Things I’ve made</p>
+          <h2 class="h2" id="made-title">Seven builds. <em>Open any one.</em></h2>
+          <p class="lead">Newest first. Each runs today unless it says otherwise. Open one for the details, then use the
+            arrows to move through them all.</p>
+        </header>
+
+        <ul class="hx-bento" role="list">
+          <li class="hx-card hx-card--xl reveal" style="--i:0">
+            <button class="hx-card__open" type="button" data-open="0" aria-haspopup="dialog">
+              <span class="hx-card__media"><video muted loop playsinline preload="none" poster="assets/video/linux-film-poster.webp" data-card-video="assets/video/linux-film-preview.mp4"></video></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-badge">New</span>
+                <span class="hx-card__kicker mono">Vox · Android + Even Realities G1</span>
+                <span class="hx-card__title">Linux, in your glasses</span>
+                <span class="hx-card__text">A whole Linux desktop from the phone in your pocket, typed into from any
+                  Bluetooth keyboard, with tabs that follow your head.</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media" style="background: url(assets/video/linux-film-poster.webp) center / contain no-repeat #050807"><video muted loop playsinline autoplay poster="assets/video/linux-film-poster.webp" src="assets/video/linux-film-preview.mp4"></video></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Vox · Android + Even Realities G1 <span class="hx-badge">New</span></p>
+                <h3 class="hx-modal__title">Linux, <em>in your glasses.</em></h3>
+                <p class="hx-modal__text">My phone runs a full Linux desktop inside the Termux app. Vox sends a second
+                  desktop, sized for the lens, to the glasses. Type on any Bluetooth keyboard; turn your head to
+                  switch tabs.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>Ubuntu and XFCE on the phone. No laptop.</li>
+                  <li>640 × 480 in up to 16 greys, over Bluetooth LE</li>
+                  <li>Tabs follow your head, from the glasses’ own gyroscope</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--primary btn--sm" href="#film" data-play="film" data-close><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the film</a>
+                  <a class="btn btn--secondary btn--sm" href="https://github.com/prunewhip/scouter_kit/tree/phone-termux-screen/examples/ssh" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card hx-card--wide reveal" style="--i:1">
+            <button class="hx-card__open" type="button" data-open="1" aria-haspopup="dialog">
+              <span class="hx-card__media"><img src="assets/img/hero-real-card.webp" alt="" width="1200" height="760" loading="lazy"></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">Vox · Kotlin + C++</span>
+                <span class="hx-card__title">A second screen for every AI</span>
+                <span class="hx-card__text">Claude Code, your phone, your laptop, live captions and your voice, in the glasses.</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media"><img src="assets/img/hero-real-card.webp" alt="Even Realities G1 glasses showing Vox" width="1200" height="760"></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Vox · Kotlin + C++ · Android</p>
+                <h3 class="hx-modal__title">A second screen <em>for every AI.</em></h3>
+                <p class="hx-modal__text">Claude Code, your phone’s screen, your laptop’s, live captions and your voice,
+                  all in the glasses. Built on ScouterKit, open firmware by Marek that unlocks the G1’s whole display; I
+                  added a 16-grey video mode to it.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>15 open models and libraries on one phone</li>
+                  <li>Speak into the glasses; Parakeet types it into any prompt</li>
+                  <li>Ask Claude from the steering wheel, lenses dark</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--primary btn--sm" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
+                  <a class="btn btn--secondary btn--sm" href="#glasses" data-close>How it works</a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card reveal" style="--i:2">
+            <button class="hx-card__open" type="button" data-open="2" aria-haspopup="dialog">
+              <span class="hx-card__media hx-card__media--art"><svg viewBox="0 0 320 120" aria-hidden="true"><use href="#art-anywhere" /></svg></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">SSH · mosh · Tailscale</span>
+                <span class="hx-card__title">Your computer, anywhere</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media hx-modal__media--art"><svg viewBox="0 0 320 120" aria-hidden="true"><use href="#art-anywhere" /></svg></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Vox · SSH · mosh · Tailscale</p>
+                <h3 class="hx-modal__title">Your computer, <em>wherever you are.</em></h3>
+                <p class="hx-modal__text">The computer at home or at the office, in your glasses: its terminal, with
+                  Claude Code building whatever you ask, or its whole screen.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>SSH inside Tailscale: nothing open to the internet</li>
+                  <li>mosh keeps the session alive between Wi-Fi and cell</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--secondary btn--sm" href="#anywhere" data-close>See the path</a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card reveal" style="--i:3">
+            <button class="hx-card__open" type="button" data-open="3" aria-haspopup="dialog">
+              <span class="hx-card__media hx-card__media--phone"><img src="assets/app/hd/vox-ask.webp" alt="" width="810" height="1800" loading="lazy"></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">Flutter · Android</span>
+                <span class="hx-card__title">Vox Amelior</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media hx-modal__media--phone"><img src="assets/app/hd/vox-ask.webp" alt="Vox Amelior answering a question about a past conversation" width="810" height="1800"></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Vox Amelior · Flutter · Android</p>
+                <h3 class="hx-modal__title">A private memory <em>for your conversations.</em></h3>
+                <p class="hx-modal__text">Where it started: an AI that listens, remembers and answers on your phone, so
+                  your conversations stay there. Its listening now runs in the glasses too.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>Speech to text and speaker ID, on the phone</li>
+                  <li>No cloud AI and no analytics</li>
+                  <li>400+ automated tests</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--primary btn--sm" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
+                  <a class="btn btn--secondary btn--sm" href="#vox" data-play="vox" data-close><svg aria-hidden="true"><use href="#i-play" /></svg> Concept film</a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card reveal" style="--i:4">
+            <button class="hx-card__open" type="button" data-open="4" aria-haspopup="dialog">
+              <span class="hx-card__media hx-card__media--phone"><img src="assets/app/hd/even-chat.webp" alt="" width="720" height="1560" loading="lazy"></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">Flutter + Python</span>
+                <span class="hx-card__title">Even Suite</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media hx-modal__media--phone"><img src="assets/app/hd/even-chat.webp" alt="Even Suite on a phone: a chat with Claude" width="720" height="1560"></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Even Suite · Flutter + Python</p>
+                <h3 class="hx-modal__title">The first app <em>to put Claude in the G1.</em></h3>
+                <p class="hx-modal__text">Say “Claude” or hold the TouchBar, and the answer appears in your view.
+                  Private when it can be, powerful when you need it.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>87 tests against simulated glasses</li>
+                  <li>A Python hub in Termux, bound to the phone only</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--secondary btn--sm" href="apps.html#even-suite">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card reveal" style="--i:5">
+            <button class="hx-card__open" type="button" data-open="5" aria-haspopup="dialog">
+              <span class="hx-card__media hx-card__media--phone"><img src="assets/app/hd/narr-reader.webp" alt="" width="540" height="1170" loading="lazy"></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">Android</span>
+                <span class="hx-card__title">Narrator Studio</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media hx-modal__media--phone"><img src="assets/app/hd/narr-reader.webp" alt="Narrator Studio reading a chapter aloud" width="540" height="1170"></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">Narrator Studio · Android</p>
+                <h3 class="hx-modal__title">Any text, <em>as a podcast.</em></h3>
+                <p class="hx-modal__text">Turns text and PDFs into a podcast in natural voices, made on your phone. Its
+                  voices now read inside Vox.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>Four on-device voice engines</li>
+                  <li>Whisper checks every build: 2.6% word error rate</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--secondary btn--sm" href="apps.html#narrator">See Narrator Studio <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </template>
+          </li>
+
+          <li class="hx-card hx-card--wide reveal" style="--i:6">
+            <button class="hx-card__open" type="button" data-open="6" aria-haspopup="dialog">
+              <span class="hx-card__media"><img src="assets/img/hero-real.webp" alt="" width="1920" height="1080" loading="lazy"></span>
+              <span class="hx-card__cta" aria-hidden="true"><svg><use href="#i-arrow" /></svg></span>
+              <span class="hx-card__body">
+                <span class="hx-card__kicker mono">HTML · CSS · JavaScript · Three.js</span>
+                <span class="hx-card__title">This website, by hand</span>
+                <span class="hx-card__text">Real-time 3D, films drawn by code frame by frame, and music written the same way.</span>
+              </span>
+            </button>
+            <template>
+              <div class="hx-modal__media"><img src="assets/img/hero-real.webp" alt="The opening scene of this website: G1 glasses in a dark studio" width="1920" height="1080"></div>
+              <div class="hx-modal__body">
+                <p class="hx-modal__meta mono">whyhirepruitt.dev · HTML, CSS, JavaScript</p>
+                <h3 class="hx-modal__title">This website, <em>by hand.</em></h3>
+                <p class="hx-modal__text">No framework and no trackers. The opening scene is real-time Three.js:
+                  refracting glass, studio light, bloom and film grain, tuned down on slower phones. Every film here is
+                  drawn by code one frame at a time, with music written the same way.</p>
+                <ul class="hx-modal__facts" role="list">
+                  <li>Physically based glass, light and reflections</li>
+                  <li>Films and scores generated from code</li>
+                </ul>
+                <div class="hx-modal__actions">
+                  <a class="btn btn--secondary btn--sm" href="https://github.com/prunewhip/whyhirepruitt" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
+                </div>
+              </div>
+            </template>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- The viewer (js/hx.js): one project at a time; Esc or a tap outside closes it -->
+    <dialog class="hx-modal" aria-labelledby="hx-modal-title" data-viewer>
+      <div class="hx-modal__panel">
+        <button class="hx-modal__close" type="button" aria-label="Close" data-viewer-close><svg aria-hidden="true"><use href="#i-close" /></svg></button>
+        <div class="hx-modal__swap" data-viewer-swap></div>
+        <div class="hx-modal__nav">
+          <button class="hx-arrow hx-arrow--prev" type="button" aria-label="Previous project" data-viewer-prev><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <div class="hx-dots" data-viewer-dots></div>
+          <p class="hx-count mono" aria-live="polite" data-viewer-count>01 / 07</p>
+          <button class="hx-arrow" type="button" aria-label="Next project" data-viewer-next><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- ══════════ 02 · The film (tools/film/linux.html?theme=dark): a silent loop plays until someone presses play ══════════ -->
+    <section class="section hx-film" id="film" aria-labelledby="film-title">
+      <div class="container">
+        <header class="hx-head hx-head--center reveal">
+          <p class="eyebrow">02 · The film · 1:10</p>
+          <h2 class="h2" id="film-title">Linux, <em>in your glasses.</em></h2>
+          <p class="lead">My phone runs a full Linux desktop, and Vox puts it in Even Realities G1. Everything in the film
+            runs today; Claude’s lines are an example session.</p>
+        </header>
+        <figure class="hx-film__frame reveal">
           <div class="player player--portrait-on-phones" data-player>
             <div class="player__frame">
               <div class="player__stage">
@@ -156,7 +445,6 @@
               </div>
             </div>
           </div>
-
           <figcaption class="hero__film-cap">
             <details class="transcript">
               <summary>Transcript</summary>
@@ -175,305 +463,65 @@
             </details>
           </figcaption>
         </figure>
-
-        <div class="hero__more">
-          <p class="lead hero__lead">
-            AI gets better every month. The way we reach it hasn’t: a text box, on a phone, in your hand. I take the
-            best new open software and fit it into one interface you wear. When the next AI ships, from any company,
-            it already has a place in your glasses.
-          </p>
-          <div class="hero__actions">
-            <a class="btn btn--primary btn--lg" href="#made">See what I’ve made</a>
-            <a class="btn btn--secondary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="container">
-        <dl class="proof">
-          <div class="proof__item"><dt>Open-source Android apps with public builds</dt><dd>4</dd></div>
-          <div class="proof__item"><dt>Open models and libraries working together in Vox</dt><dd>15</dd></div>
-          <div class="proof__item"><dt>Years in telecom and fiber before software</dt><dd>7</dd></div>
-        </dl>
       </div>
     </section>
 
-    <!-- ══════════ 01 · Things I've made: a filmstrip of thumbnails, one project at a time (js/home.js initMade).
-         Without JavaScript every project shows, one after another. ══════════ -->
-    <section class="section section--tight made-section" id="made" aria-labelledby="made-title">
+    <!-- ══════════ 03 · Anywhere: the path from the lens to your own computer, with light running along it ══════════ -->
+    <section class="section hx-anywhere" id="anywhere" aria-labelledby="anywhere-title">
       <div class="container">
-        <div class="section-head section-head--split reveal">
-          <div>
-            <p class="eyebrow">01 · Things I’ve made</p>
-            <h2 class="h2" id="made-title">Seven things. <em>Click through.</em></h2>
+        <header class="hx-head reveal">
+          <p class="eyebrow">03 · Your screen, anywhere</p>
+          <h2 class="h2" id="anywhere-title">Your computer at home. <em>In your glasses, anywhere.</em></h2>
+          <p class="lead">Vox reaches your own computer over SSH inside Tailscale, a private network where every
+            connection is encrypted and nothing on your computer is open to the internet. Its terminal, with Claude Code
+            building whatever you ask, or its whole screen, shows in your glasses.</p>
+        </header>
+        <div class="hx-path reveal" role="img" aria-label="The glasses connect to Vox on the phone over Bluetooth LE; the phone reaches your computer over SSH and mosh inside Tailscale, encrypted.">
+          <div class="hx-node">
+            <span class="hx-node__icon"><svg aria-hidden="true"><use href="#i-glasses" /></svg></span>
+            <b>Even Realities G1</b><span>640 × 480 · up to 16 greys</span>
           </div>
-          <p class="lead">Newest first. Each one runs today unless it says otherwise, and each links to its build, its
-            source or more detail below.</p>
-        </div>
-
-        <div class="made" data-made>
-          <div class="made__strip" role="tablist" aria-label="Things I’ve made">
-            <button class="made__tab" type="button" role="tab" id="made-tab-1" aria-controls="made-1" aria-selected="true">
-              <span class="made__thumb"><img src="assets/video/linux-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></span>
-              <span class="made__tab-num mono">01 · New</span>
-              <span class="made__tab-title">Linux in your glasses</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-2" aria-controls="made-2" aria-selected="false" tabindex="-1">
-              <span class="made__thumb"><img src="assets/img/interface-devices.webp" alt="" width="950" height="880" loading="lazy"></span>
-              <span class="made__tab-num mono">02</span>
-              <span class="made__tab-title">Vox, the glasses app</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-3" aria-controls="made-3" aria-selected="false" tabindex="-1">
-              <span class="made__thumb"><img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy"></span>
-              <span class="made__tab-num mono">03</span>
-              <span class="made__tab-title">Your screen, anywhere</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-4" aria-controls="made-4" aria-selected="false" tabindex="-1">
-              <span class="made__thumb"><img src="assets/video/vox-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></span>
-              <span class="made__tab-num mono">04</span>
-              <span class="made__tab-title">Vox Amelior</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-5" aria-controls="made-5" aria-selected="false" tabindex="-1">
-              <span class="made__thumb made__thumb--phone"><img src="assets/app/hd/even-chat.webp" alt="" width="720" height="1560" loading="lazy"></span>
-              <span class="made__tab-num mono">05</span>
-              <span class="made__tab-title">Even Suite</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-6" aria-controls="made-6" aria-selected="false" tabindex="-1">
-              <span class="made__thumb made__thumb--phone"><img src="assets/app/hd/narr-reader.webp" alt="" width="540" height="1170" loading="lazy"></span>
-              <span class="made__tab-num mono">06</span>
-              <span class="made__tab-title">Narrator Studio</span>
-            </button>
-            <button class="made__tab" type="button" role="tab" id="made-tab-7" aria-controls="made-7" aria-selected="false" tabindex="-1">
-              <span class="made__thumb"><img src="assets/img/hero-devices.webp" alt="" width="1200" height="1000" loading="lazy"></span>
-              <span class="made__tab-num mono">07</span>
-              <span class="made__tab-title">This website</span>
-            </button>
+          <div class="hx-link"><span class="hx-link__label mono">Bluetooth LE</span><i></i></div>
+          <div class="hx-node hx-node--hub">
+            <span class="hx-node__icon"><svg aria-hidden="true"><use href="#i-device" /></svg></span>
+            <b>Vox on your phone</b><span>15 open models · one microphone</span>
           </div>
-
-          <div class="made__stage" data-made-stage>
-            <article class="made__panel" role="tabpanel" id="made-1" aria-labelledby="made-tab-1">
-              <div class="made__media made__media--film">
-                <video class="made__video" muted loop playsinline preload="none" width="1920" height="1080"
-                  poster="assets/video/linux-film-poster.webp" data-made-video="assets/video/linux-film-preview.mp4"
-                  aria-label="A silent loop from the film Linux, in your glasses"></video>
-              </div>
-              <div class="made__body">
-                <p class="made__meta mono">Vox · Android + Even Realities G1 <span class="made__status">New</span></p>
-                <h3 class="made__title">Linux, <em>in your glasses.</em></h3>
-                <p class="made__text">My phone runs a full Linux desktop inside the Termux app. Vox sends a second
-                  desktop, sized for the lens, to the glasses. Type on any Bluetooth keyboard; turn your head to switch
-                  tabs.</p>
-                <ul class="made__facts" role="list">
-                  <li>Ubuntu and XFCE on the phone. No laptop.</li>
-                  <li>640 × 480 in up to 16 greys, over Bluetooth LE</li>
-                  <li>Tabs follow your head, from the glasses’ own gyroscope</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="btn btn--primary btn--sm" href="#film" data-play="film"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the film</a>
-                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/scouter_kit/tree/phone-termux-screen/examples/ssh" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-2" aria-labelledby="made-tab-2">
-              <div class="made__media made__media--contain"><img src="assets/img/interface-devices.webp" alt="Even Realities G1 glasses in front of a phone running Vox" width="950" height="880" loading="lazy"></div>
-              <div class="made__body">
-                <p class="made__meta mono">Vox · Kotlin + C++ · Android</p>
-                <h3 class="made__title">A second screen <em>for every AI.</em></h3>
-                <p class="made__text">Claude Code, your phone’s screen, your laptop’s, live captions and your voice, all
-                  in the glasses. Built on ScouterKit, open firmware by Marek that unlocks the G1’s whole display; I
-                  added a 16-grey video mode to it.</p>
-                <ul class="made__facts" role="list">
-                  <li>15 open models and libraries on one phone</li>
-                  <li>Speak into the glasses; Parakeet types it into any prompt</li>
-                  <li>Ask Claude from the steering wheel, lenses dark</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="btn btn--primary btn--sm" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
-                  <a class="link-arrow" href="#glasses">How it works <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-3" aria-labelledby="made-tab-3">
-              <div class="made__media made__media--contain"><img src="assets/img/anywhere-wide.webp" alt="The glasses linked to a computer at home" width="1600" height="860" loading="lazy"></div>
-              <div class="made__body">
-                <p class="made__meta mono">Vox · SSH · mosh · Tailscale</p>
-                <h3 class="made__title">Your computer, <em>wherever you are.</em></h3>
-                <p class="made__text">The computer at home or at the office, in your glasses: its terminal, with Claude
-                  Code building whatever you ask, or its whole screen.</p>
-                <ul class="made__facts" role="list">
-                  <li>SSH inside Tailscale: nothing open to the internet</li>
-                  <li>mosh keeps the session alive between Wi-Fi and cell</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="link-arrow" href="#anywhere">See it in 3D <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-4" aria-labelledby="made-tab-4">
-              <div class="made__media made__media--film"><img src="assets/video/vox-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></div>
-              <div class="made__body">
-                <p class="made__meta mono">Vox Amelior · Flutter · Android</p>
-                <h3 class="made__title">A private memory <em>for your conversations.</em></h3>
-                <p class="made__text">Where it started: an AI that listens, remembers and answers on your phone, so your
-                  conversations stay there. Its listening now runs in the glasses too.</p>
-                <ul class="made__facts" role="list">
-                  <li>Speech to text and speaker ID, on the phone</li>
-                  <li>No cloud AI and no analytics</li>
-                  <li>400+ automated tests</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="btn btn--primary btn--sm" href="#vox" data-play="vox"><svg aria-hidden="true"><use href="#i-play" /></svg> Concept film</a>
-                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-5" aria-labelledby="made-tab-5">
-              <div class="made__media made__media--phone"><div class="device"><img src="assets/app/hd/even-chat.webp" alt="Even Suite on a phone: a chat with Claude" width="720" height="1560" loading="lazy"></div></div>
-              <div class="made__body">
-                <p class="made__meta mono">Even Suite · Flutter + Python</p>
-                <h3 class="made__title">The first app <em>to put Claude in the G1.</em></h3>
-                <p class="made__text">Say “Claude” or hold the TouchBar, and the answer appears in your view. Private when
-                  it can be, powerful when you need it.</p>
-                <ul class="made__facts" role="list">
-                  <li>87 tests against simulated glasses</li>
-                  <li>A Python hub in Termux, bound to the phone only</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="link-arrow" href="apps.html#even-suite">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-6" aria-labelledby="made-tab-6">
-              <div class="made__media made__media--phone"><div class="device"><img src="assets/app/hd/narr-reader.webp" alt="Narrator Studio reading a chapter aloud" width="540" height="1170" loading="lazy"></div></div>
-              <div class="made__body">
-                <p class="made__meta mono">Narrator Studio · Android</p>
-                <h3 class="made__title">Any text, <em>as a podcast.</em></h3>
-                <p class="made__text">Turns text and PDFs into a podcast in natural voices, made on your phone. Its voices
-                  now read inside Vox.</p>
-                <ul class="made__facts" role="list">
-                  <li>Four on-device voice engines</li>
-                  <li>Whisper checks every build: 2.6% word error rate</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="link-arrow" href="apps.html#narrator">See Narrator Studio <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="made__panel" role="tabpanel" id="made-7" aria-labelledby="made-tab-7">
-              <div class="made__media made__media--contain"><img src="assets/img/hero-devices.webp" alt="A phone and G1 glasses, rendered in Three.js" width="1200" height="1000" loading="lazy"></div>
-              <div class="made__body">
-                <p class="made__meta mono">whyhirepruitt.dev · HTML, CSS, JavaScript</p>
-                <h3 class="made__title">This website, <em>by hand.</em></h3>
-                <p class="made__text">No framework and no trackers. The 3D scenes are Three.js, and every film here is
-                  drawn by code one frame at a time, with music written the same way.</p>
-                <ul class="made__facts" role="list">
-                  <li>Films and scores generated from code</li>
-                  <li>Real screenshots when a phone can’t run 3D</li>
-                </ul>
-                <div class="made__actions">
-                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/whyhirepruitt" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="made__nav">
-            <button class="made__arrow" type="button" data-made-prev aria-label="Previous project"><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-            <div class="made__progress" aria-hidden="true"><span data-made-bar></span></div>
-            <p class="made__count mono" aria-live="polite" data-made-count>01 / 07</p>
-            <button class="made__arrow made__arrow--next" type="button" data-made-next aria-label="Next project"><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <div class="hx-link hx-link--secure"><span class="hx-link__label mono">SSH · mosh · Tailscale</span><i></i><span class="hx-lock"><svg aria-hidden="true"><use href="#i-lock" /></svg></span></div>
+          <div class="hx-node">
+            <span class="hx-node__icon"><svg aria-hidden="true"><use href="#i-monitor" /></svg></span>
+            <b>Your computer</b><span>at home or at the office</span>
           </div>
         </div>
-
-        <a class="next-link" href="#anywhere"><span class="mono">Next</span> 02 · Your screen, anywhere <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <ul class="hx-facts" role="list">
+          <li class="reveal" style="--i:0"><b>Encrypted</b>SSH, inside Tailscale’s private network.</li>
+          <li class="reveal" style="--i:1"><b>Closed to the internet</b>Nothing on your computer is exposed.</li>
+          <li class="reveal" style="--i:2"><b>Always on</b>mosh holds the session between Wi-Fi and cell.</li>
+        </ul>
       </div>
     </section>
 
-    <!-- ══════════ 02 · The screen is anywhere: the glasses' green projection, an arrow to a computer at home or at the
-         office, the same session on both (js/3d/anywhere.js). Stills, wide and tall, without WebGL. ══════════ -->
-    <section class="section section--tight" id="anywhere" aria-labelledby="anywhere-title">
+    <!-- ══════════ 04 · Vox, the glasses ══════════ -->
+    <section class="section hx-glasses" id="glasses" aria-labelledby="glasses-title">
       <div class="container">
-        <figure class="anywhere" data-anywhere>
-          <div class="anywhere__head reveal">
-            <p class="eyebrow">02 · Your screen, anywhere</p>
-            <h2 class="h2 anywhere__title" id="anywhere-title">Your computer, at home or at the office. <em>In your glasses,
-                wherever you are.</em></h2>
-            <p class="lead">Vox reaches your own computer over SSH inside Tailscale, a private network where every
-              connection is encrypted and nothing on your computer is open to the internet. mosh keeps the session
-              alive as your phone moves between Wi-Fi and cell. Its terminal, with Claude Code building whatever you
-              ask, or its whole screen shows in your glasses.</p>
-          </div>
-          <div class="anywhere__stage" aria-hidden="true">
-            <canvas class="anywhere__canvas" data-anywhere-canvas></canvas>
-            <picture class="anywhere__still">
-              <source media="(max-width: 700px)" srcset="assets/img/anywhere-tall.webp" width="800" height="1400">
-              <img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy">
-            </picture>
-          </div>
-        </figure>
-
-        <a class="next-link" href="#glasses"><span class="mono">Next</span> 03 · Vox, a second screen for every AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
-      </div>
-    </section>
-
-    <!-- ══════════ Vox: the glasses ══════════ -->
-    <section class="section vox glasses" id="glasses" aria-labelledby="glasses-title">
-      <div class="container vox__grid">
-        <div class="vox__copy reveal">
-          <p class="eyebrow">03 · New · Vox · Android + Even Realities G1</p>
+        <header class="hx-head reveal">
+          <p class="eyebrow">04 · Vox · Android + Even Realities G1</p>
           <h2 class="h2" id="glasses-title">A second screen <em>for every AI.</em></h2>
-          <p class="lead">Smart glasses usually come locked to one maker’s apps. ScouterKit, open-source firmware by
-            Marek, unlocks the G1’s whole 640 × 480 display at up to 30 frames a second. On top of it I built Vox, the
-            Android app that makes those lenses a screen any AI can use.</p>
+          <p class="lead">Smart glasses usually come locked to one maker’s apps. ScouterKit, open-source firmware by Marek,
+            unlocks the G1’s whole 640 × 480 display at up to 30 frames a second. On top of it I built Vox, the Android
+            app that makes those lenses a screen any AI can use.</p>
+        </header>
 
-          <dl class="vox__features">
-            <div><dt>Any terminal AI</dt><dd>Claude Code in your glasses, on the phone or a laptop. Any AI with a command
-                line works the same way.</dd></div>
-            <div><dt>Any app</dt><dd>Your phone’s screen, or your laptop’s, mirrored and tuned to read well on the
-                lenses.</dd></div>
-            <div><dt>Your voice</dt><dd>Speak into the glasses’ microphone; NVIDIA Parakeet, on the phone, types it into
-                any prompt.</dd></div>
-            <div><dt>The room</dt><dd>Live captions and an all-day transcript that knows who’s speaking, carried over
-                from Vox Amelior.</dd></div>
-            <div><dt>On the road</dt><dd>Ask Claude from the steering wheel. The answer is read aloud; the lenses stay
-                dark while you drive.</dd></div>
-            <div><dt>At a glance</dt><dd>Look up for the time, the weather, your next event and the notifications that
-                matter.</dd></div>
-          </dl>
+        <ul class="hx-features" role="list">
+          <li class="hx-feature reveal" style="--i:0"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-terminal" /></svg></span><h3>Any terminal AI</h3><p>Claude Code in your glasses, on the phone or a laptop. Any AI with a command line works the same way.</p></li>
+          <li class="hx-feature reveal" style="--i:1"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-screen" /></svg></span><h3>Any app, any desktop</h3><p>Your phone’s screen, your laptop’s, or a Linux desktop running on the phone, tuned to read well on the lenses.</p></li>
+          <li class="hx-feature reveal" style="--i:2"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-mic" /></svg></span><h3>Your voice</h3><p>Speak into the glasses’ microphone; NVIDIA Parakeet, on the phone, types it into any prompt.</p></li>
+          <li class="hx-feature reveal" style="--i:3"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-captions" /></svg></span><h3>The room</h3><p>Live captions and an all-day transcript that knows who’s speaking, carried over from Vox Amelior.</p></li>
+          <li class="hx-feature reveal" style="--i:4"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-car" /></svg></span><h3>On the road</h3><p>Ask Claude from the steering wheel. The answer is read aloud; the lenses stay dark while you drive.</p></li>
+          <li class="hx-feature reveal" style="--i:5"><span class="hx-feature__icon"><svg aria-hidden="true"><use href="#i-eye" /></svg></span><h3>At a glance</h3><p>Look up for the time, the weather, your next event and the notifications that matter.</p></li>
+        </ul>
 
-          <p class="imperatives glasses__rule">If it runs on your phone or in a terminal, it can be in your glasses.
-            The next AI needs no new app to get there.</p>
 
-          <div class="case__actions">
-            <a class="btn btn--primary" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener">
-              <svg aria-hidden="true"><use href="#i-download" /></svg>
-              Android build
-            </a>
-            <a class="btn btn--ghost" href="https://github.com/prunewhip/scouter_kit/tree/phone-termux-screen/examples/ssh" rel="noopener">
-              <svg aria-hidden="true"><use href="#i-github" /></svg>
-              Source
-            </a>
-          </div>
-        </div>
-
-        <!-- The glasses turning with Vox on the phone behind them: each turn brings another source to the lens
-             (js/3d/showcase.js, kind "interface"). The still shows without WebGL. -->
-        <figure class="showcase showcase--still reveal">
-          <div class="showcase__stage" aria-hidden="true">
-            <canvas class="showcase__canvas" data-showcase="interface"></canvas>
-            <img class="showcase__still" src="assets/img/interface-devices.webp" alt="" width="950" height="880" loading="lazy">
-          </div>
-        </figure>
-      </div>
-
-      <!-- The signal path: what reaches the lenses, through the phone, and how -->
-      <div class="container">
+        <div class="hx-flow-wrap">
         <figure class="flow reveal" aria-labelledby="flow-cap">
           <figcaption class="flow__cap" id="flow-cap"><span class="mono">Signal path</span> Everything runs on the
             phone; the glasses draw.</figcaption>
@@ -510,46 +558,24 @@
             </div>
           </div>
         </figure>
-      </div>
+        </div>
 
-      <!-- How the pieces come together: the method, and what it's built from -->
-      <div class="container">
-        <div class="method">
-          <div class="section-head section-head--split reveal">
-            <div>
-              <p class="eyebrow eyebrow--plain">How I build</p>
-              <h3 class="h2 method__title">Find it. Fit it. <em>Ship it.</em></h3>
-            </div>
-            <p class="lead">Better open software ships every month. The work is knowing which pieces win, and making
-              them run together on a phone you carry all day.</p>
-          </div>
-          <ol class="ways__list" role="list">
-            <li class="way reveal">
-              <p class="way__num mono">01 · Find</p>
-              <p class="way__text">I test the candidates on a real phone and keep what wins: Parakeet for speech,
-                Liquid’s LFM2.5 for thinking on the phone, Kokoro for voices.</p>
-            </li>
-            <li class="way reveal">
-              <p class="way__num mono">02 · Fit</p>
-              <p class="way__text">Then I make them share one phone: one microphone for every feature, a queue on disk
-                so nothing said is lost, models that take turns instead of fighting for the chip.</p>
-            </li>
-            <li class="way reveal">
-              <p class="way__num mono">03 · Ship</p>
-              <p class="way__text">Every change builds in the open and runs its tests, and the result goes on the phone
-                and glasses I use every day.</p>
-            </li>
-          </ol>
-
-          <div class="built reveal">
-            <p class="built__label mono">Built on</p>
-            <ul class="built__list" role="list">
-              <li>ScouterKit</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
-              <li>pyannote</li><li>SenseVoice</li><li>llama.cpp</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
-              <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>JSch</li><li>LC3</li>
-            </ul>
-          </div>
-
+        <h3 class="hx-sub reveal">Find it. Fit it. <em>Ship it.</em></h3>
+        <p class="lead reveal" style="margin-top:12px;max-width:40em">Better open software ships every month. The work is
+          knowing which pieces win, and making them run together on a phone you carry all day.</p>
+        <ol class="hx-steps" role="list">
+          <li class="reveal" style="--i:0"><b>01 · Find</b><p>I test the candidates on a real phone and keep what wins:
+              Parakeet for speech, Liquid’s LFM2.5 for thinking on the phone, Kokoro for voices.</p></li>
+          <li class="reveal" style="--i:1"><b>02 · Fit</b><p>Then I make them share one phone: one microphone for every
+              feature, a queue on disk so nothing said is lost, models that take turns instead of fighting for the chip.</p></li>
+          <li class="reveal" style="--i:2"><b>03 · Ship</b><p>Every change builds in the open and runs its tests, and the
+              result goes on the phone and glasses I use every day.</p></li>
+        </ol>
+        <ul class="hx-chips reveal" role="list" aria-label="Built on">
+          <li>ScouterKit</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+          <li>pyannote</li><li>SenseVoice</li><li>llama.cpp</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
+          <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>JSch</li><li>LC3</li>
+        </ul>
           <ul class="tiers next reveal" role="list">
             <li class="tiers__next"><b>Copilot <span class="tag-next">In testing</span></b><span>Claude hears a
                 meeting with you and cues an answer, in your glasses, only when a question needs you.</span></li>
@@ -558,9 +584,6 @@
             <li class="tiers__next"><b>Tools for AI <span class="tag-next">Next</span></b><span>Any AI can search your
                 day, put a note in your glasses or set a reminder.</span></li>
           </ul>
-        </div>
-
-        <a class="next-link" href="#vox"><span class="mono">Next</span> 04 · Vox Amelior, where it started <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -568,7 +591,7 @@
     <section class="section vox" id="vox" aria-labelledby="vox-title">
       <div class="container vox__grid">
         <div class="vox__copy reveal">
-          <p class="eyebrow">04 · Where it started · Vox Amelior · Android</p>
+          <p class="eyebrow">05 · Where it started · Vox Amelior · Android</p>
           <h2 class="h2" id="vox-title">A private memory <em>for your conversations.</em></h2>
           <p class="lead">It writes down what’s said nearby, learns who’s speaking and answers when you ask. Then it
             does something a feed never will: it helps you hear yourself. Its listening is what Vox now brings to the
@@ -671,16 +694,13 @@
         </figure>
       </div>
 
-      <div class="container">
-        <a class="next-link" href="#contact"><span class="mono">Next</span> 05 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
-      </div>
     </section>
 
     <!-- ══════════ CTA ══════════ -->
     <section class="section section--tight" id="contact" aria-labelledby="cta-title">
       <div class="container">
-        <div class="cta-band reveal">
-          <p class="eyebrow">05 · Hiring?</p>
+        <div class="cta-band hx-cta reveal">
+          <p class="eyebrow">06 · Hiring?</p>
           <h2 class="h2" id="cta-title">Let’s <em>talk.</em></h2>
           <p class="cta-band__text">I’m looking for full-time work on how people reach AI: on-device AI, wearables,
             voice and AI products. What I bring is the habit behind this site: find the best new software early, then
