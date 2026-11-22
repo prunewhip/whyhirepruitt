@@ -1,0 +1,2029 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Linux in your glasses (video composition)</title>
+  <meta name="robots" content="noindex">
+  <!--
+    A 1:10 film for the home page, rendered frame by frame by tools/promo-video/render.mjs:
+      --page tools/film/linux.html --name linux-film                              (16:9, 1920×1080, desktop)
+      --page "tools/film/linux.html?format=portrait" --name linux-film-portrait   (4:5, 1080×1350, phones)
+    Sound: tools/film/linux-score.mjs; both read the scene and typing times in linux-timeline.js.
+
+    The story, as a rule of three that comes back at the end:
+      A  A desktop needs a desk. A laptop needs a lap. This needs a glance.
+      B  Linux, in your glasses.
+      C  01 The computer  the phone runs Ubuntu with a desktop, inside Termux
+      D  02 The screen    Vox sends a second desktop, sized for the lens, to the glasses
+      E  03 The keyboard  any Bluetooth keyboard types into it: Claude Code builds a timer
+      F  04 The tabs      turn your head and the tab you face comes up
+      G  05 The apps      the web, your files, your code
+      H  No desk. No lap. Just a glance.
+      K  the end card
+
+    One layout for the whole film: words on the left (on top in the phone cut), the picture on the right (below).
+    The picture box is 940×820 in both cuts, so every move is written once. Each frame is a pure function of time.
+    Preview through a local server: ?t=30 shows a moment, ?poster shows the poster; add &format=portrait.
+    Facts: every feature shown runs today (phone desktop, glasses desktop at 640×480, keyboard, head-turn tabs, Chrome
+    on the glasses). Claude Code's lines are an example session.
+  -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --paper: #fcfcfa;
+      --surface: #ffffff;
+      --ink: #18201c;
+      --ink-2: #4a544e;
+      --ink-3: #5f6963;
+      --line: #e2e6e0;
+      --accent: #1e6b57;
+      --accent-soft: #e6f0ec;
+      /* The glasses' light: one green in sixteen steps on the real display */
+      --g: #7cf9b0;
+      --g2: rgba(124, 249, 176, 0.66);
+      --g3: rgba(124, 249, 176, 0.36);
+      --g4: rgba(124, 249, 176, 0.16);
+      --W: 1920px;
+      --H: 1080px;
+    }
+
+    .portrait {
+      --W: 1080px;
+      --H: 1350px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html,
+    body {
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      background: var(--paper);
+    }
+
+    #stage {
+      position: relative;
+      width: var(--W);
+      height: var(--H);
+      overflow: hidden;
+      font-family: "Geist", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: "Geist Mono", ui-monospace, monospace;
+    }
+
+    em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .w {
+      display: inline-block;
+    }
+
+    /* ── Words ───────────────────────────── */
+    #words {
+      position: absolute;
+      left: 150px;
+      top: 0;
+      width: 700px;
+      height: 100%;
+    }
+
+    .portrait #words {
+      left: 70px;
+      width: 940px;
+    }
+
+    .cap {
+      position: absolute;
+      left: 0;
+      top: 300px;
+      width: 100%;
+      display: none;
+    }
+
+    .portrait .cap {
+      top: 92px;
+    }
+
+    .kick {
+      font-family: "Geist Mono", monospace;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    .hl {
+      font-size: 76px;
+      line-height: 1.05;
+      font-weight: 620;
+      letter-spacing: -0.028em;
+    }
+
+    .title {
+      font-size: 108px;
+      line-height: 1;
+      font-weight: 640;
+      letter-spacing: -0.035em;
+    }
+
+    .sub {
+      margin-top: 30px;
+      font-size: 34px;
+      line-height: 1.38;
+      color: var(--ink-2);
+      font-weight: 420;
+    }
+
+    .portrait .kick {
+      font-size: 26px;
+      margin-bottom: 24px;
+    }
+
+    .portrait .hl {
+      font-size: 68px;
+    }
+
+    .portrait .title {
+      font-size: 96px;
+    }
+
+    .portrait .sub {
+      font-size: 37px;
+      margin-top: 24px;
+    }
+
+    /* Three lines that stack: the rule of three, at the start and the end */
+    .tri .hl {
+      margin-bottom: 18px;
+      font-size: 60px;
+      white-space: nowrap;
+    }
+
+    .portrait .tri .hl {
+      margin-bottom: 10px;
+      font-size: 64px;
+    }
+
+    #brandline {
+      position: absolute;
+      left: 150px;
+      bottom: 64px;
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    #brandline b {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .portrait #brandline {
+      display: none;
+    }
+
+    /* ── Picture: one 940×820 box in both cuts ───────── */
+    #pic {
+      position: absolute;
+      left: 880px;
+      top: 130px;
+      width: 940px;
+      height: 820px;
+    }
+
+    .portrait #pic {
+      left: 70px;
+      top: 490px;
+    }
+
+    /* Objects are placed by their centre: translate(x, y) in picture pixels */
+    .obj {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #desk {
+      width: 620px;
+      height: 460px;
+      margin: -230px 0 0 -310px;
+    }
+
+    #laptop {
+      width: 560px;
+      height: 400px;
+      margin: -200px 0 0 -280px;
+    }
+
+    #glasses {
+      width: 760px;
+      height: 340px;
+      margin: -170px 0 0 -380px;
+      overflow: visible;
+    }
+
+    #phone {
+      width: 250px;
+      height: 520px;
+      margin: -260px 0 0 -125px;
+    }
+
+    #hud {
+      width: 800px;
+      height: 600px;
+      margin: -300px 0 0 -400px;
+    }
+
+    #kbd {
+      width: 760px;
+      height: 230px;
+      margin: -115px 0 0 -380px;
+      overflow: visible;
+    }
+
+    #head {
+      width: 420px;
+      height: 150px;
+      margin: -75px 0 0 -210px;
+      overflow: visible;
+    }
+
+    #chips {
+      width: 640px;
+      height: 60px;
+      margin: -30px 0 0 -320px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    #beam {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 940px;
+      height: 820px;
+      overflow: visible;
+      opacity: 0;
+    }
+
+    /* ── The phone ───────────────────────── */
+    .ph-body {
+      position: relative;
+      width: 250px;
+      height: 520px;
+      border-radius: 42px;
+      background: #1b2320;
+      padding: 9px;
+      box-shadow: 0 34px 60px -26px rgba(24, 32, 28, 0.5), inset 0 0 0 2px #3b4540, inset 0 0 0 4px #121815;
+    }
+
+    .ph-body::before,
+    .ph-body::after {
+      content: "";
+      position: absolute;
+      right: -4px;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+      background: #2b3430;
+    }
+
+    .ph-body::before {
+      top: 110px;
+      height: 54px;
+    }
+
+    .ph-body::after {
+      top: 180px;
+      height: 34px;
+    }
+
+    .ph-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      background: #0b0e0d;
+    }
+
+    .ph-cam {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      width: 11px;
+      height: 11px;
+      margin-left: -5.5px;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 0 0 2px #1d2421;
+      z-index: 5;
+    }
+
+    .layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .term {
+      padding: 46px 16px 0;
+      font-family: "Geist Mono", monospace;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #d4e3da;
+    }
+
+    .term .dim {
+      color: #7f9188;
+    }
+
+    .term .pr {
+      color: #6fdc9e;
+    }
+
+    .term .acc {
+      color: #6fdc9e;
+    }
+
+    .caret {
+      display: inline-block;
+      width: 0.55em;
+      height: 1.05em;
+      vertical-align: -0.16em;
+      background: currentColor;
+      margin-left: 1px;
+    }
+
+    /* XFCE on the phone: the dark theme, a panel, desktop icons and a dock */
+    .xd {
+      background: linear-gradient(165deg, #2a7a63 0%, #17483b 48%, #0c2420 100%);
+      font-size: 11px;
+      color: #e9f0ec;
+    }
+
+    .xd-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 34px;
+      padding: 15px 14px 0 18px;
+      display: flex;
+      justify-content: space-between;
+      background: #1f2523;
+      font-weight: 550;
+      font-size: 10.5px;
+    }
+
+    .xd-icons {
+      position: absolute;
+      left: 14px;
+      top: 50px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .xd-ic {
+      width: 54px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .xd-ic i {
+      display: block;
+      width: 38px;
+      height: 32px;
+      margin: 0 auto 4px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+      position: relative;
+    }
+
+    .xd-ic i::after {
+      content: "";
+      position: absolute;
+      left: 9px;
+      top: 9px;
+      width: 20px;
+      height: 14px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .xd-ic:nth-child(2) i::after {
+      background: none;
+      border-left: 3px solid #8ff0bd;
+      border-bottom: 3px solid #8ff0bd;
+      width: 7px;
+      height: 7px;
+      transform: rotate(-135deg) translate(-2px, -3px);
+      border-radius: 0;
+    }
+
+    .xd-win {
+      position: absolute;
+      left: 74px;
+      top: 92px;
+      width: 150px;
+      height: 112px;
+      border-radius: 8px;
+      background: #121715;
+      box-shadow: 0 14px 26px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      font-family: "Geist Mono", monospace;
+      font-size: 8.5px;
+      line-height: 1.55;
+      color: #cfe0d6;
+    }
+
+    .xd-win b {
+      display: block;
+      height: 17px;
+      padding: 3px 8px;
+      background: #262d2a;
+      font-family: "Geist", sans-serif;
+      font-weight: 550;
+      font-size: 8.5px;
+      color: #e9f0ec;
+    }
+
+    .xd-win p {
+      padding: 0 8px;
+    }
+
+    .xd-win p:first-of-type {
+      margin-top: 6px;
+    }
+
+    .xd-dock {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 16px;
+      height: 48px;
+      border-radius: 16px;
+      background: rgba(20, 26, 24, 0.72);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 8px;
+    }
+
+    .xd-dock i {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .xd-dock i:nth-child(2) {
+      background: #2e8a6f;
+    }
+
+    .xd-dock i:nth-child(4) {
+      background: #d9e4de;
+    }
+
+    /* ── The glasses' screen ─────────────── */
+    .hud-label {
+      position: absolute;
+      left: 6px;
+      top: -48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .hud-label i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #3fd283;
+      box-shadow: 0 0 0 4px rgba(63, 210, 131, 0.2);
+    }
+
+    .hud-glass {
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      background: radial-gradient(120% 90% at 50% 40%, #0c1d15 0%, #07120d 70%, #050d09 100%);
+      overflow: hidden;
+      box-shadow: 0 46px 80px -34px rgba(8, 34, 22, 0.6), 0 0 0 1px rgba(124, 249, 176, 0.24) inset, 0 0 0 7px #e9eeea;
+    }
+
+    .hud-sheen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 0 38%, rgba(255, 255, 255, 0.07) 46%, transparent 56%);
+      pointer-events: none;
+    }
+
+    .hs {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 640px;
+      height: 480px;
+      transform: scale(1.25);
+      transform-origin: 0 0;
+      overflow: hidden;
+      color: var(--g);
+      font-family: "Geist Mono", monospace;
+      font-size: 15px;
+      line-height: 1.55;
+      text-shadow: 0 0 7px rgba(124, 249, 176, 0.45);
+    }
+
+    .hl2 {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+
+    .hs .dim {
+      color: var(--g2);
+    }
+
+    .hs .faint {
+      color: var(--g3);
+    }
+
+    /* Boot */
+    #hBoot {
+      display: grid;
+      place-content: center;
+      text-align: center;
+      gap: 14px;
+    }
+
+    #hBoot .big {
+      font-family: "Geist", sans-serif;
+      font-size: 54px;
+      font-weight: 650;
+      letter-spacing: 0.32em;
+      margin-right: -0.32em;
+    }
+
+    .bootbar {
+      width: 260px;
+      height: 6px;
+      margin: 8px auto 0;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px var(--g3);
+      overflow: hidden;
+    }
+
+    .bootbar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--g);
+    }
+
+    /* XFCE, sized for the lens */
+    .xg-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 32px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--g3);
+      font-family: "Geist", sans-serif;
+      font-weight: 560;
+      font-size: 14px;
+    }
+
+    .xg-panel .apps {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .xg-panel .apps i {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 2px var(--g);
+    }
+
+    .xg-panel .ws {
+      display: flex;
+      gap: 6px;
+    }
+
+    .xg-panel .ws i {
+      width: 22px;
+      height: 13px;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1.5px var(--g3);
+    }
+
+    .xg-panel .ws i.on {
+      background: var(--g3);
+      box-shadow: inset 0 0 0 1.5px var(--g);
+    }
+
+    .xg-icons {
+      position: absolute;
+      left: 26px;
+      top: 54px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .xg-ic {
+      width: 76px;
+      text-align: center;
+      font-family: "Geist", sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .xg-ic i {
+      position: relative;
+      display: block;
+      width: 46px;
+      height: 38px;
+      margin: 0 auto 6px;
+      border-radius: 7px;
+      box-shadow: inset 0 0 0 2px var(--g);
+    }
+
+    .xg-ic i::after {
+      content: "";
+      position: absolute;
+    }
+
+    .ic-folder::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: -6px;
+      width: 18px;
+      height: 8px;
+      border-radius: 3px 3px 0 0;
+      box-shadow: inset 2px 2px 0 var(--g), inset -2px 0 0 var(--g);
+    }
+
+    .ic-term::after {
+      left: 10px;
+      top: 13px;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--g);
+      border-bottom: 2px solid var(--g);
+      transform: rotate(-45deg);
+    }
+
+    .ic-term::before {
+      content: "";
+      position: absolute;
+      left: 22px;
+      top: 22px;
+      width: 12px;
+      height: 2px;
+      background: var(--g);
+    }
+
+    .ic-files::after {
+      left: 9px;
+      right: 9px;
+      top: 10px;
+      height: 2px;
+      background: var(--g2);
+      box-shadow: 0 7px 0 var(--g2), 0 14px 0 var(--g2);
+    }
+
+    .ic-web {
+      border-radius: 50% !important;
+      width: 38px !important;
+    }
+
+    .ic-web::after {
+      left: 17px;
+      top: 2px;
+      width: 2px;
+      height: 34px;
+      background: var(--g2);
+      box-shadow: -9px 0 0 -0px transparent;
+    }
+
+    .ic-web::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      top: 18px;
+      height: 2px;
+      background: var(--g2);
+    }
+
+    .xg-wall {
+      position: absolute;
+      right: -120px;
+      bottom: -150px;
+      width: 460px;
+      height: 460px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1.5px var(--g4), 0 0 0 40px transparent;
+    }
+
+    .xg-wall::before,
+    .xg-wall::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1.5px var(--g4);
+    }
+
+    .xg-wall::before {
+      inset: 60px;
+    }
+
+    .xg-wall::after {
+      inset: 120px;
+    }
+
+    .xg-stamp {
+      position: absolute;
+      right: 24px;
+      bottom: 18px;
+      font-size: 12px;
+      color: var(--g3);
+      text-shadow: none;
+    }
+
+    /* A maximised window under the panel */
+    .win {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 32px;
+      bottom: 0;
+      background: #06100b;
+    }
+
+    .win-bar {
+      height: 28px;
+      padding: 0 12px 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--g4);
+      font-family: "Geist", sans-serif;
+      font-size: 13px;
+      font-weight: 520;
+      color: var(--g2);
+    }
+
+    .win-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .win-btns i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1.5px var(--g3);
+    }
+
+    .win-body {
+      padding: 12px 18px;
+    }
+
+    .win-body p {
+      white-space: pre;
+    }
+
+    .pr {
+      color: var(--g2);
+    }
+
+    .cc-box {
+      margin: 10px 0 12px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1.5px var(--g3);
+      width: 380px;
+    }
+
+    .cc-box b {
+      font-weight: 600;
+    }
+
+    .cc {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .cc .dot {
+      position: absolute;
+      left: 2px;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--g);
+    }
+
+    .cc.indent {
+      padding-left: 44px;
+      color: var(--g2);
+    }
+
+    .cc .elbow {
+      position: absolute;
+      left: 22px;
+      top: 2px;
+      width: 12px;
+      height: 10px;
+      border-left: 1.5px solid var(--g3);
+      border-bottom: 1.5px solid var(--g3);
+    }
+
+    .think {
+      color: var(--g2);
+    }
+
+    /* Tabs around you: three screens side by side; the head picks one */
+    #strip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 480px;
+      display: flex;
+    }
+
+    .tab {
+      position: relative;
+      width: 640px;
+      height: 480px;
+      flex: none;
+      border-right: 1px solid var(--g4);
+    }
+
+    .tbar {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--g3);
+      font-size: 14px;
+      color: var(--g3);
+    }
+
+    .tbar span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tbar .on {
+      color: var(--g);
+      font-weight: 600;
+    }
+
+    .tbar .on::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--g);
+    }
+
+    .tbody {
+      padding: 16px 20px;
+    }
+
+    .tbody p {
+      white-space: pre;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 70px 1fr 54px;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 9px;
+    }
+
+    .meter b {
+      display: block;
+      height: 12px;
+      border-radius: 2px;
+      box-shadow: inset 0 0 0 1px var(--g3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .meter b i {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: var(--g2);
+    }
+
+    .procs {
+      margin-top: 14px;
+      border-top: 1px solid var(--g4);
+      padding-top: 10px;
+    }
+
+    .procs p {
+      display: grid;
+      grid-template-columns: 72px 70px 1fr;
+    }
+
+    /* Apps: web, files, code */
+    .app {
+      position: absolute;
+      inset: 0;
+    }
+
+    .bar2 {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 34px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--g3);
+      font-size: 13px;
+    }
+
+    .url {
+      flex: 1;
+      height: 22px;
+      border-radius: 11px;
+      box-shadow: inset 0 0 0 1.5px var(--g3);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      color: var(--g2);
+    }
+
+    .nav3 {
+      display: flex;
+      gap: 9px;
+    }
+
+    .nav3 i {
+      width: 10px;
+      height: 10px;
+      border-left: 2px solid var(--g2);
+      border-bottom: 2px solid var(--g2);
+      transform: rotate(45deg);
+    }
+
+    .nav3 i:nth-child(2) {
+      transform: rotate(-135deg);
+    }
+
+    .nav3 i:nth-child(3) {
+      border-radius: 50%;
+      border: 2px solid var(--g2);
+      border-top-color: transparent;
+      transform: none;
+    }
+
+    .page {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      top: 54px;
+      font-family: "Geist", sans-serif;
+    }
+
+    .page h4 {
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .page .lede {
+      font-size: 14px;
+      color: var(--g2);
+      margin: 4px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--g4);
+    }
+
+    .lines i {
+      display: block;
+      height: 7px;
+      border-radius: 4px;
+      background: var(--g3);
+      margin-bottom: 11px;
+    }
+
+    .page .fig {
+      position: absolute;
+      right: 0;
+      top: 66px;
+      width: 160px;
+      height: 150px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1.5px var(--g3);
+      display: grid;
+      place-content: center;
+      font-size: 12px;
+      color: var(--g2);
+    }
+
+    .page .fig::before {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 2px var(--g2);
+    }
+
+    .side {
+      position: absolute;
+      left: 0;
+      top: 34px;
+      bottom: 0;
+      width: 150px;
+      padding: 14px 16px;
+      border-right: 1px solid var(--g4);
+      font-family: "Geist", sans-serif;
+      font-size: 13.5px;
+      line-height: 2;
+      color: var(--g2);
+    }
+
+    .side .on {
+      color: var(--g);
+      font-weight: 600;
+    }
+
+    .grid6 {
+      position: absolute;
+      left: 176px;
+      top: 58px;
+      right: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px 10px;
+    }
+
+    .grid6 div {
+      text-align: center;
+      font-family: "Geist", sans-serif;
+      font-size: 13px;
+    }
+
+    .grid6 i {
+      position: relative;
+      display: block;
+      width: 64px;
+      height: 48px;
+      margin: 0 auto 8px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 2px var(--g);
+    }
+
+    .grid6 i::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: -7px;
+      width: 24px;
+      height: 9px;
+      border-radius: 3px 3px 0 0;
+      box-shadow: inset 2px 2px 0 var(--g), inset -2px 0 0 var(--g);
+    }
+
+    .grid6 .file i {
+      width: 42px;
+      height: 54px;
+      margin-top: -6px;
+    }
+
+    .grid6 .file i::before {
+      display: none;
+    }
+
+    .code {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 34px;
+      padding: 12px 0;
+      font-size: 14.5px;
+      line-height: 1.72;
+    }
+
+    .code p {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      white-space: pre;
+    }
+
+    .code p span:first-child {
+      text-align: right;
+      padding-right: 16px;
+      color: var(--g3);
+    }
+
+    .code .k {
+      color: var(--g);
+      font-weight: 600;
+    }
+
+    .code .c {
+      color: var(--g2);
+    }
+
+    /* ── Keyboard, head, chips ───────────── */
+    .key rect {
+      transition: none;
+    }
+
+    .chip {
+      height: 52px;
+      padding: 0 26px;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      font-weight: 550;
+      color: var(--ink-2);
+      background: var(--surface);
+      box-shadow: inset 0 0 0 1.5px var(--line);
+    }
+
+    .chip.on {
+      color: #fff;
+      background: var(--accent);
+      box-shadow: none;
+    }
+
+    /* ── End card ────────────────────────── */
+    #end {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 140px 40px;
+    }
+
+    #endG {
+      width: 380px;
+      height: 170px;
+      margin-bottom: 36px;
+    }
+
+    .end-kick {
+      font-size: 22px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .end-title {
+      font-size: 104px;
+      line-height: 1;
+      font-weight: 640;
+      letter-spacing: -0.035em;
+    }
+
+    .end-by {
+      margin-top: 34px;
+      max-width: 1100px;
+      font-size: 30px;
+      line-height: 1.45;
+      color: var(--ink-2);
+    }
+
+    .end-url {
+      margin-top: 40px;
+      font-size: 26px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+
+    .portrait #end {
+      padding: 0 70px 60px;
+    }
+
+    .portrait .end-title {
+      font-size: 92px;
+    }
+
+    .portrait .end-by {
+      font-size: 34px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+
+    <!-- ══ Words ══ -->
+    <div id="words">
+      <section class="cap tri" id="capA">
+        <p class="hl" id="a1" data-words>A desktop needs a desk.</p>
+        <p class="hl" id="a2" data-words>A laptop needs a lap.</p>
+        <p class="hl" id="a3" data-words>This needs <em>a glance.</em></p>
+      </section>
+      <section class="cap" id="capB">
+        <p class="kick">Vox · for Even Realities G1</p>
+        <p class="title" data-words>Linux, <em>in your glasses.</em></p>
+      </section>
+      <section class="cap" id="capC">
+        <p class="kick">01 · The computer</p>
+        <p class="hl" data-words>It starts in your pocket.</p>
+        <p class="sub" data-words>Inside the Termux app, your phone runs Ubuntu with a full Linux desktop.</p>
+      </section>
+      <section class="cap" id="capD">
+        <p class="kick">02 · The screen</p>
+        <p class="hl" data-words>Vox sends it to <em>your glasses.</em></p>
+        <p class="sub" data-words>A second desktop, sized for the lens: 640 × 480, over Bluetooth LE.</p>
+      </section>
+      <section class="cap" id="capE">
+        <p class="kick">03 · The keyboard</p>
+        <p class="hl" data-words>Type, and it lands in <em>your glasses.</em></p>
+        <p class="sub" data-words>Any Bluetooth keyboard paired to your phone types straight into it.</p>
+      </section>
+      <section class="cap" id="capF">
+        <p class="kick">04 · The tabs</p>
+        <p class="hl" data-words>Your tabs sit <em>around you.</em></p>
+        <p class="sub" data-words>Turn your head, and the tab you face comes up.</p>
+      </section>
+      <section class="cap" id="capG">
+        <p class="kick">05 · The apps</p>
+        <p class="hl" data-words>The web. Your files. <em>Your code.</em></p>
+        <p class="sub" data-words>If Linux or Android runs it, your glasses can show it.</p>
+      </section>
+      <section class="cap tri" id="capH">
+        <p class="hl" id="h1" data-words>No desk.</p>
+        <p class="hl" id="h2" data-words>No lap.</p>
+        <p class="hl" id="h3" data-words>Just <em>a glance.</em></p>
+      </section>
+    </div>
+    <p id="brandline" class="mono"><b>Vox</b> · Linux in your glasses</p>
+
+    <!-- ══ Picture ══ -->
+    <div id="pic">
+
+      <!-- A desk: a monitor, a keyboard, a mug and a plant -->
+      <svg id="desk" class="obj" viewBox="0 0 620 460" fill="none" stroke="#18201c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="310" cy="444" rx="270" ry="9" fill="#18201c" opacity=".07" stroke="none" />
+        <rect x="160" y="34" width="300" height="190" rx="14" fill="#fff" />
+        <rect x="176" y="50" width="268" height="158" rx="5" fill="#e6f0ec" stroke="none" />
+        <g fill="#1e6b57" stroke="none" opacity=".85">
+          <rect x="196" y="72" width="90" height="9" rx="4.5" />
+          <rect x="196" y="92" width="150" height="7" rx="3.5" opacity=".5" />
+          <rect x="196" y="108" width="120" height="7" rx="3.5" opacity=".5" />
+          <rect x="196" y="124" width="170" height="7" rx="3.5" opacity=".5" />
+          <rect x="196" y="150" width="70" height="30" rx="6" />
+          <rect x="276" y="150" width="70" height="30" rx="6" opacity=".35" />
+        </g>
+        <path d="M310 224v20M276 247h68" />
+        <rect x="46" y="250" width="528" height="18" rx="5" fill="#fff" />
+        <path d="M82 268v172M538 268v172M82 330h456" />
+        <rect x="214" y="234" width="180" height="12" rx="3" fill="#fff" stroke-width="2.5" />
+        <rect x="410" y="234" width="22" height="13" rx="6.5" fill="#fff" stroke-width="2.5" />
+        <path d="M476 206h38v36a8 8 0 0 1-8 8h-22a8 8 0 0 1-8-8z" fill="#fff" />
+        <path d="M514 214h6a9 9 0 0 1 0 18h-6" />
+        <path d="M488 196c-6-8 6-12 0-20M502 196c-6-8 6-12 0-20" stroke="#1e6b57" stroke-width="2.5" opacity=".55" />
+        <path d="M92 250l7-40h44l7 40z" fill="#fff" />
+        <path d="M121 210c-2-30-22-44-40-50 8 20 18 38 40 50zM121 210c4-34 24-52 46-58-6 24-20 44-46 58zM121 210c0-30 6-50 2-74-14 18-14 46-2 74z" fill="#e6f0ec" stroke="#1e6b57" stroke-width="2.5" />
+      </svg>
+
+      <!-- A laptop on a sofa -->
+      <svg id="laptop" class="obj" viewBox="0 0 560 400" fill="none" stroke="#18201c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="280" cy="388" rx="250" ry="8" fill="#18201c" opacity=".07" stroke="none" />
+        <rect x="58" y="150" width="444" height="150" rx="34" fill="#f1f4f1" />
+        <rect x="18" y="214" width="84" height="150" rx="30" fill="#fff" />
+        <rect x="458" y="214" width="84" height="150" rx="30" fill="#fff" />
+        <rect x="88" y="282" width="384" height="70" rx="20" fill="#fff" />
+        <path d="M280 286v62M70 364v14M490 364v14" />
+        <rect x="186" y="126" width="188" height="140" rx="10" fill="#fff" />
+        <rect x="197" y="137" width="166" height="114" rx="4" fill="#e6f0ec" stroke="none" />
+        <g fill="#1e6b57" stroke="none">
+          <rect x="211" y="153" width="64" height="8" rx="4" />
+          <rect x="211" y="171" width="120" height="6" rx="3" opacity=".45" />
+          <rect x="211" y="184" width="98" height="6" rx="3" opacity=".45" />
+          <rect x="211" y="208" width="52" height="26" rx="5" opacity=".85" />
+        </g>
+        <path d="M168 266h224l18 16H150z" fill="#fff" />
+      </svg>
+
+      <!-- Even Realities G1, from the front: round lenses, metal hinges, arms with battery tips behind the ear -->
+      <svg id="glasses" class="obj" viewBox="-380 -170 760 340">
+        <defs>
+          <clipPath id="clipL"><circle cx="-165" cy="14" r="108" /></clipPath>
+          <clipPath id="clipR"><circle cx="165" cy="14" r="108" /></clipPath>
+          <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+            <stop offset="0" stop-color="#3fd283" stop-opacity=".32" />
+            <stop offset="1" stop-color="#3fd283" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="glare" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0" />
+            <stop offset=".5" stop-color="#fff" stop-opacity=".85" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="0" cy="160" rx="300" ry="9" fill="#18201c" opacity=".07" />
+        <circle cx="-165" cy="14" r="108" fill="#eef3f0" />
+        <circle cx="165" cy="14" r="108" fill="#eef3f0" />
+        <g class="lit">
+          <circle cx="-165" cy="14" r="108" fill="url(#glow)" />
+          <circle cx="165" cy="14" r="108" fill="url(#glow)" />
+          <g clip-path="url(#clipL)" fill="none" stroke="#0e9c58" stroke-width="3" stroke-linecap="round">
+            <rect x="-232" y="-40" width="134" height="96" rx="8" fill="rgba(14,156,88,.07)" />
+            <path d="M-232-24h134" stroke-width="2" />
+            <path d="M-220 -2h44M-220 14h70M-220 30h56" stroke-width="4" />
+          </g>
+          <g clip-path="url(#clipR)" fill="none" stroke="#0e9c58" stroke-width="3" stroke-linecap="round">
+            <rect x="98" y="-40" width="134" height="96" rx="8" fill="rgba(14,156,88,.07)" />
+            <path d="M98-24h134" stroke-width="2" />
+            <path d="M110 -2h44M110 14h70M110 30h56" stroke-width="4" />
+          </g>
+        </g>
+        <g clip-path="url(#clipL)"><rect class="glare" x="-300" y="-110" width="60" height="260" fill="url(#glare)" opacity=".7" transform="rotate(24 -165 14)" /></g>
+        <g clip-path="url(#clipR)"><rect class="glare" x="30" y="-110" width="60" height="260" fill="url(#glare)" opacity=".7" transform="rotate(24 165 14)" /></g>
+        <g fill="none" stroke="#18201c" stroke-width="13">
+          <circle cx="-165" cy="14" r="108" />
+          <circle cx="165" cy="14" r="108" />
+        </g>
+        <path d="M-58-20Q0-58 58-20" fill="none" stroke="#18201c" stroke-width="12" stroke-linecap="round" />
+        <g fill="#5d6661" stroke="#18201c" stroke-width="3">
+          <rect x="-336" y="-28" width="62" height="30" rx="8" />
+          <rect x="274" y="-28" width="62" height="30" rx="8" />
+        </g>
+        <g fill="none" stroke="#9aa39e" stroke-width="4" stroke-linecap="round">
+          <path d="M-46 40q-12 22-4 42" />
+          <path d="M46 40q12 22 4 42" />
+        </g>
+      </svg>
+
+      <!-- The phone: Termux, then the Linux desktop -->
+      <div id="phone" class="obj">
+        <div class="ph-body">
+          <div class="ph-screen">
+            <span class="ph-cam"></span>
+            <div class="layer term" id="pTerm">
+              <p class="dim">Welcome to Termux</p>
+              <p>&nbsp;</p>
+              <p><span class="pr">~ $</span> <span id="pType"></span><span class="caret" id="pCaret"></span></p>
+              <p class="dim" id="pOut1">Starting the desktop…</p>
+              <p class="acc" id="pOut2">Ubuntu · XFCE · :1</p>
+            </div>
+            <div class="layer xd" id="pDesk">
+              <div class="xd-panel"><span>Applications</span><span>9:41</span></div>
+              <div class="xd-icons">
+                <div class="xd-ic"><i></i>Home</div>
+                <div class="xd-ic"><i></i>Terminal</div>
+                <div class="xd-ic"><i></i>Files</div>
+              </div>
+              <div class="xd-win"><b>Terminal</b>
+                <p>~ $ uname -o</p>
+                <p>GNU/Linux</p>
+                <p>~ $ <span style="background:#cfe0d6">&nbsp;</span></p>
+              </div>
+              <div class="xd-dock"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone to glasses -->
+      <svg id="beam" viewBox="0 0 940 820">
+        <path d="M184 440H322" stroke="#1e6b57" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round" fill="none" />
+        <g fill="#1e6b57" id="beamDots">
+          <circle r="6" cy="440" />
+          <circle r="6" cy="440" />
+          <circle r="6" cy="440" />
+        </g>
+        <g transform="translate(253 400)">
+          <rect x="-74" y="-20" width="148" height="34" rx="17" fill="#e6f0ec" />
+          <text x="0" y="3" text-anchor="middle" font-family="Geist Mono" font-size="15" font-weight="500" fill="#1e6b57" letter-spacing="1">Bluetooth LE</text>
+        </g>
+      </svg>
+
+      <!-- What the glasses show: 640 × 480, drawn at 1.25× -->
+      <div id="hud" class="obj">
+        <p class="hud-label mono"><i></i>In your glasses · 640 × 480</p>
+        <div class="hud-glass">
+          <div class="hs">
+
+            <div class="hl2" id="hBoot">
+              <p class="big">VOX</p>
+              <p class="dim">Desktop · 640 × 480</p>
+              <div class="bootbar"><i id="bootBar"></i></div>
+            </div>
+
+            <div class="hl2" id="hDesk">
+              <div class="xg-wall"></div>
+              <div class="xg-panel"><span class="apps"><i></i>Applications</span><span class="ws"><i class="on"></i><i></i></span><span>9:41</span></div>
+              <div class="xg-icons">
+                <div class="xg-ic"><i class="ic-folder"></i>Home</div>
+                <div class="xg-ic"><i class="ic-term"></i>Terminal</div>
+                <div class="xg-ic"><i class="ic-files"></i>Files</div>
+                <div class="xg-ic"><i class="ic-web"></i>Web</div>
+              </div>
+              <p class="xg-stamp">ubuntu · xfce · :2</p>
+            </div>
+
+            <div class="hl2" id="hTerm">
+              <div class="xg-panel"><span class="apps"><i></i>Applications</span><span class="ws"><i class="on"></i><i></i></span><span>9:41</span></div>
+              <div class="win" id="termWin">
+                <div class="win-bar"><span>claude — ~/projects</span><span class="win-btns"><i></i><i></i><i></i></span></div>
+                <div class="win-body">
+                  <p><span class="pr">~/projects $</span> <span id="hType1"></span><span class="caret" id="hCaret1"></span></p>
+                  <div class="cc-box" id="ccBox">
+                    <p><b>*</b> Welcome to Claude Code</p>
+                    <p class="dim">cwd: ~/projects</p>
+                  </div>
+                  <p id="ccPrompt"><span class="pr">&gt;</span> <span id="hType2"></span><span class="caret" id="hCaret2"></span></p>
+                  <p class="think" id="ccThink">&nbsp;</p>
+                  <p class="cc" id="o1"><i class="dot"></i>I’ll make it one page: start, pause, reset.</p>
+                  <p class="cc" id="o2"><i class="dot"></i>Write(timer/index.html)</p>
+                  <p class="cc indent" id="o3"><i class="elbow"></i>Wrote 64 lines</p>
+                  <p class="cc" id="o4"><i class="dot"></i>Done. Open timer/index.html.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="hl2" id="hPano">
+              <div id="strip">
+                <div class="tab">
+                  <div class="tbar"><span class="on">1 · notes</span><span>2 · claude</span><span>3 · server</span></div>
+                  <div class="tbody">
+                    <p class="dim">notes.md</p>
+                    <p>&nbsp;</p>
+                    <p># Today</p>
+                    <p>- [x] Ship the kitchen timer</p>
+                    <p>- [ ] Plumber, Thursday 9:00</p>
+                    <p>- [ ] Read the LFM2.5 notes</p>
+                    <p>&nbsp;</p>
+                    <p># Ideas</p>
+                    <p>- Timer in the glasses, too</p>
+                    <p>- Captions for the meeting</p>
+                  </div>
+                </div>
+                <div class="tab">
+                  <div class="tbar"><span>1 · notes</span><span class="on">2 · claude</span><span>3 · server</span></div>
+                  <div class="tbody">
+                    <p><span class="pr">&gt;</span> make a kitchen timer app</p>
+                    <p>&nbsp;</p>
+                    <p class="cc"><i class="dot"></i>I’ll make it one page: start, pause, reset.</p>
+                    <p class="cc"><i class="dot"></i>Write(timer/index.html)</p>
+                    <p class="cc indent"><i class="elbow"></i>Wrote 64 lines</p>
+                    <p class="cc"><i class="dot"></i>Done. Open timer/index.html.</p>
+                    <p>&nbsp;</p>
+                    <p><span class="pr">&gt;</span> <span class="caret"></span></p>
+                  </div>
+                </div>
+                <div class="tab">
+                  <div class="tbar"><span>1 · notes</span><span>2 · claude</span><span class="on">3 · server</span></div>
+                  <div class="tbody">
+                    <div class="meter"><span>CPU</span><b><i style="width:34%"></i></b><span>34%</span></div>
+                    <div class="meter"><span>Memory</span><b><i style="width:58%"></i></b><span>58%</span></div>
+                    <div class="meter"><span>Battery</span><b><i style="width:81%"></i></b><span>81%</span></div>
+                    <div class="procs">
+                      <p class="dim"><span>PID</span><span>CPU</span><span>COMMAND</span></p>
+                      <p><span>2141</span><span>11.0</span><span>Xvfb :2</span></p>
+                      <p><span>2168</span><span>6.2</span><span>xfce4-session</span></p>
+                      <p><span>3307</span><span>4.8</span><span>claude</span></p>
+                      <p><span>1980</span><span>0.4</span><span>sshd</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hl2" id="hApps">
+              <div class="app" id="appWeb">
+                <div class="bar2"><span class="nav3"><i></i><i></i><i></i></span><span class="url" id="url"></span></div>
+                <div class="page" id="webPage">
+                  <h4>Linux</h4>
+                  <p class="lede">Free and open-source operating system</p>
+                  <div class="lines" style="width:380px">
+                    <i style="width:100%"></i><i style="width:94%"></i><i style="width:98%"></i><i style="width:70%"></i>
+                    <i style="width:0;margin-bottom:22px"></i>
+                    <i style="width:96%"></i><i style="width:100%"></i><i style="width:88%"></i><i style="width:60%"></i>
+                  </div>
+                  <div class="fig">Tux, 1996</div>
+                </div>
+              </div>
+              <div class="app" id="appFiles">
+                <div class="bar2"><span class="nav3"><i></i><i></i></span><span class="url">/root/projects</span></div>
+                <div class="side">
+                  <p>Home</p>
+                  <p>Desktop</p>
+                  <p>Documents</p>
+                  <p class="on">projects</p>
+                  <p>Music</p>
+                </div>
+                <div class="grid6" id="filesGrid">
+                  <div><i></i>timer</div>
+                  <div><i></i>notes</div>
+                  <div><i></i>glasses</div>
+                  <div class="file"><i></i>todo.md</div>
+                  <div class="file"><i></i>photo.jpg</div>
+                  <div class="file"><i></i>run.sh</div>
+                </div>
+              </div>
+              <div class="app" id="appCode">
+                <div class="bar2"><span>timer.js — Mousepad</span></div>
+                <div class="code" id="codeLines">
+                  <p><span>1</span><span><b class="k">const</b> display = document.querySelector(<span class="c">'#time'</span>);</span></p>
+                  <p><span>2</span><span><b class="k">let</b> left = 5 * 60;</span></p>
+                  <p><span>3</span><span> </span></p>
+                  <p><span>4</span><span><b class="k">function</b> tick() {</span></p>
+                  <p><span>5</span><span>  left -= 1;</span></p>
+                  <p><span>6</span><span>  display.textContent = format(left);</span></p>
+                  <p><span>7</span><span>  <b class="k">if</b> (left === 0) ring();</span></p>
+                  <p><span>8</span><span>}</span></p>
+                  <p><span>9</span><span> </span></p>
+                  <p><span>10</span><span>setInterval(tick, 1000);</span></p>
+                  <p><span>11</span><span class="c">// start, pause and reset live in buttons.js</span></p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="hud-sheen" id="sheen"></div>
+        </div>
+      </div>
+
+      <!-- A Bluetooth keyboard; keys light as they're typed (built in the script) -->
+      <svg id="kbd" class="obj" viewBox="0 0 760 230"></svg>
+
+      <!-- The head, seen from above, and the three tabs around it -->
+      <svg id="head" class="obj" viewBox="0 0 420 150">
+        <g id="arcLabels" font-family="Geist Mono" font-size="16" font-weight="500" text-anchor="middle"></g>
+        <path d="M120 104A100 100 0 0 1 300 104" fill="none" stroke="#e2e6e0" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round" transform="translate(0 30)" />
+        <g id="headG" transform="translate(210 136)">
+          <path id="cone" d="M0 0L-38-96A100 100 0 0 1 38-96Z" fill="#1e6b57" opacity=".12" />
+          <ellipse cx="-33" cy="0" rx="7" ry="12" fill="#fff" stroke="#18201c" stroke-width="3" />
+          <ellipse cx="33" cy="0" rx="7" ry="12" fill="#fff" stroke="#18201c" stroke-width="3" />
+          <circle r="32" fill="#fff" stroke="#18201c" stroke-width="3" />
+          <path d="M-8-29L0-44L8-29" fill="#fff" stroke="#18201c" stroke-width="3" stroke-linejoin="round" />
+          <path d="M-22-14h44" stroke="#18201c" stroke-width="5" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <div id="chips" class="obj">
+        <span class="chip">Web</span><span class="chip">Files</span><span class="chip">Editor</span>
+      </div>
+    </div>
+
+    <!-- ══ End card ══ -->
+    <section id="end">
+      <svg id="endG" viewBox="-380 -170 760 340"></svg>
+      <p class="end-kick mono">Vox · for Even Realities G1</p>
+      <p class="end-title">Linux, <em>in your glasses.</em></p>
+      <p class="end-by">Built by Pruitt Colon on ScouterKit, open firmware by Marek, with Termux, Ubuntu and XFCE.</p>
+      <p class="end-url mono">whyhirepruitt.dev</p>
+    </section>
+  </div>
+
+  <script src="linux-timeline.js"></script>
+  <script>
+    const S = LINUX.scenes;
+    const DURATION = LINUX.duration;
+    const PORTRAIT = new URLSearchParams(location.search).get('format') === 'portrait';
+    document.documentElement.classList.toggle('portrait', PORTRAIT);
+
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const lerp = (a, b, p) => a + (b - a) * p;
+    const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+    const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+    const easeOutBack = (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2);
+    const prog = (t, start, dur) => clamp((t - start) / dur);
+    const px = (v) => `${v.toFixed(1)}px`;
+    const op = (el, v) => { el.style.opacity = clamp(v).toFixed(3); };
+
+    /* Keyframes: [[time, {x, y, s, o}], …], eased in and out between them, held before the first and after the last */
+    function kf(t, frames) {
+      if (t <= frames[0][0]) return frames[0][1];
+      for (let i = 0; i < frames.length - 1; i++) {
+        const [t0, a] = frames[i];
+        const [t1, b] = frames[i + 1];
+        if (t < t1) {
+          const p = easeInOut((t - t0) / (t1 - t0));
+          const v = {};
+          for (const k in a) v[k] = lerp(a[k], b[k] ?? a[k], p);
+          return v;
+        }
+      }
+      return frames[frames.length - 1][1];
+    }
+
+    function place(el, v, extra = '') {
+      el.style.opacity = clamp(v.o).toFixed(3);
+      el.style.visibility = v.o < 0.003 ? 'hidden' : 'visible';
+      el.style.transform = `translate(${px(v.x)}, ${px(v.y)}) scale(${v.s.toFixed(4)})${extra}`;
+    }
+
+    /* Kinetic type: [data-words] elements are split into words that rise in one by one */
+    function splitWords(root) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        if (!node.textContent.trim()) return;
+        const frag = document.createDocumentFragment();
+        node.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) frag.appendChild(document.createTextNode(part));
+          else {
+            const s = document.createElement('span');
+            s.className = 'w';
+            s.textContent = part;
+            frag.appendChild(s);
+          }
+        });
+        node.replaceWith(frag);
+      });
+      root.words = [...root.querySelectorAll('.w')];
+    }
+    document.querySelectorAll('[data-words]').forEach(splitWords);
+
+    function words(el, t, start, { stagger = 0.11, dur = 0.55, y = 24, blur = 6 } = {}) {
+      el.words.forEach((w, i) => {
+        const p = easeOut(prog(t, start + i * stagger, dur));
+        w.style.opacity = p.toFixed(3);
+        w.style.transform = `translateY(${px(y * (1 - p))})`;
+        w.style.filter = blur && p < 1 ? `blur(${(blur * (1 - p)).toFixed(2)}px)` : '';
+      });
+      return start + el.words.length * stagger + dur;
+    }
+
+    function rise(el, t, start, { dur = 0.6, y = 14 } = {}) {
+      const p = easeOut(prog(t, start, dur));
+      el.style.opacity = p.toFixed(3);
+      el.style.transform = `translateY(${px(y * (1 - p))})`;
+      return p;
+    }
+
+    // Characters typed so far: the first lands at `start`, then one every `rate` seconds
+    function typed(el, t, start, text, rate) {
+      const n = t < start ? 0 : Math.min(text.length, Math.floor((t - start) / rate) + 1);
+      el.textContent = text.slice(0, n);
+      return n;
+    }
+    // A caret blinks while waiting and stays solid while typing
+    const caretOn = (t, typingFrom, typingTo) => (t >= typingFrom && t <= typingTo + 0.3) || (t * 1.8) % 1 < 0.55;
+
+    /* ── The keyboard, drawn once ── */
+    const KEYS = {};
+    (function buildKeyboard() {
+      const svg = $('kbd');
+      const ns = 'http://www.w3.org/2000/svg';
+      const mk = (tag, attrs) => {
+        const el = document.createElementNS(ns, tag);
+        for (const k in attrs) el.setAttribute(k, attrs[k]);
+        return el;
+      };
+      svg.appendChild(mk('ellipse', { cx: 380, cy: 222, rx: 340, ry: 8, fill: '#18201c', opacity: '.07' }));
+      svg.appendChild(mk('rect', { x: 2, y: 2, width: 756, height: 210, rx: 24, fill: '#fff', stroke: '#18201c', 'stroke-width': 3 }));
+      const rows = [['qwertyuiop', 62, 22], ['asdfghjkl', 84, 72], ['zxcvbnm', 116, 122]];
+      const key = (id, x, y, w, label) => {
+        const g = mk('g', {});
+        const r = mk('rect', { x, y, width: w, height: 42, rx: 9, fill: '#f4f6f3', stroke: '#c9d0cb', 'stroke-width': 2 });
+        const tx = mk('text', { x: x + w / 2, y: y + 27, 'text-anchor': 'middle', 'font-family': 'Geist Mono', 'font-size': 15, fill: '#5f6963' });
+        tx.textContent = label;
+        g.appendChild(r);
+        g.appendChild(tx);
+        svg.appendChild(g);
+        KEYS[id] = { r, tx };
+      };
+      rows.forEach(([letters, x0, y]) => [...letters].forEach((c, i) => key(c, x0 + i * 62, y, 54, c)));
+      key('enter', 642, 72, 92, 'enter');
+      key(' ', 220, 168, 320, '');
+      key('shift', 26, 122, 84, 'shift');
+    })();
+
+    // Key presses: [time, key], from the typing in the timeline (the glasses scenes) and the Enter presses
+    const PRESSES = [];
+    LINUX.typing.slice(1).forEach(([start, text, rate]) => [...text].forEach((c, i) => PRESSES.push([start + i * rate, c])));
+    LINUX.enters.slice(1).forEach((tm) => PRESSES.push([tm, 'enter']));
+
+    function keyboardAt(t) {
+      const lit = {};
+      PRESSES.forEach(([tm, k]) => {
+        if (t >= tm && t < tm + 0.28) lit[k] = Math.max(lit[k] || 0, 1 - (t - tm) / 0.28);
+      });
+      for (const k in KEYS) {
+        const v = lit[k] || 0;
+        const { r, tx } = KEYS[k];
+        r.setAttribute('fill', v > 0 ? `rgba(30,107,87,${(0.25 + 0.75 * v).toFixed(3)})` : '#f4f6f3');
+        r.setAttribute('stroke', v > 0 ? '#1e6b57' : '#c9d0cb');
+        r.setAttribute('transform', v > 0 ? `translate(0 ${(2 * v).toFixed(2)})` : '');
+        tx.setAttribute('fill', v > 0.4 ? '#fff' : '#5f6963');
+        tx.setAttribute('transform', v > 0 ? `translate(0 ${(2 * v).toFixed(2)})` : '');
+      }
+    }
+
+    /* ── The head's three places ── */
+    const TABS = [['1 · notes', -36], ['2 · claude', 0], ['3 · server', 36]];
+    (function buildArc() {
+      const g = $('arcLabels');
+      TABS.forEach(([name, a]) => {
+        const r = 120;
+        const x = 210 + r * Math.sin((a * Math.PI) / 180);
+        const y = 136 - r * Math.cos((a * Math.PI) / 180) + 4;
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', x.toFixed(1));
+        t.setAttribute('y', y.toFixed(1));
+        t.textContent = name;
+        g.appendChild(t);
+      });
+    })();
+
+    // The end card's glasses: a copy of the main drawing, lit
+    $('endG').innerHTML = $('glasses').innerHTML.replace(/id="(clip[LR]|glow|glare)"/g, 'id="e$1"').replace(/url\(#(clip[LR]|glow|glare)\)/g, 'url(#e$1)');
+
+    /* ── Where everything is, over time (picture pixels, centres) ── */
+    const F = {
+      desk: [[0.6, { x: 590, y: 430, s: 0.96, o: 0 }], [1.5, { x: 470, y: 430, s: 1, o: 1 }], [3.3, { x: 470, y: 430, s: 1, o: 1 }], [4.0, { x: 330, y: 430, s: 0.96, o: 0 }]],
+      laptop: [[3.4, { x: 610, y: 440, s: 0.96, o: 0 }], [4.3, { x: 470, y: 440, s: 1, o: 1 }], [6.2, { x: 470, y: 440, s: 1, o: 1 }], [6.9, { x: 330, y: 440, s: 0.96, o: 0 }]],
+      glasses: [
+        [6.3, { x: 610, y: 420, s: 0.96, o: 0 }], [7.2, { x: 470, y: 420, s: 1, o: 1 }],
+        [10.3, { x: 470, y: 420, s: 1, o: 1 }], [11.5, { x: 470, y: 400, s: 1.14, o: 1 }],
+        [14.6, { x: 470, y: 400, s: 1.14, o: 1 }], [15.5, { x: 470, y: 150, s: 0.78, o: 0 }],
+        [58.7, { x: 470, y: 430, s: 0.92, o: 0 }], [59.6, { x: 470, y: 410, s: 1.06, o: 1 }],
+        [63.9, { x: 470, y: 410, s: 1.06, o: 1 }], [64.6, { x: 470, y: 330, s: 0.8, o: 0 }]
+      ],
+      phone: [
+        [15.2, { x: 470, y: 1000, s: 1.42, o: 0 }], [16.4, { x: 470, y: 420, s: 1.42, o: 1 }],
+        [24.1, { x: 470, y: 420, s: 1.42, o: 1 }], [25.2, { x: 95, y: 440, s: 0.62, o: 1 }],
+        [33.1, { x: 95, y: 440, s: 0.62, o: 1 }], [33.9, { x: -150, y: 440, s: 0.62, o: 0 }]
+      ],
+      hud: [
+        [24.5, { x: 690, y: 440, s: 0.68, o: 0 }], [25.4, { x: 630, y: 440, s: 0.74, o: 1 }],
+        [33.1, { x: 630, y: 440, s: 0.74, o: 1 }], [33.9, { x: 470, y: 300, s: 0.86, o: 1 }],
+        [42.0, { x: 470, y: 300, s: 0.86, o: 1 }], [42.8, { x: 470, y: 350, s: 1, o: 1 }],
+        [58.3, { x: 470, y: 350, s: 1, o: 1 }], [59.3, { x: 646, y: 424, s: 0.18, o: 0 }]
+      ],
+      kbd: [[33.4, { x: 470, y: 960, s: 1, o: 0 }], [34.3, { x: 470, y: 690, s: 1, o: 1 }], [42.0, { x: 470, y: 690, s: 1, o: 1 }], [42.8, { x: 470, y: 960, s: 1, o: 0 }]],
+      head: [[42.5, { x: 470, y: 900, s: 1, o: 0 }], [43.3, { x: 470, y: 742, s: 1.25, o: 1 }], [50.9, { x: 470, y: 742, s: 1.25, o: 1 }], [51.5, { x: 470, y: 900, s: 1, o: 0 }]],
+      chips: [[51.3, { x: 470, y: 740, s: 1, o: 0 }], [52.0, { x: 470, y: 712, s: 1, o: 1 }], [58.2, { x: 470, y: 712, s: 1, o: 1 }], [58.8, { x: 470, y: 740, s: 1, o: 0 }]],
+      // Head turn in degrees (left is negative), and which tab is up (0, 1, 2, eased between)
+      yaw: [[44.0, { v: 0 }], [44.9, { v: -36 }], [46.6, { v: -36 }], [48.0, { v: 36 }], [49.5, { v: 36 }], [50.3, { v: 0 }]],
+      tab: [[44.4, { v: 1 }], [44.9, { v: 0 }], [46.9, { v: 0 }], [47.3, { v: 1 }], [47.6, { v: 1 }], [48.0, { v: 2 }], [49.6, { v: 2 }], [50.1, { v: 1 }]],
+      app: [[53.5, { v: 0 }], [54.0, { v: 1 }], [55.9, { v: 1 }], [56.4, { v: 2 }]]
+    };
+
+    /* ── Captions ── */
+    const CAPS = [['capA', S.A, S.B], ['capB', S.B, S.C], ['capC', S.C, S.D], ['capD', S.D, S.E], ['capE', S.E, S.F], ['capF', S.F, S.G], ['capG', S.G, S.H], ['capH', S.H, S.K]];
+
+    function captionsAt(t) {
+      CAPS.forEach(([id, start, end]) => {
+        const el = $(id);
+        const on = t >= start && t < end;
+        el.style.display = on ? 'block' : 'none';
+        if (!on) return;
+        const out = easeInOut(prog(t, end - 0.5, 0.5));
+        el.style.opacity = (1 - out).toFixed(3);
+        el.style.transform = out > 0 ? `translateY(${px(-20 * out)})` : '';
+        el.style.filter = out > 0 ? `blur(${(7 * out).toFixed(2)}px)` : '';
+        if (id === 'capA' || id === 'capH') {
+          const lines = id === 'capA' ? [['a1', 0.5], ['a2', 3.4], ['a3', 6.3]] : [['h1', 0.3], ['h2', 1.3], ['h3', 2.3]];
+          lines.forEach(([lid, at], i) => {
+            words($(lid), t, start + at, { stagger: 0.12 });
+            // Earlier lines step back when the next one arrives
+            const next = lines[i + 1];
+            const dim = next ? easeInOut(prog(t, start + next[1] - 0.1, 0.5)) : 0;
+            $(lid).style.opacity = (1 - 0.62 * dim).toFixed(3);
+          });
+          return;
+        }
+        const kick = el.querySelector('.kick');
+        const hl = el.querySelector('.hl, .title');
+        const sub = el.querySelector('.sub');
+        if (kick) rise(kick, t, start + 0.1, { dur: 0.6, y: 10 });
+        const hlDone = words(hl, t, start + 0.25, { stagger: id === 'capB' ? 0.16 : 0.11 });
+        if (sub) words(sub, t, hlDone - 0.15, { stagger: 0.085, y: 16, blur: 4 });
+      });
+    }
+
+    /* ── The picture ── */
+    function pictureAt(t) {
+      const bob = Math.sin(t * 1.3) * 4;
+      place($('desk'), kf(t, F.desk));
+      place($('laptop'), kf(t, F.laptop));
+
+      const gv = kf(t, F.glasses);
+      gv.y += bob;
+      place($('glasses'), gv);
+      const lit = t < 30 ? easeOut(prog(t, 10.6, 1.4)) : 1;
+      $('glasses').querySelector('.lit').style.opacity = lit.toFixed(3);
+      // A light sweep across the lenses as they light, and again at the end
+      const sweep = t < 30 ? prog(t, 10.5, 1.6) : prog(t, 60.2, 1.6);
+      $('glasses').querySelectorAll('.glare').forEach((g, i) => {
+        const base = i === 0 ? -165 : 165;
+        g.setAttribute('x', (base - 200 + 400 * easeInOut(sweep)).toFixed(1));
+        g.setAttribute('opacity', (0.75 * Math.sin(Math.PI * sweep)).toFixed(3));
+      });
+
+      phoneAt(t);
+      place($('phone'), kf(t, F.phone));
+
+      const hv = kf(t, F.hud);
+      place($('hud'), hv);
+      hudAt(t);
+      // The label above the glasses' screen steps back once the screen is big
+      op(document.querySelector('.hud-label'), 1);
+
+      // The link from the phone, with light running along it
+      const beamO = Math.min(easeOut(prog(t, 25.0, 0.6)), 1 - prog(t, 32.7, 0.5));
+      op($('beam'), beamO);
+      $('beamDots').querySelectorAll('circle').forEach((c, k) => {
+        const p = ((t * 0.85 + k / 3) % 1);
+        c.setAttribute('cx', (184 + 138 * p).toFixed(1));
+        c.setAttribute('opacity', Math.sin(Math.PI * p).toFixed(3));
+      });
+
+      place($('kbd'), kf(t, F.kbd));
+      if (t > 33 && t < 43) keyboardAt(t);
+
+      place($('head'), kf(t, F.head));
+      const yaw = kf(t, F.yaw).v;
+      $('headG').setAttribute('transform', `translate(210 136) rotate(${yaw.toFixed(2)})`);
+      const tabNow = kf(t, F.tab).v;
+      $('arcLabels').querySelectorAll('text').forEach((tx, i) => {
+        const on = 1 - clamp(Math.abs(tabNow - i));
+        tx.setAttribute('fill', on > 0.5 ? '#1e6b57' : '#5f6963');
+        tx.setAttribute('font-weight', on > 0.5 ? '650' : '500');
+      });
+
+      place($('chips'), kf(t, F.chips));
+      const app = kf(t, F.app).v;
+      $('chips').querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('on', Math.round(app) === i));
+    }
+
+    function phoneAt(t) {
+      const n = typed($('pType'), t, LINUX.typing[0][0], LINUX.typing[0][1], LINUX.typing[0][2]);
+      $('pCaret').style.visibility = t < LINUX.enters[0] && caretOn(t, LINUX.typing[0][0], LINUX.enters[0]) ? 'visible' : 'hidden';
+      op($('pOut1'), easeOut(prog(t, 18.4, 0.3)));
+      op($('pOut2'), easeOut(prog(t, 18.95, 0.3)));
+      const d = easeOut(prog(t, 19.6, 0.7));
+      op($('pDesk'), d);
+      $('pDesk').style.transform = `scale(${lerp(1.06, 1, d).toFixed(4)})`;
+      op($('pTerm'), 1 - d);
+      void n;
+    }
+
+    function hudAt(t) {
+      // Boot, then the desktop
+      const boot = Math.min(1, 1 - easeInOut(prog(t, 26.3, 0.4)));
+      op($('hBoot'), t < 26.8 ? boot : 0);
+      $('bootBar').style.width = `${(100 * easeInOut(prog(t, 25.2, 1.0))).toFixed(1)}%`;
+      const desk = easeOut(prog(t, 26.4, 0.5));
+      const term = easeOut(prog(t, 33.6, 0.45));
+      op($('hDesk'), t < 42.5 ? desk * (1 - term) + (term > 0 ? 0 : 0) : 0);
+      $('hDesk').querySelectorAll('.xg-ic').forEach((ic, i) => {
+        const p = easeOutBack(prog(t, 26.7 + i * 0.12, 0.45));
+        ic.style.opacity = clamp(prog(t, 26.7 + i * 0.12, 0.2)).toFixed(3);
+        ic.style.transform = `scale(${lerp(0.5, 1, p).toFixed(4)})`;
+      });
+      $('hDesk').querySelector('.xg-panel').style.transform = `translateY(${px(-32 * (1 - easeOut(prog(t, 26.4, 0.5))))})`;
+
+      // The terminal opens, maximised; Claude Code starts and builds a timer
+      const pano = easeInOut(prog(t, 42.3, 0.35));
+      op($('hTerm'), term * (1 - pano));
+      $('termWin').style.transform = `scale(${lerp(0.94, 1, term).toFixed(4)})`;
+      const [, t1, r1] = LINUX.typing[1];
+      const [, t2, r2] = LINUX.typing[2];
+      typed($('hType1'), t, LINUX.typing[1][0], t1, r1);
+      $('hCaret1').style.visibility = t < LINUX.enters[1] && caretOn(t, LINUX.typing[1][0], LINUX.enters[1]) ? 'visible' : 'hidden';
+      op($('ccBox'), easeOut(prog(t, 35.5, 0.35)));
+      op($('ccPrompt'), easeOut(prog(t, 35.8, 0.3)));
+      typed($('hType2'), t, LINUX.typing[2][0], t2, r2);
+      $('hCaret2').style.visibility = t >= 35.8 && t < LINUX.enters[2] && caretOn(t, LINUX.typing[2][0], LINUX.enters[2]) ? 'visible' : 'hidden';
+      // A short "thinking" line between the request and the answer
+      const thinking = t >= 38.05 && t < 38.4;
+      $('ccThink').textContent = thinking ? `${'Thinking'}${'.'.repeat(1 + (Math.floor(t * 8) % 3))}` : ' ';
+      [['o1', 38.4], ['o2', 39.0], ['o3', 39.5], ['o4', 40.4]].forEach(([id, at]) => {
+        const p = easeOut(prog(t, at, 0.35));
+        $(id).style.opacity = p.toFixed(3);
+        $(id).style.transform = `translateX(${px(-10 * (1 - p))})`;
+      });
+
+      // Tabs around you
+      const appsIn = easeInOut(prog(t, 51.0, 0.35));
+      op($('hPano'), pano * (1 - appsIn));
+      $('strip').style.transform = `translateX(${px(-640 * kf(t, F.tab).v)})`;
+
+      // Apps: the web, files, code, sliding in turn
+      op($('hApps'), appsIn);
+      const a = kf(t, F.app).v;
+      ['appWeb', 'appFiles', 'appCode'].forEach((id, i) => {
+        $(id).style.transform = `translateX(${px(640 * (i - a))})`;
+      });
+      typed($('url'), t, 51.4, 'en.wikipedia.org/wiki/Linux', 0.028);
+      op($('webPage'), easeOut(prog(t, 52.3, 0.5)));
+      $('filesGrid').querySelectorAll('div').forEach((d, i) => {
+        const p = easeOutBack(prog(t, 54.0 + i * 0.08, 0.4));
+        d.style.opacity = clamp(prog(t, 54.0 + i * 0.08, 0.2)).toFixed(3);
+        d.style.transform = `scale(${lerp(0.6, 1, p).toFixed(4)})`;
+      });
+      $('codeLines').querySelectorAll('p').forEach((p, i) => {
+        const q = easeOut(prog(t, 56.3 + i * 0.13, 0.3));
+        p.style.opacity = q.toFixed(3);
+        p.style.transform = `translateX(${px(-8 * (1 - q))})`;
+      });
+
+      // A slow sheen across the glass
+      $('sheen').style.transform = `translateX(${px(-500 + ((t * 70) % 1300))})`;
+    }
+
+    /* ── End card ── */
+    function endAt(t) {
+      const el = $('end');
+      const on = t >= S.K;
+      el.style.display = on ? 'flex' : 'none';
+      $('brandline').style.opacity = t >= S.C && t < S.K - 0.3 ? easeOut(prog(t, S.C, 0.6)).toFixed(3) : '0';
+      if (!on) return;
+      const kids = [$('endG'), ...el.querySelectorAll('p')];
+      kids.forEach((k, i) => rise(k, t, S.K + 0.5 + i * 0.35, { dur: 0.7, y: 16 }));
+    }
+
+    function renderAt(t) {
+      captionsAt(t);
+      pictureAt(t);
+      endAt(t);
+    }
+
+    function renderPoster() {
+      renderAt(13.6);
+    }
+
+    window.DURATION = DURATION;
+    window.SIZE = PORTRAIT ? [1080, 1350] : [1920, 1080];
+    window.renderAt = renderAt;
+    window.renderPoster = renderPoster;
+    window.ready = true;
+
+    const params = new URLSearchParams(location.search);
+    document.fonts.ready.then(() => (params.has('poster') ? renderPoster() : renderAt(Number(params.get('t') || 0))));
+  </script>
+</body>
+
+</html>

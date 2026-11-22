@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="Pruitt Colon">
   <meta property="og:title" content="Pruitt Colon · AI engineer">
   <meta property="og:description"
-    content="Every AI, one glance away. Vox turns smart glasses into a second screen for any AI, built on open firmware and fifteen open models and libraries, alongside a private conversation memory and a podcast studio.">
+    content="Every AI, one glance away. Vox turns smart glasses into a second screen for any AI, and for a whole Linux desktop, built on open firmware and fifteen open models and libraries.">
   <meta property="og:url" content="https://whyhirepruitt.dev/">
   <meta property="og:image" content="https://whyhirepruitt.dev/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -101,15 +101,14 @@
 
   <main id="main">
     <nav class="rail" aria-label="On this page" data-rail>
-      <a href="#anywhere"><span class="mono">01</span><span class="rail__label">Anywhere</span></a>
-      <a href="#idea"><span class="mono">02</span><span class="rail__label">The idea</span></a>
+      <a href="#made"><span class="mono">01</span><span class="rail__label">Things I’ve made</span></a>
+      <a href="#anywhere"><span class="mono">02</span><span class="rail__label">Anywhere</span></a>
       <a href="#glasses"><span class="mono">03</span><span class="rail__label">Vox, the glasses</span></a>
       <a href="#vox"><span class="mono">04</span><span class="rail__label">Vox Amelior</span></a>
-      <a href="#more"><span class="mono">05</span><span class="rail__label">Other apps</span></a>
-      <a href="#contact"><span class="mono">06</span><span class="rail__label">Contact</span></a>
+      <a href="#contact"><span class="mono">05</span><span class="rail__label">Contact</span></a>
     </nav>
     <!-- ══════════ Hero: the pitch and the film ══════════ -->
-    <section class="hero" aria-labelledby="hero-title" data-hero>
+    <section class="hero" id="film" aria-labelledby="hero-title" data-hero>
       <div class="container hero__grid">
         <div class="hero__copy">
           <p class="hero__status">
@@ -128,32 +127,31 @@
           </h1>
         </div>
 
-        <!-- The commercial: a silent loop of its best moments plays here until someone presses play (js/player.js).
-             Phones get a 4:5 cut with larger type below 700px. -->
+        <!-- The new film: a silent loop of its best moments plays here until someone presses play (js/player.js).
+             Phones get a 4:5 cut with larger type below 700px. Made by tools/film/linux.html. -->
         <figure class="hero__film">
           <div class="hero__film-intro">
-            <p class="eyebrow">Where it started · concept film · 2:55</p>
-            <p><strong>Vox Amelior</strong>, my first app: an AI that listens, remembers and answers on your phone, so
-              your conversations stay there. Its listening now runs in the glasses app too. The film shows what it
-              could do for you; most of it runs in the app today.</p>
+            <p class="eyebrow">New · Linux in your glasses · film · 1:10</p>
+            <p>My phone runs a full Linux desktop, and <strong>Vox</strong>, my glasses app, puts it in Even Realities G1
+              glasses. Everything in the film runs today; Claude’s lines are an example session.</p>
           </div>
           <div class="player player--portrait-on-phones" data-player>
             <div class="player__frame">
               <div class="player__stage">
                 <video class="player__video" playsinline preload="none" width="1920" height="1080"
-                  poster="assets/video/vox-film-poster.webp" data-poster-portrait="assets/video/vox-film-portrait-poster.webp"
-                  data-preview="assets/video/vox-film-preview.mp4" data-preview-portrait="assets/video/vox-film-preview-portrait.mp4"
-                  aria-describedby="film-video-desc">
-                  <source src="assets/video/vox-film.mp4" data-src-portrait="assets/video/vox-film-portrait.mp4"
+                  poster="assets/video/linux-film-poster.webp" data-poster-portrait="assets/video/linux-film-portrait-poster.webp"
+                  data-preview="assets/video/linux-film-preview.mp4" data-preview-portrait="assets/video/linux-film-portrait-preview.mp4"
+                  aria-describedby="linux-video-desc">
+                  <source src="assets/video/linux-film.mp4" data-src-portrait="assets/video/linux-film-portrait.mp4"
                     type='video/mp4; codecs="avc1.640028"'>
-                  <track kind="chapters" src="assets/video/vox-film-chapters.vtt" srclang="en" label="Chapters" default>
-                  Your browser can’t play this video. <a href="assets/video/vox-film.mp4">Download the MP4</a>.
+                  <track kind="chapters" src="assets/video/linux-film-chapters.vtt" srclang="en" label="Chapters" default>
+                  Your browser can’t play this video. <a href="assets/video/linux-film.mp4">Download the MP4</a>.
                 </video>
-                <p class="sr-only" id="film-video-desc">Concept commercial for Vox Amelior, 2 minutes 55 seconds, with quiet
-                  music and no narration. A transcript is available below the video.</p>
+                <p class="sr-only" id="linux-video-desc">Film, Linux in your glasses, 1 minute 10 seconds, with quiet music
+                  and no narration. A transcript is available below the video.</p>
                 <button class="player__play" type="button" data-player-play>
                   <span class="player__play-icon"><svg aria-hidden="true"><use href="#i-play" /></svg></span>
-                  <span class="player__play-label">Play the film <span class="mono">2:55</span></span>
+                  <span class="player__play-label">Play the film <span class="mono">1:10</span></span>
                 </button>
               </div>
             </div>
@@ -163,36 +161,16 @@
             <details class="transcript">
               <summary>Transcript</summary>
               <div class="transcript__body prose">
-                <p>Soft piano and ambient music throughout; no narration.</p>
-                <p>On an average day, we speak about 16,000 words. Most of them slip away.</p>
-                <p>Except our words online. Those, they keep. The screen fills with them: searches like “is this rash
-                  serious” and “why do we keep fighting”, things we typed like “I’m fine, really.” and a card number, and the
-                  videos that held our attention, like “10 signs you’re burned out”, watched three times. Now AI is in your
-                  search, your inbox, your photos. All of it can be stored on servers we’ll never see, read by people we’ll
-                  never meet, and sold to companies we’ve never heard of. Our words. Their rules.</p>
-                <p>Take your words offline. Start here. It listens on your phone, thinks on your phone and remembers on your
-                  phone. It works in airplane mode. Encrypted: 256-bit, by Android, keyed to your passcode. Sealed: other
-                  apps can’t read it, and there are no cloud backups. Never sent: no server holds a copy to breach. You
-                  can’t leak what you never send. Your words. Your phone. Your rules.</p>
-                <p>Now let your words work for you. What you heard, when you need it: “What did Jordan say I shouldn’t
-                  forget?” The plumber, Thursday at 9; cake pickup by 5; your mom’s birthday is Sunday. “What do we need from
-                  the store?” Eggs and the good bread; you still have milk.</p>
-                <p>At bedtime, Milo, age five, says: “When I grow up, I want to be just like you.” Years later, on a hard
-                  day, you ask what he said, and it’s there. Worth living up to.</p>
-                <p>So ask about the voice you hear most. Yours. “Which words do I use incorrectly?” “That plan is ingenuous”:
-                  ingenuous means naive; you meant ingenious. “When did I sound sharpest? Why?” Thursday’s pitch; you’d
-                  rehearsed it out loud the night before. “What thinking traps do I fall into?” All-or-nothing: “always”
-                  and “never”, 23 times in arguments. “Who did I thank this week?” Dana, twice.
-                  Jordan, not once. “What have I promised and not done?” Call Mom back; you’ve said “this weekend” three
-                  times. “Honestly, who starts more of our fights: me or Jordan?” You, six to five. “Want to know who
-                  apologizes first?” “Not today.”</p>
-                <p>Three months later: “Who starts more of our fights now?” Hard to say; there haven’t been many. Heated
-                  moments down 60% and laughter up 35% since spring. And you called Mom. Every Sunday.</p>
-                <p>Your voice, to better your life. The words fall away and become the name: Vox Amelior. Free for
-                  Android.</p>
-                <p>Concept film. People, conversations and answers are examples. Listening, speaker recognition, Ask,
-                  reviews and Insights run in the app today. Encryption is Android’s own, standard on phones launched with
-                  Android 10 or later. Let people know when it’s listening.</p>
+                <p>Quiet music throughout; no narration.</p>
+                <p>A desktop needs a desk. A laptop needs a lap. This needs a glance. Linux, in your glasses.</p>
+                <p>It starts in your pocket. Inside the Termux app, your phone runs Ubuntu with a full Linux desktop.</p>
+                <p>Vox sends it to your glasses: a second desktop, sized for the lens, 640 × 480, over Bluetooth LE.</p>
+                <p>Type, and it lands in your glasses. Any Bluetooth keyboard paired to your phone types straight into it.
+                  In the example, Claude Code builds a kitchen timer.</p>
+                <p>Your tabs sit around you. Turn your head, and the tab you face comes up.</p>
+                <p>The web. Your files. Your code. If Linux or Android runs it, your glasses can show it.</p>
+                <p>No desk. No lap. Just a glance. Built by Pruitt Colon on ScouterKit, open firmware by Marek, with
+                  Termux, Ubuntu and XFCE.</p>
               </div>
             </details>
           </figcaption>
@@ -200,14 +178,13 @@
 
         <div class="hero__more">
           <p class="lead hero__lead">
-            AI gets better every month. The way we reach it hasn’t: a text box, on a phone, in your hand. So I find
-            the best new open software and wire it into one interface you wear: glasses that show any AI, a phone
-            that hears and remembers, voices that read to you. When the next AI ships, from any company, it already
-            has a place in your glasses.
+            AI gets better every month. The way we reach it hasn’t: a text box, on a phone, in your hand. I take the
+            best new open software and fit it into one interface you wear. When the next AI ships, from any company,
+            it already has a place in your glasses.
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
-            <a class="btn btn--secondary btn--lg" href="#anywhere">See it anywhere</a>
+            <a class="btn btn--primary btn--lg" href="#made">See what I’ve made</a>
+            <a class="btn btn--secondary btn--lg" href="mailto:PruittColon@gmail.com">Email me</a>
           </div>
         </div>
       </div>
@@ -221,13 +198,210 @@
       </div>
     </section>
 
-    <!-- ══════════ 01 · The screen is anywhere: the glasses' green projection, an arrow to a computer at home or at the
+    <!-- ══════════ 01 · Things I've made: a filmstrip of thumbnails, one project at a time (js/home.js initMade).
+         Without JavaScript every project shows, one after another. ══════════ -->
+    <section class="section section--tight made-section" id="made" aria-labelledby="made-title">
+      <div class="container">
+        <div class="section-head section-head--split reveal">
+          <div>
+            <p class="eyebrow">01 · Things I’ve made</p>
+            <h2 class="h2" id="made-title">Seven things. <em>Click through.</em></h2>
+          </div>
+          <p class="lead">Newest first. Each one runs today unless it says otherwise, and each links to its build, its
+            source or more detail below.</p>
+        </div>
+
+        <div class="made" data-made>
+          <div class="made__strip" role="tablist" aria-label="Things I’ve made">
+            <button class="made__tab" type="button" role="tab" id="made-tab-1" aria-controls="made-1" aria-selected="true">
+              <span class="made__thumb"><img src="assets/video/linux-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></span>
+              <span class="made__tab-num mono">01 · New</span>
+              <span class="made__tab-title">Linux in your glasses</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-2" aria-controls="made-2" aria-selected="false" tabindex="-1">
+              <span class="made__thumb"><img src="assets/img/interface-devices.webp" alt="" width="950" height="880" loading="lazy"></span>
+              <span class="made__tab-num mono">02</span>
+              <span class="made__tab-title">Vox, the glasses app</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-3" aria-controls="made-3" aria-selected="false" tabindex="-1">
+              <span class="made__thumb"><img src="assets/img/anywhere-wide.webp" alt="" width="1600" height="860" loading="lazy"></span>
+              <span class="made__tab-num mono">03</span>
+              <span class="made__tab-title">Your screen, anywhere</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-4" aria-controls="made-4" aria-selected="false" tabindex="-1">
+              <span class="made__thumb"><img src="assets/video/vox-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></span>
+              <span class="made__tab-num mono">04</span>
+              <span class="made__tab-title">Vox Amelior</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-5" aria-controls="made-5" aria-selected="false" tabindex="-1">
+              <span class="made__thumb made__thumb--phone"><img src="assets/app/hd/even-chat.webp" alt="" width="720" height="1560" loading="lazy"></span>
+              <span class="made__tab-num mono">05</span>
+              <span class="made__tab-title">Even Suite</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-6" aria-controls="made-6" aria-selected="false" tabindex="-1">
+              <span class="made__thumb made__thumb--phone"><img src="assets/app/hd/narr-reader.webp" alt="" width="540" height="1170" loading="lazy"></span>
+              <span class="made__tab-num mono">06</span>
+              <span class="made__tab-title">Narrator Studio</span>
+            </button>
+            <button class="made__tab" type="button" role="tab" id="made-tab-7" aria-controls="made-7" aria-selected="false" tabindex="-1">
+              <span class="made__thumb"><img src="assets/img/hero-devices.webp" alt="" width="1200" height="1000" loading="lazy"></span>
+              <span class="made__tab-num mono">07</span>
+              <span class="made__tab-title">This website</span>
+            </button>
+          </div>
+
+          <div class="made__stage" data-made-stage>
+            <article class="made__panel" role="tabpanel" id="made-1" aria-labelledby="made-tab-1">
+              <div class="made__media made__media--film">
+                <video class="made__video" muted loop playsinline preload="none" width="1920" height="1080"
+                  poster="assets/video/linux-film-poster.webp" data-made-video="assets/video/linux-film-preview.mp4"
+                  aria-label="A silent loop from the film Linux, in your glasses"></video>
+              </div>
+              <div class="made__body">
+                <p class="made__meta mono">Vox · Android + Even Realities G1 <span class="made__status">New</span></p>
+                <h3 class="made__title">Linux, <em>in your glasses.</em></h3>
+                <p class="made__text">My phone runs a full Linux desktop inside the Termux app. Vox sends a second
+                  desktop, sized for the lens, to the glasses. Type on any Bluetooth keyboard; turn your head to switch
+                  tabs.</p>
+                <ul class="made__facts" role="list">
+                  <li>Ubuntu and XFCE on the phone. No laptop.</li>
+                  <li>640 × 480 in up to 16 greys, over Bluetooth LE</li>
+                  <li>Tabs follow your head, from the glasses’ own gyroscope</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="btn btn--primary btn--sm" href="#film" data-play="film"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the film</a>
+                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/scouter_kit/tree/phone-termux-screen/examples/ssh" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-2" aria-labelledby="made-tab-2">
+              <div class="made__media made__media--contain"><img src="assets/img/interface-devices.webp" alt="Even Realities G1 glasses in front of a phone running Vox" width="950" height="880" loading="lazy"></div>
+              <div class="made__body">
+                <p class="made__meta mono">Vox · Kotlin + C++ · Android</p>
+                <h3 class="made__title">A second screen <em>for every AI.</em></h3>
+                <p class="made__text">Claude Code, your phone’s screen, your laptop’s, live captions and your voice, all
+                  in the glasses. Built on ScouterKit, open firmware by Marek that unlocks the G1’s whole display; I
+                  added a 16-grey video mode to it.</p>
+                <ul class="made__facts" role="list">
+                  <li>15 open models and libraries on one phone</li>
+                  <li>Speak into the glasses; Parakeet types it into any prompt</li>
+                  <li>Ask Claude from the steering wheel, lenses dark</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="btn btn--primary btn--sm" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
+                  <a class="link-arrow" href="#glasses">How it works <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-3" aria-labelledby="made-tab-3">
+              <div class="made__media made__media--contain"><img src="assets/img/anywhere-wide.webp" alt="The glasses linked to a computer at home" width="1600" height="860" loading="lazy"></div>
+              <div class="made__body">
+                <p class="made__meta mono">Vox · SSH · mosh · Tailscale</p>
+                <h3 class="made__title">Your computer, <em>wherever you are.</em></h3>
+                <p class="made__text">The computer at home or at the office, in your glasses: its terminal, with Claude
+                  Code building whatever you ask, or its whole screen.</p>
+                <ul class="made__facts" role="list">
+                  <li>SSH inside Tailscale: nothing open to the internet</li>
+                  <li>mosh keeps the session alive between Wi-Fi and cell</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="link-arrow" href="#anywhere">See it in 3D <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-4" aria-labelledby="made-tab-4">
+              <div class="made__media made__media--film"><img src="assets/video/vox-film-poster.webp" alt="" width="1920" height="1080" loading="lazy"></div>
+              <div class="made__body">
+                <p class="made__meta mono">Vox Amelior · Flutter · Android</p>
+                <h3 class="made__title">A private memory <em>for your conversations.</em></h3>
+                <p class="made__text">Where it started: an AI that listens, remembers and answers on your phone, so your
+                  conversations stay there. Its listening now runs in the glasses too.</p>
+                <ul class="made__facts" role="list">
+                  <li>Speech to text and speaker ID, on the phone</li>
+                  <li>No cloud AI and no analytics</li>
+                  <li>400+ automated tests</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="btn btn--primary btn--sm" href="#vox" data-play="vox"><svg aria-hidden="true"><use href="#i-play" /></svg> Concept film</a>
+                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-5" aria-labelledby="made-tab-5">
+              <div class="made__media made__media--phone"><div class="device"><img src="assets/app/hd/even-chat.webp" alt="Even Suite on a phone: a chat with Claude" width="720" height="1560" loading="lazy"></div></div>
+              <div class="made__body">
+                <p class="made__meta mono">Even Suite · Flutter + Python</p>
+                <h3 class="made__title">The first app <em>to put Claude in the G1.</em></h3>
+                <p class="made__text">Say “Claude” or hold the TouchBar, and the answer appears in your view. Private when
+                  it can be, powerful when you need it.</p>
+                <ul class="made__facts" role="list">
+                  <li>87 tests against simulated glasses</li>
+                  <li>A Python hub in Termux, bound to the phone only</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="link-arrow" href="apps.html#even-suite">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-6" aria-labelledby="made-tab-6">
+              <div class="made__media made__media--phone"><div class="device"><img src="assets/app/hd/narr-reader.webp" alt="Narrator Studio reading a chapter aloud" width="540" height="1170" loading="lazy"></div></div>
+              <div class="made__body">
+                <p class="made__meta mono">Narrator Studio · Android</p>
+                <h3 class="made__title">Any text, <em>as a podcast.</em></h3>
+                <p class="made__text">Turns text and PDFs into a podcast in natural voices, made on your phone. Its voices
+                  now read inside Vox.</p>
+                <ul class="made__facts" role="list">
+                  <li>Four on-device voice engines</li>
+                  <li>Whisper checks every build: 2.6% word error rate</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="link-arrow" href="apps.html#narrator">See Narrator Studio <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="made__panel" role="tabpanel" id="made-7" aria-labelledby="made-tab-7">
+              <div class="made__media made__media--contain"><img src="assets/img/hero-devices.webp" alt="A phone and G1 glasses, rendered in Three.js" width="1200" height="1000" loading="lazy"></div>
+              <div class="made__body">
+                <p class="made__meta mono">whyhirepruitt.dev · HTML, CSS, JavaScript</p>
+                <h3 class="made__title">This website, <em>by hand.</em></h3>
+                <p class="made__text">No framework and no trackers. The 3D scenes are Three.js, and every film here is
+                  drawn by code one frame at a time, with music written the same way.</p>
+                <ul class="made__facts" role="list">
+                  <li>Films and scores generated from code</li>
+                  <li>Real screenshots when a phone can’t run 3D</li>
+                </ul>
+                <div class="made__actions">
+                  <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/whyhirepruitt" rel="noopener"><svg aria-hidden="true"><use href="#i-github" /></svg> Source</a>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="made__nav">
+            <button class="made__arrow" type="button" data-made-prev aria-label="Previous project"><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+            <div class="made__progress" aria-hidden="true"><span data-made-bar></span></div>
+            <p class="made__count mono" aria-live="polite" data-made-count>01 / 07</p>
+            <button class="made__arrow made__arrow--next" type="button" data-made-next aria-label="Next project"><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+        </div>
+
+        <a class="next-link" href="#anywhere"><span class="mono">Next</span> 02 · Your screen, anywhere <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+      </div>
+    </section>
+
+    <!-- ══════════ 02 · The screen is anywhere: the glasses' green projection, an arrow to a computer at home or at the
          office, the same session on both (js/3d/anywhere.js). Stills, wide and tall, without WebGL. ══════════ -->
     <section class="section section--tight" id="anywhere" aria-labelledby="anywhere-title">
       <div class="container">
         <figure class="anywhere" data-anywhere>
           <div class="anywhere__head reveal">
-            <p class="eyebrow">01 · Your screen, anywhere</p>
+            <p class="eyebrow">02 · Your screen, anywhere</p>
             <h2 class="h2 anywhere__title" id="anywhere-title">Your computer, at home or at the office. <em>In your glasses,
                 wherever you are.</em></h2>
             <p class="lead">Vox reaches your own computer over SSH inside Tailscale, a private network where every
@@ -243,61 +417,6 @@
             </picture>
           </div>
         </figure>
-
-        <a class="next-link" href="#idea"><span class="mono">Next</span> 02 · One interface, any AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
-      </div>
-    </section>
-
-    <!-- ══════════ The idea ══════════ -->
-    <section class="section section--tight ways" id="idea" aria-labelledby="ways-title">
-      <div class="container">
-        <div class="section-head section-head--split reveal">
-          <div>
-            <p class="eyebrow">02 · The idea</p>
-            <h2 class="h2" id="ways-title">One interface. <em>Any AI.</em></h2>
-          </div>
-          <p class="lead">Reaching AI shouldn’t mean stopping to type. I’m building the way around the text box, one
-            sense at a time: it shows you, it hears you, it speaks to you. Each piece is made from the best open
-            software I can find, and each one hands back a choice the usual apps make for you.</p>
-        </div>
-
-        <!-- The real devices on a turntable: the phone runs the apps, the glasses show Even Suite's display.
-             The 3D loads only as this nears the screen (js/home.js). -->
-        <figure class="devices" data-devices>
-          <div class="devices__stage" aria-hidden="true">
-            <canvas class="devices__canvas" data-devices-canvas></canvas>
-            <div class="devices__anchor" data-device-anchor></div>
-            <!-- Shown until the 3D scene is ready, or instead of it without WebGL -->
-            <img class="devices__fallback" src="assets/img/hero-devices.webp" alt="" width="1200" height="1000" loading="lazy">
-          </div>
-        </figure>
-
-        <ol class="ways__list" role="list">
-          <li class="way reveal">
-            <p class="way__num mono">01 · Shows you</p>
-            <h3 class="way__title">Vox</h3>
-            <p class="way__text">Turns Even Realities G1 glasses into a second screen for any AI: Claude Code, your
-              phone, your laptop, live captions.</p>
-            <p class="way__choice"><b>Your choice:</b> which AI is in your glasses.</p>
-            <a class="link-arrow" href="#glasses">The glasses app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-          </li>
-          <li class="way reveal">
-            <p class="way__num mono">02 · Hears you</p>
-            <h3 class="way__title">Vox Amelior</h3>
-            <p class="way__text">Listens and remembers on your phone, then helps you hear yourself. Your conversations
-              stay on the phone.</p>
-            <p class="way__choice"><b>Your choice:</b> what stays private.</p>
-            <a class="link-arrow" href="#vox">The memory app <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-          </li>
-          <li class="way reveal">
-            <p class="way__num mono">03 · Speaks to you</p>
-            <h3 class="way__title">Narrator Studio</h3>
-            <p class="way__text">Turns whatever you decide to read into a podcast, in natural voices made on your
-              phone.</p>
-            <p class="way__choice"><b>Your choice:</b> what fills your ears.</p>
-            <a class="link-arrow" href="apps.html#narrator">In other apps <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-          </li>
-        </ol>
 
         <a class="next-link" href="#glasses"><span class="mono">Next</span> 03 · Vox, a second screen for every AI <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
@@ -483,59 +602,77 @@
           </div>
         </div>
 
-        <figure class="showcase reveal">
-          <div class="showcase__stage" aria-hidden="true">
-            <canvas class="showcase__canvas" data-showcase="vox"></canvas>
-            <!-- Real screenshots, shown without WebGL -->
-            <div class="showcase__fallback">
-              <div class="device"><img src="assets/app/hd/vox-now.webp" alt="" width="810" height="1800" loading="lazy"></div>
-              <div class="device"><img src="assets/app/hd/vox-conversation.webp" alt="" width="810" height="1800" loading="lazy"></div>
-              <div class="device"><img src="assets/app/hd/vox-ask.webp" alt="" width="810" height="1800" loading="lazy"></div>
+        <!-- The Vox Amelior commercial: a silent loop of its best moments plays until someone presses play (js/player.js).
+             Phones get a 4:5 cut with larger type below 700px. -->
+        <figure class="hero__film vox__film reveal">
+          <div class="hero__film-intro">
+            <p class="eyebrow">Concept film · 2:55</p>
+            <p>What Vox Amelior could do for you; most of it runs in the app today.</p>
+          </div>
+          <div class="player player--portrait-on-phones" data-player>
+            <div class="player__frame">
+              <div class="player__stage">
+                <video class="player__video" playsinline preload="none" width="1920" height="1080"
+                  poster="assets/video/vox-film-poster.webp" data-poster-portrait="assets/video/vox-film-portrait-poster.webp"
+                  data-preview="assets/video/vox-film-preview.mp4" data-preview-portrait="assets/video/vox-film-preview-portrait.mp4"
+                  aria-describedby="film-video-desc">
+                  <source src="assets/video/vox-film.mp4" data-src-portrait="assets/video/vox-film-portrait.mp4"
+                    type='video/mp4; codecs="avc1.640028"'>
+                  <track kind="chapters" src="assets/video/vox-film-chapters.vtt" srclang="en" label="Chapters" default>
+                  Your browser can’t play this video. <a href="assets/video/vox-film.mp4">Download the MP4</a>.
+                </video>
+                <p class="sr-only" id="film-video-desc">Concept commercial for Vox Amelior, 2 minutes 55 seconds, with quiet
+                  music and no narration. A transcript is available below the video.</p>
+                <button class="player__play" type="button" data-player-play>
+                  <span class="player__play-icon"><svg aria-hidden="true"><use href="#i-play" /></svg></span>
+                  <span class="player__play-label">Play the film <span class="mono">2:55</span></span>
+                </button>
+              </div>
             </div>
           </div>
+
+          <figcaption class="hero__film-cap">
+            <details class="transcript">
+              <summary>Transcript</summary>
+              <div class="transcript__body prose">
+                <p>Soft piano and ambient music throughout; no narration.</p>
+                <p>On an average day, we speak about 16,000 words. Most of them slip away.</p>
+                <p>Except our words online. Those, they keep. The screen fills with them: searches like “is this rash
+                  serious” and “why do we keep fighting”, things we typed like “I’m fine, really.” and a card number, and the
+                  videos that held our attention, like “10 signs you’re burned out”, watched three times. Now AI is in your
+                  search, your inbox, your photos. All of it can be stored on servers we’ll never see, read by people we’ll
+                  never meet, and sold to companies we’ve never heard of. Our words. Their rules.</p>
+                <p>Take your words offline. Start here. It listens on your phone, thinks on your phone and remembers on your
+                  phone. It works in airplane mode. Encrypted: 256-bit, by Android, keyed to your passcode. Sealed: other
+                  apps can’t read it, and there are no cloud backups. Never sent: no server holds a copy to breach. You
+                  can’t leak what you never send. Your words. Your phone. Your rules.</p>
+                <p>Now let your words work for you. What you heard, when you need it: “What did Jordan say I shouldn’t
+                  forget?” The plumber, Thursday at 9; cake pickup by 5; your mom’s birthday is Sunday. “What do we need from
+                  the store?” Eggs and the good bread; you still have milk.</p>
+                <p>At bedtime, Milo, age five, says: “When I grow up, I want to be just like you.” Years later, on a hard
+                  day, you ask what he said, and it’s there. Worth living up to.</p>
+                <p>So ask about the voice you hear most. Yours. “Which words do I use incorrectly?” “That plan is ingenuous”:
+                  ingenuous means naive; you meant ingenious. “When did I sound sharpest? Why?” Thursday’s pitch; you’d
+                  rehearsed it out loud the night before. “What thinking traps do I fall into?” All-or-nothing: “always”
+                  and “never”, 23 times in arguments. “Who did I thank this week?” Dana, twice.
+                  Jordan, not once. “What have I promised and not done?” Call Mom back; you’ve said “this weekend” three
+                  times. “Honestly, who starts more of our fights: me or Jordan?” You, six to five. “Want to know who
+                  apologizes first?” “Not today.”</p>
+                <p>Three months later: “Who starts more of our fights now?” Hard to say; there haven’t been many. Heated
+                  moments down 60% and laughter up 35% since spring. And you called Mom. Every Sunday.</p>
+                <p>Your voice, to better your life. The words fall away and become the name: Vox Amelior. Free for
+                  Android.</p>
+                <p>Concept film. People, conversations and answers are examples. Listening, speaker recognition, Ask,
+                  reviews and Insights run in the app today. Encryption is Android’s own, standard on phones launched with
+                  Android 10 or later. Let people know when it’s listening.</p>
+              </div>
+            </details>
+          </figcaption>
         </figure>
       </div>
 
       <div class="container">
-        <a class="next-link" href="#more"><span class="mono">Next</span> 05 · Two more ways in <svg aria-hidden="true"><use href="#i-down" /></svg></a>
-      </div>
-    </section>
-
-    <!-- ══════════ Other apps ══════════ -->
-    <section class="section section--tight more" id="more" aria-labelledby="more-title">
-      <div class="container">
-        <div class="section-head section-head--split reveal">
-          <div>
-            <p class="eyebrow">05 · Other apps</p>
-            <h2 class="h2" id="more-title">Two more <em>ways in.</em></h2>
-          </div>
-          <p class="lead">They came first, and they still ship: the first app to put Claude in the G1, and the studio
-            whose voices now read inside Vox.</p>
-        </div>
-
-        <div class="more__grid">
-          <a class="more__card reveal" href="apps.html#even-suite">
-            <div class="more__shot device" aria-hidden="true"><img src="assets/app/hd/even-chat.webp" alt="" width="720" height="1560" loading="lazy"></div>
-            <div class="more__body">
-              <p class="way__num mono">Even Suite · Android + smart glasses</p>
-              <h3 class="more__title">Private when it can be. <em>Powerful when you need it.</em></h3>
-              <p>Claude in your Even Realities G1 glasses on their own firmware, for the questions where accuracy
-                matters most.</p>
-              <span class="link-arrow">See Even Suite <svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
-            </div>
-          </a>
-          <a class="more__card reveal" href="apps.html#narrator">
-            <div class="more__shot device" aria-hidden="true"><img src="assets/app/hd/narr-reader.webp" alt="" width="540" height="1170" loading="lazy"></div>
-            <div class="more__body">
-              <p class="way__num mono">Narrator Studio · Android</p>
-              <h3 class="more__title">What you hear shapes how you think. <em>So choose it.</em></h3>
-              <p>Any text or PDF, turned into a podcast in natural voices, made on your phone.</p>
-              <span class="link-arrow">See Narrator Studio <svg aria-hidden="true"><use href="#i-arrow" /></svg></span>
-            </div>
-          </a>
-        </div>
-
-        <a class="next-link" href="#contact"><span class="mono">Next</span> 06 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
+        <a class="next-link" href="#contact"><span class="mono">Next</span> 05 · Let’s talk <svg aria-hidden="true"><use href="#i-down" /></svg></a>
       </div>
     </section>
 
@@ -543,7 +680,7 @@
     <section class="section section--tight" id="contact" aria-labelledby="cta-title">
       <div class="container">
         <div class="cta-band reveal">
-          <p class="eyebrow">06 · Hiring?</p>
+          <p class="eyebrow">05 · Hiring?</p>
           <h2 class="h2" id="cta-title">Let’s <em>talk.</em></h2>
           <p class="cta-band__text">I’m looking for full-time work on how people reach AI: on-device AI, wearables,
             voice and AI products. What I bring is the habit behind this site: find the best new software early, then

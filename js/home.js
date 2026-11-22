@@ -4,6 +4,7 @@
  *      the phone and glasses under "The idea", and a turning device for each app
  *   2. Case studies and the on-page rail: what's in view is marked, so you always know where you are
  *   3. Sample podcast player with chapters
+ *   4. Things I've made: a click-through of every project
  */
 
 const SCREENS = {
@@ -110,6 +111,103 @@ function initShowcases() {
       }
     });
   });
+}
+
+/* ════════════════════════════════════════════════════════
+   THINGS I'VE MADE: thumbnails along the top, one project below, arrows and swipes in between
+   ════════════════════════════════════════════════════════ */
+
+function initMade() {
+  const root = document.querySelector('[data-made]');
+  if (!root) return;
+  const tabs = [...root.querySelectorAll('[role="tab"]')];
+  const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+  const strip = root.querySelector('.made__strip');
+  const stage = root.querySelector('[data-made-stage]');
+  const count = root.querySelector('[data-made-count]');
+  const bar = root.querySelector('[data-made-bar]');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const pad = (n) => String(n).padStart(2, '0');
+  let current = 0;
+  let onScreen = false;
+
+  // A panel's loop plays only while it's chosen and on screen, and never with reduced motion or data saver
+  const syncVideos = () => {
+    panels.forEach((panel, i) => {
+      const video = panel.querySelector('[data-made-video]');
+      if (!video) return;
+      const play = i === current && onScreen && !reduced.matches && !navigator.connection?.saveData;
+      if (play) {
+        if (!video.getAttribute('src')) video.src = video.dataset.madeVideo;
+        video.play().catch(() => {});
+      } else if (!video.paused) {
+        video.pause();
+      }
+    });
+  };
+
+  function select(next, { focus = false } = {}) {
+    next = (next + tabs.length) % tabs.length;
+    if (next === current && !panels[next].hidden) return;
+    const dir = next > current ? 1 : -1;
+    current = next;
+    tabs.forEach((tab, i) => {
+      const on = i === next;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;
+      panels[i].hidden = !on;
+    });
+    const panel = panels[next];
+    panel.style.setProperty('--made-from', `${28 * dir}px`);
+    panel.classList.remove('is-entering');
+    void panel.offsetWidth;
+    panel.classList.add('is-entering');
+    count.textContent = `${pad(next + 1)} / ${pad(tabs.length)}`;
+    bar.style.transform = `translateX(${next * 100}%)`;
+    // Keep the chosen thumbnail in view inside the strip, without moving the page
+    const tab = tabs[next];
+    const left = tab.offsetLeft - strip.offsetLeft;
+    if (left < strip.scrollLeft || left + tab.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: left - 16, behavior: reduced.matches ? 'auto' : 'smooth' });
+    }
+    if (focus) tab.focus();
+    syncVideos();
+  }
+
+  panels.forEach((panel, i) => { panel.hidden = i !== 0; });
+  tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+  root.querySelector('[data-made-prev]').addEventListener('click', () => select(current - 1));
+  root.querySelector('[data-made-next]').addEventListener('click', () => select(current + 1));
+
+  // Arrow keys move along the strip (the usual tab pattern); Home and End jump to the ends
+  strip.addEventListener('keydown', (e) => {
+    const keys = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: tabs.length - 1 };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    select(keys[e.key], { focus: true });
+  });
+
+  // A sideways swipe on the project moves to the next or previous one
+  let startX = null;
+  let startY = 0;
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  stage.addEventListener('pointerup', (e) => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    startX = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) select(current + (dx < 0 ? 1 : -1));
+  });
+  stage.addEventListener('pointercancel', () => { startX = null; });
+
+  new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    syncVideos();
+  }, { threshold: 0.3 }).observe(stage);
 }
 
 /* ════════════════════════════════════════════════════════
@@ -238,6 +336,7 @@ function initRail() {
   }
 }
 
+initMade();
 initCases();
 initListen();
 initRail();

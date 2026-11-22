@@ -1748,3 +1748,392 @@ html:not(.has-webgl) .case__shots .device {
 .js .vox.is-scrubbed .vox__features [data-at]:not(.is-lit) {
   opacity: 0.45;
 }
+
+/* The Vox Amelior concept film sits beside its copy, not in the hero's grid */
+.vox__film {
+  grid-area: auto;
+}
+
+/* ══════════════════════════════════════════════════════════
+   THINGS I'VE MADE: a filmstrip of thumbnails, one project at a time (js/home.js initMade)
+   ══════════════════════════════════════════════════════════ */
+
+.made {
+  margin-top: var(--space-10);
+}
+
+.made__strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.made__tab {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 7px 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s, color 0.2s;
+}
+
+.made__tab:hover {
+  border-color: var(--line-hover);
+  transform: translateY(-2px);
+}
+
+.made__tab[aria-selected="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow-2);
+  color: var(--ink);
+}
+
+.made__tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.made__thumb {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: calc(var(--r-md) - 5px);
+  background: var(--paper-2);
+}
+
+.made__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.made__thumb--phone img {
+  object-position: top;
+}
+
+.made__tab-num {
+  padding: 0 3px;
+  font-size: var(--fs-2xs);
+  color: var(--ink-3);
+}
+
+.made__tab[aria-selected="true"] .made__tab-num {
+  color: var(--accent);
+}
+
+.made__tab-title {
+  padding: 0 3px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.made__stage {
+  margin-top: var(--space-5);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  border-bottom: 0;
+  background: var(--surface);
+  touch-action: pan-y;
+}
+
+.made__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  min-height: 430px;
+}
+
+.js .made__panel[hidden] {
+  display: none;
+}
+
+/* Without JavaScript all seven show, one under another */
+html:not(.js) .made__panel + .made__panel {
+  border-top: 1px solid var(--line);
+}
+
+.made__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--paper-2);
+}
+
+.made__media > img,
+.made__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Film frames are drawn on the site's paper colour: fit them whole, on the same paper */
+.made__media--film {
+  background: var(--paper);
+}
+
+.made__media--film > img,
+.made__media--film .made__video {
+  object-fit: contain;
+}
+
+.made__media--contain > img {
+  object-fit: contain;
+  padding: var(--space-4);
+}
+
+.made__media--phone {
+  padding: var(--space-8) 0 0;
+  align-items: end;
+}
+
+.made__media--phone .device {
+  width: min(230px, 56%);
+  aspect-ratio: 9 / 17;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-bottom: 0;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 30px 60px -30px rgba(21, 23, 27, 0.45);
+}
+
+.made__media--phone .device img {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.made__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: clamp(var(--space-6), 3.2vw, var(--space-10));
+}
+
+.made__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.made__status {
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.made__title {
+  font-size: clamp(1.6rem, 1.2rem + 1.3vw, 2.25rem);
+  font-weight: 640;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.made__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.made__text {
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.made__facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+
+.made__facts li {
+  position: relative;
+  padding-left: 1.4em;
+}
+
+.made__facts li::before {
+  content: "";
+  position: absolute;
+  left: 0.15em;
+  top: 0.42em;
+  width: 0.7em;
+  height: 0.38em;
+  border-left: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+.made__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.made__actions .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Arrows, a progress bar and the count, joined to the stage */
+.made__nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+  background: var(--surface);
+}
+
+.made__arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.made__arrow:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.made__arrow svg {
+  width: 18px;
+  height: 18px;
+  transform: rotate(180deg);
+}
+
+.made__arrow--next svg {
+  transform: none;
+}
+
+.made__progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.made__progress span {
+  display: block;
+  width: calc(100% / 7);
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.made__count {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+/* The nav and arrows only make sense with the script */
+html:not(.js) .made__nav {
+  display: none;
+}
+
+html:not(.js) .made__stage {
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--r-xl);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .made__panel.is-entering {
+    animation: made-in 0.42s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .made__panel.is-entering .made__body > * {
+    animation: made-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .made__panel.is-entering .made__body > :nth-child(2) { animation-delay: 40ms; }
+  .made__panel.is-entering .made__body > :nth-child(3) { animation-delay: 80ms; }
+  .made__panel.is-entering .made__body > :nth-child(4) { animation-delay: 120ms; }
+  .made__panel.is-entering .made__body > :nth-child(5) { animation-delay: 160ms; }
+}
+
+@keyframes made-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--made-from, 28px));
+  }
+}
+
+@keyframes made-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (max-width: 960px) {
+  /* The strip becomes a row you can swipe */
+  .made__strip {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 136px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 4px var(--gutter) 8px;
+    scroll-padding-inline: var(--gutter);
+  }
+
+  .made__strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .made__tab {
+    scroll-snap-align: start;
+  }
+
+  .made__panel {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .made__media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .made__media--phone {
+    aspect-ratio: 16 / 12;
+  }
+}
+
+@media (max-width: 480px) {
+  .made__nav {
+    gap: var(--space-3);
+  }
+}
