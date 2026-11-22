@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Short films (video compositions)</title>
+  <meta name="robots" content="noindex">
+  <!--
+    Four short, square films for the home page, one per section, rendered frame by frame by tools/promo-video/render.mjs:
+      --page "tools/film/shorts.html?film=learn"    --name short-learn      Learn anything      (24 s)
+      --page "tools/film/shorts.html?film=build"    --name short-build      Build anywhere      (24 s)
+      --page "tools/film/shorts.html?film=remember" --name short-remember   Forget nothing      (24 s)
+      --page "tools/film/shorts.html?film=made"     --name short-made       AI at every step    (16 s)
+    1080 × 1080, so one cut reads on a phone and a desktop. Each film is four beats, one per tab in its section.
+    The glasses are path-traced stills from tools/render/g1.py (shot "lens", clear lenses; "memory"; the "spin"
+    turntable). The display in the lenses is drawn here, mapped onto each lens with a CSS matrix3d from the corners
+    g1.py prints, so it stays crisp and can type, fill and blink.
+    Preview through a local server: ?film=learn&t=8 shows a moment, &poster shows the poster, &still drops the words
+    (the pictures in each section's tabs are stills).
+    People, companies and sessions are examples.
+  -->
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("../../assets/fonts/geist-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("../../assets/fonts/geist-mono-latin-var.woff2") format("woff2");
+      font-weight: 100 900;
+    }
+
+    :root {
+      --ink: #eef5f1;
+      --ink-2: #b2c0b8;
+      --ink-3: #8a9891;
+      --line: rgba(255, 255, 255, 0.1);
+      --accent: #6ff0a6;
+      --hud: #8dffbf;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      animation: none !important;
+      transition: none !important;
+    }
+
+    html,
+    body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      background: #050807;
+    }
+
+    #stage {
+      position: relative;
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Geist", system-ui, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(900px 720px at 50% 38%, #0e1c17 0%, #070c0a 55%, #040706 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: "Geist Mono", ui-monospace, monospace;
+    }
+
+    em {
+      font-style: normal;
+      color: var(--accent);
+      text-shadow: 0 0 28px rgba(111, 240, 166, 0.35);
+    }
+
+    .beat {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+
+    /* ── The path-traced photographs, moved by a slow camera ── */
+    .cam {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 40%;
+    }
+
+    .photo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1080px;
+    }
+
+    .photo--wide {
+      width: 1920px;
+      left: -700px;
+    }
+
+    /* The lens display: drawn flat at 400 × 245, then mapped onto the lens */
+    .hud {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 400px;
+      height: 245px;
+      padding: 20px 22px;
+      transform-origin: 0 0;
+      font: 500 24px/1.3 "Geist Mono", monospace;
+      color: var(--hud);
+      mix-blend-mode: screen;
+      text-shadow: 0 0 5px rgba(111, 240, 166, 0.85), 0 0 16px rgba(111, 240, 166, 0.45);
+      white-space: nowrap;
+    }
+
+    .hud .dim {
+      opacity: 0.6;
+    }
+
+    .hud .hd {
+      font-size: 21px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+
+    .hud .r {
+      position: absolute;
+      right: 22px;
+      top: 20px;
+      font-size: 21px;
+      opacity: 0.7;
+    }
+
+    .hbar {
+      height: 9px;
+      margin-top: 10px;
+      border-radius: 5px;
+      box-shadow: inset 0 0 0 1.5px rgba(141, 255, 191, 0.6);
+      overflow: hidden;
+    }
+
+    .hbar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--hud);
+    }
+
+    .hud .note {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1.5px solid rgba(141, 255, 191, 0.45);
+    }
+
+    .caret::after {
+      content: "▍";
+      opacity: var(--blink, 1);
+    }
+
+    /* Darkens the floor under the words */
+    .scrim {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 420px;
+      background: linear-gradient(180deg, rgba(4, 7, 6, 0) 0%, rgba(4, 7, 6, 0.78) 45%, rgba(4, 7, 6, 0.95) 100%);
+    }
+
+    /* ── Cards: the app's moments, large enough to read at phone width ── */
+    .card {
+      position: absolute;
+      left: 110px;
+      right: 110px;
+      top: 92px;
+      padding: 46px 50px;
+      border-radius: 40px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+      box-shadow: 0 50px 90px -30px rgba(0, 0, 0, 0.85), inset 0 0 0 1.5px rgba(255, 255, 255, 0.1), inset 0 1.5px 0 rgba(255, 255, 255, 0.12), 0 0 90px -20px rgba(111, 240, 166, 0.16);
+    }
+
+    .card__kick {
+      font-size: 22px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .card__title {
+      margin-top: 14px;
+      font-size: 46px;
+      line-height: 1.1;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin-top: 8px;
+      font-size: 28px;
+      color: var(--ink-2);
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .chip {
+      padding: 20px 24px;
+      border-radius: 22px;
+      font-size: 28px;
+      font-weight: 550;
+      color: var(--ink-2);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.12);
+    }
+
+    .chip.on {
+      color: #03140b;
+      background: var(--accent);
+      box-shadow: 0 0 40px -6px rgba(111, 240, 166, 0.65);
+    }
+
+    .writing {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 34px;
+      font-size: 27px;
+      color: var(--ink);
+    }
+
+    .writing .dim {
+      color: var(--ink-3);
+      font-size: 22px;
+    }
+
+    .pulse {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 calc(var(--p, 0) * 10px) rgba(111, 240, 166, calc(0.35 - var(--p, 0) * 0.35)), 0 0 14px rgba(111, 240, 166, 0.8);
+    }
+
+    .bar {
+      height: 10px;
+      margin-top: 18px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #3fcf86, var(--accent));
+      box-shadow: 0 0 18px rgba(111, 240, 166, 0.6);
+    }
+
+    .player-top {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .cover {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 28px;
+      background: radial-gradient(120% 120% at 20% 10%, #2b6b51 0%, #0f2a20 55%, #08130f 100%);
+      box-shadow: inset 0 0 0 1.5px rgba(111, 240, 166, 0.35), 0 20px 40px -16px rgba(0, 0, 0, 0.8);
+      font-size: 84px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 30px rgba(111, 240, 166, 0.5);
+    }
+
+    .player-top .card__title {
+      margin-top: 8px;
+    }
+
+    .wave {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 90px;
+      margin: 30px 0 8px;
+    }
+
+    .wave i {
+      flex: 1;
+      height: 20%;
+      border-radius: 4px;
+      background: var(--accent);
+      opacity: 0.85;
+    }
+
+    .wave i.past {
+      opacity: 0.85;
+    }
+
+    .wave i.next {
+      opacity: 0.22;
+    }
+
+    .lines p {
+      margin-top: 20px;
+      font-size: 30px;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .lines b {
+      display: block;
+      margin-bottom: 4px;
+      font: 600 19px/1.2 "Geist Mono", monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .lines p.me b {
+      color: var(--accent);
+    }
+
+    .opts {
+      list-style: none;
+      margin-top: 28px;
+    }
+
+    .opts li {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-top: 14px;
+      padding: 18px 24px;
+      border-radius: 22px;
+      font-size: 32px;
+      color: var(--ink-2);
+      background: rgba(255, 255, 255, 0.035);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.1);
+    }
+
+    .opts li b {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font: 600 24px/1 "Geist Mono", monospace;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--ink);
+    }
+
+    .opts li.on {
+      color: var(--ink);
+      background: rgba(111, 240, 166, 0.12);
+      box-shadow: inset 0 0 0 2px var(--accent), 0 0 44px -10px rgba(111, 240, 166, 0.55);
+    }
+
+    .opts li.on b {
+      background: var(--accent);
+      color: #03140b;
+    }
+
+    .opts li .tick {
+      margin-left: auto;
+      font: 600 26px/1 "Geist Mono", monospace;
+      color: var(--accent);
+    }
+
+    .heard {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+      font-size: 26px;
+      color: var(--ink-2);
+    }
+
+    .heard svg {
+      width: 30px;
+      height: 30px;
+      color: var(--accent);
+    }
+
+    .score {
+      display: flex;
+      gap: 14px;
+      margin-top: 22px;
+      align-items: center;
+    }
+
+    .score .pts {
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 26px rgba(111, 240, 166, 0.55);
+      margin-right: 8px;
+    }
+
+    .score span:not(.pts) {
+      padding: 10px 18px;
+      border-radius: 999px;
+      font: 500 21px/1 "Geist Mono", monospace;
+      color: var(--ink-2);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.14);
+    }
+
+    .askbar {
+      padding: 24px 28px;
+      border-radius: 24px;
+      font-size: 32px;
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 0 1.5px rgba(111, 240, 166, 0.4), 0 0 40px -14px rgba(111, 240, 166, 0.5);
+      min-height: 92px;
+    }
+
+    .ans {
+      list-style: none;
+      margin-top: 30px;
+    }
+
+    .ans li {
+      display: flex;
+      gap: 18px;
+      align-items: baseline;
+      margin-top: 16px;
+      font-size: 38px;
+      line-height: 1.2;
+    }
+
+    .ans li::before {
+      content: "";
+      flex: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(111, 240, 166, 0.8);
+      transform: translateY(-6px);
+    }
+
+    .src {
+      margin-top: 28px;
+      font-size: 21px;
+      color: var(--ink-3);
+    }
+
+    .big {
+      margin-top: 30px;
+      font-size: 58px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .big.dim {
+      margin-top: 8px;
+      color: var(--ink-3);
+    }
+
+    .lock {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lock svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* ── The words under every beat ── */
+    .cap {
+      position: absolute;
+      left: 96px;
+      right: 96px;
+      bottom: 92px;
+    }
+
+    .cap__kick {
+      font: 500 23px/1 "Geist Mono", monospace;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .cap__line {
+      font-size: 66px;
+      font-weight: 650;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+    }
+
+    .cap__line.long {
+      font-size: 56px;
+    }
+
+    .w {
+      display: inline-block;
+    }
+
+    #veil {
+      position: absolute;
+      inset: 0;
+      background: #040706;
+      pointer-events: none;
+    }
+
+    /* ── Poster ── */
+    #poster {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    /* ?still: a picture for the page, without the words (cards are centred by the script) */
+    .still .cap,
+    .still .scrim,
+    .still #veil {
+      display: none;
+    }
+
+    .poster #poster {
+      display: block;
+    }
+
+    .poster .beat,
+    .poster .cap,
+    .poster #veil {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stage">
+    <div id="beats"></div>
+    <div class="cap" id="cap">
+      <p class="cap__kick" id="capKick"></p>
+      <p class="cap__line" id="capLine"></p>
+    </div>
+    <div id="veil"></div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></symbol>
+    <symbol id="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></symbol>
+  </svg>
+
+  <!-- ══ Learn anything ══ -->
+  <template id="film-learn">
+    <section class="beat" data-t0="0" data-t1="6" data-kick="Learn anything" data-line="Any subject. <em>Your voice, your level.</em>">
+      <div class="card" data-in="0.15">
+        <p class="card__kick mono">Vox · Learn</p>
+        <h3 class="card__title">What do you want to learn?</h3>
+        <div class="chips">
+          <span class="chip" data-on="2.3">How Northwind works</span>
+          <span class="chip">The Roman Empire</span>
+          <span class="chip">Kotlin, properly</span>
+          <span class="chip">Wine, finally</span>
+        </div>
+        <div class="writing" data-in="2.9"><i class="pulse" data-pulse></i> Claude is writing episode 1 <span class="mono dim">· two hosts</span></div>
+        <div class="bar" data-in="2.9"><i data-bar="3.0" data-dur="2.6" data-to="100"></i></div>
+      </div>
+    </section>
+    <section class="beat" data-t0="6" data-t1="12" data-kick="Your new job, explained" data-line="The employee handbook, <em>now with a plot.</em>">
+      <div class="card" data-in="0.1">
+        <div class="player-top">
+          <div class="cover">N</div>
+          <div>
+            <p class="card__kick mono">Episode 1 · 18 min</p>
+            <h3 class="card__title">Northwind, explained</h3>
+            <p class="sub">Where the money comes from</p>
+          </div>
+        </div>
+        <div class="wave" data-wave="0.4"></div>
+        <div class="lines">
+          <p data-in="0.8"><b>Host</b>In 1987, Northwind sold exactly one thing: shipping labels.</p>
+          <p data-in="2.6"><b>Co-host</b>And now?</p>
+          <p data-in="3.5"><b>Host</b>Now it sells the promise that your box shows up.</p>
+        </div>
+      </div>
+    </section>
+    <section class="beat" data-t0="12" data-t1="18" data-kick="Lost? Ask." data-line="Don’t get it? <em>Ask, right then and there.</em>">
+      <div class="cam" data-cam="1.22 0 0 1.3 -16 -4">
+        <img class="photo" src="../../assets/img/g1-lens.webp" alt="">
+        <div class="hud" data-lens>
+          <p data-type="0.5" data-dur="1.0">&gt; what’s a chargeback?</p>
+          <p class="dim" data-in="1.9">A customer disputes it,</p>
+          <p class="dim" data-in="2.2">the bank pulls the money</p>
+          <p class="dim" data-in="2.5">until we prove the box</p>
+          <p class="dim" data-in="2.8">arrived. Back to ep. 1?</p>
+        </div>
+        <div class="scrim"></div>
+      </div>
+    </section>
+    <section class="beat" data-t0="18" data-t1="24" data-kick="A quiz on the drive home" data-line="Answer out loud. <em>It sticks.</em>">
+      <div class="card" data-in="0.1">
+        <p class="card__kick mono">Question 3 of 6</p>
+        <h3 class="card__title">Who pays when a chargeback is lost?</h3>
+        <ol class="opts">
+          <li><b>A</b> The customer</li>
+          <li data-on="2.5"><b>B</b> Northwind <span class="tick" data-in="2.5">Right</span></li>
+          <li><b>C</b> The bank</li>
+        </ol>
+        <p class="heard" data-in="1.6"><svg aria-hidden="true"><use href="#mic" /></svg> You said “B”</p>
+        <div class="score" data-in="2.9"><span class="pts">+10</span><span>6-day streak</span><span>Level 3</span></div>
+      </div>
+    </section>
+  </template>
+
+  <!-- ══ Build anywhere ══ -->
+  <template id="film-build">
+    <section class="beat" data-t0="0" data-t1="6" data-kick="Build anywhere" data-line="Your computer at home, <em>one look away.</em>">
+      <div class="cam" data-cam="1.2 10 0 1.28 0 -4">
+        <img class="photo" src="../../assets/img/g1-lens.webp" alt="">
+        <div class="hud" data-lens>
+          <p class="hd">home-pc · ~/app</p>
+          <p data-type="0.5" data-dur="0.9">&gt; add dark mode</p>
+          <p class="dim" data-in="1.8">Claude · step 2 of 5</p>
+          <div class="hbar" data-in="1.8"><i data-bar="1.9" data-dur="3.6" data-from="18" data-to="58"></i></div>
+        </div>
+        <div class="scrim"></div>
+      </div>
+    </section>
+    <section class="beat" data-t0="6" data-t1="12" data-kick="Or at work" data-line="Your work computer. <em>Same glance.</em>">
+      <div class="cam" data-cam="1.28 -8 0 1.34 -28 -6">
+        <img class="photo" src="../../assets/img/g1-lens.webp" alt="">
+        <div class="hud" data-lens>
+          <p class="hd">work-laptop · ~/api</p>
+          <p data-type="0.5" data-dur="1.1">&gt; fix the flaky test</p>
+          <p class="dim" data-in="2.0">Found it: a race in</p>
+          <p class="dim" data-in="2.3">the retry timer.</p>
+          <p data-in="3.0">Done. 41 tests pass.</p>
+        </div>
+        <div class="scrim"></div>
+      </div>
+    </section>
+    <section class="beat" data-t0="12" data-t1="18" data-kick="Or no computer at all" data-line="The terminal on your phone. <em>Always waiting.</em>">
+      <div class="cam" data-cam="1.32 16 -4 1.24 0 0">
+        <img class="photo" src="../../assets/img/g1-lens.webp" alt="">
+        <div class="hud" data-lens>
+          <p class="hd">phone · ~</p>
+          <p data-type="0.5" data-dur="1.0">&gt; plan my Saturday</p>
+          <p class="dim" data-in="2.0">Hike at 8, lunch at</p>
+          <p class="dim" data-in="2.3">Rosa’s at 1, home by 3.</p>
+          <p data-in="3.0">Added to your calendar.</p>
+        </div>
+        <div class="scrim"></div>
+      </div>
+    </section>
+    <section class="beat" data-t0="18" data-t1="24" data-kick="Heads-up" data-line="Check in <em>only when it counts.</em>">
+      <div class="cam" data-cam="1.2 0 0 1.27 0 -6">
+        <img class="photo" src="../../assets/img/g1-lens.webp" alt="">
+        <div class="hud" data-lens>
+          <p class="hd">Heads-up · 9:41</p>
+          <p class="dim" data-in="0.5">Claude · step 4 of 5</p>
+          <div class="hbar" data-in="0.5"><i data-bar="0.6" data-dur="2.2" data-from="62" data-to="100"></i></div>
+          <p data-in="3.0">Done. Ready to ship.</p>
+          <p class="note" data-in="3.9">Mom: call tonight?</p>
+        </div>
+        <div class="scrim"></div>
+      </div>
+    </section>
+  </template>
+
+  <!-- ══ Forget nothing (Vox Amelior) ══ -->
+  <template id="film-remember">
+    <section class="beat" data-t0="0" data-t1="6" data-kick="Forget nothing" data-line="It listens on your phone. <em>Only there.</em>">
+      <div class="card" data-in="0.15">
+        <p class="card__kick mono lock"><svg aria-hidden="true"><use href="#lock" /></svg> Kitchen · 6:42 PM · this phone</p>
+        <div class="lines">
+          <p data-in="0.8"><b>Jordan</b>The plumber’s coming Thursday at 9.</p>
+          <p class="me" data-in="2.1"><b>You</b>Got it.</p>
+          <p data-in="3.0"><b>Jordan</b>And the cake is ready at 5. Don’t forget.</p>
+        </div>
+      </div>
+    </section>
+    <section class="beat" data-t0="6" data-t1="12" data-kick="Ask about your day" data-line="What you heard, <em>when you need it.</em>">
+      <div class="card" data-in="0.1">
+        <p class="card__kick mono">Vox Amelior · Ask</p>
+        <div class="askbar" style="margin-top:22px"><span data-type="0.4" data-dur="1.6">What did Jordan say I shouldn’t forget?</span></div>
+        <ul class="ans">
+          <li data-in="2.4"><span><b>Plumber</b>, Thursday at 9</span></li>
+          <li data-in="2.8"><span><b>Cake pickup</b> by 5</span></li>
+        </ul>
+        <p class="src mono" data-in="3.3">From: Kitchen · Tuesday 6:42 PM</p>
+      </div>
+    </section>
+    <section class="beat" data-t0="12" data-t1="18" data-kick="Then ask about yourself" data-line="The voice you hear most <em>is yours.</em>">
+      <div class="card" data-in="0.1">
+        <p class="card__kick mono">Vox Amelior · Insights</p>
+        <div class="askbar" style="margin-top:22px"><span data-type="0.4" data-dur="1.1">Who did I thank this week?</span></div>
+        <p class="big" data-in="2.1">Dana, twice.</p>
+        <p class="big dim" data-in="3.0">Jordan, not once.</p>
+      </div>
+    </section>
+    <section class="beat" data-t0="18" data-t1="24" data-kick="In your glasses" data-line="On the tip of your tongue? <em>Now it’s on the tip of your nose.</em>" data-long>
+      <div class="cam" data-cam="1.0 0 0 1.08 -20 0">
+        <img class="photo photo--wide" src="../../assets/img/g1-memory.webp" alt="">
+        <div class="scrim"></div>
+      </div>
+    </section>
+  </template>
+
+  <!-- ══ AI at every step (the turntable) ══ -->
+  <template id="film-made">
+    <section class="beat" data-t0="0" data-t1="4" data-kick="Modelled in code" data-line="Every hinge, <em>written in Python.</em>"></section>
+    <section class="beat" data-t0="4" data-t1="8" data-kick="Path-traced on a phone" data-line="Blender’s Cycles, <em>frame by frame.</em>"></section>
+    <section class="beat" data-t0="8" data-t1="12" data-kick="Built with Claude Code" data-line="AI at <em>every step.</em>"></section>
+    <section class="beat" data-t0="12" data-t1="16" data-kick="One person, one phone" data-line="No laptops <em>were harmed.</em>"></section>
+  </template>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const FILM = params.get('film') || 'learn';
+    const DURATIONS = { learn: 24, build: 24, remember: 24, made: 16 };
+    const POSTERS = { learn: 9.8, build: 3.9, remember: 21.5, made: 1.5 };
+    window.SIZE = [1080, 1080];
+    window.DURATION = DURATIONS[FILM];
+
+    // Where the clear lenses sit in g1-lens (printed by tools/render/g1.py --shot lens): TL TR BR BL, in pixels
+    const QUADS = [
+      [[219.2, 352.6], [454.8, 359.7], [455.7, 514.5], [222.4, 503.2]],
+      [[625.8, 364.9], [885.9, 372.7], [882.2, 535.2], [624.9, 522.7]]
+    ];
+
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const ease = (p) => 1 - Math.pow(1 - clamp(p), 3);
+    const smooth = (p) => { p = clamp(p); return p * p * (3 - 2 * p); };
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+    // ── A matrix3d that maps a w × h box onto four points (a projective transform) ──
+    function adj(m) {
+      return [m[4] * m[8] - m[5] * m[7], m[2] * m[7] - m[1] * m[8], m[1] * m[5] - m[2] * m[4],
+        m[5] * m[6] - m[3] * m[8], m[0] * m[8] - m[2] * m[6], m[2] * m[3] - m[0] * m[5],
+        m[3] * m[7] - m[4] * m[6], m[1] * m[6] - m[0] * m[7], m[0] * m[4] - m[1] * m[3]];
+    }
+    function mm(a, b) {
+      const c = [];
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+        let s = 0;
+        for (let k = 0; k < 3; k++) s += a[3 * i + k] * b[3 * k + j];
+        c[3 * i + j] = s;
+      }
+      return c;
+    }
+    function mv(m, v) {
+      return [m[0] * v[0] + m[1] * v[1] + m[2] * v[2], m[3] * v[0] + m[4] * v[1] + m[5] * v[2], m[6] * v[0] + m[7] * v[1] + m[8] * v[2]];
+    }
+    function basis(p) {
+      const m = [p[0], p[2], p[4], p[1], p[3], p[5], 1, 1, 1];
+      const v = mv(adj(m), [p[6], p[7], 1]);
+      return mm(m, [v[0], 0, 0, 0, v[1], 0, 0, 0, v[2]]);
+    }
+    function quadMatrix(w, h, q) {
+      const [tl, tr, br, bl] = q;
+      const t = mm(basis([tl[0], tl[1], tr[0], tr[1], bl[0], bl[1], br[0], br[1]]), adj(basis([0, 0, w, 0, 0, h, w, h])));
+      for (let i = 0; i < 9; i++) t[i] /= t[8];
+      return `matrix3d(${t[0]},${t[3]},0,${t[6]},${t[1]},${t[4]},0,${t[7]},0,0,1,0,${t[2]},${t[5]},0,${t[8]})`;
+    }
+
+    // ── Build the film ──
+    const beatsEl = $('#beats');
+    beatsEl.appendChild(document.getElementById(`film-${FILM}`).content.cloneNode(true));
+    const beats = $$('.beat', beatsEl).map((el) => ({ el, t0: +el.dataset.t0, t1: +el.dataset.t1 }));
+
+    // Each lens gets the same display (the G1 shows one picture to both eyes)
+    $$('[data-lens]').forEach((hud) => {
+      const twin = hud.cloneNode(true);
+      hud.after(twin);
+      hud.style.transform = quadMatrix(400, 245, QUADS[0]);
+      twin.style.transform = quadMatrix(400, 245, QUADS[1]);
+    });
+    $$('[data-type]').forEach((el) => { el.dataset.full = el.textContent; });
+    $$('[data-wave]').forEach((el) => {
+      for (let i = 0; i < 56; i++) el.appendChild(document.createElement('i'));
+    });
+
+    // The made film turns the glasses: one turntable frame per moment (24 fps, 240 frames a turn)
+    let spin = null;
+    if (FILM === 'made') {
+      spin = document.createElement('img');
+      spin.className = 'photo';
+      beatsEl.prepend(spin);
+      const scrim = document.createElement('div');
+      scrim.className = 'scrim';
+      spin.after(scrim);
+    }
+
+    // Caption words rise one by one; words inside <em> keep their colour
+    const capKick = $('#capKick');
+    const capLine = $('#capLine');
+    let capFor = null;
+    function setCaption(beat) {
+      if (capFor === beat) return;
+      capFor = beat;
+      capKick.textContent = beat.el.dataset.kick;
+      capLine.innerHTML = beat.el.dataset.line;
+      capLine.classList.toggle('long', 'long' in beat.el.dataset);
+      const wrap = (node) => {
+        [...node.childNodes].forEach((child) => {
+          if (child.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            child.textContent.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) frag.appendChild(document.createTextNode(part));
+              else {
+                const w = document.createElement('span');
+                w.className = 'w';
+                w.textContent = part;
+                frag.appendChild(w);
+              }
+            });
+            child.replaceWith(frag);
+          } else wrap(child);
+        });
+      };
+      wrap(capLine);
+    }
+
+    function show(el, p, rise = 22) {
+      el.style.opacity = ease(p);
+      el.style.transform = `translateY(${(1 - ease(p)) * rise}px)`;
+    }
+
+    window.renderAt = async function renderAt(t) {
+      const D = window.DURATION;
+      // Fade up from black, down to black at the end
+      $('#veil').style.opacity = 1 - Math.min(smooth(t / 0.6), smooth((D - t) / 0.7));
+
+      let active = beats[beats.length - 1];
+      beats.forEach((b, i) => {
+        const lt = t - b.t0;
+        const first = i === 0;
+        const last = i === beats.length - 1;
+        const fin = first ? 1 : smooth(lt / 0.5);
+        const fout = last ? 1 : smooth((b.t1 - t) / 0.45 + (i < beats.length - 1 ? 0.0 : 0));
+        const on = t >= b.t0 - 0.001 && (t < b.t1 + 0.45 || last);
+        const o = on ? Math.min(fin, last ? 1 : smooth((b.t1 + 0.45 - t) / 0.45)) : 0;
+        b.el.style.opacity = o;
+        b.el.style.visibility = o > 0 ? 'visible' : 'hidden';
+        if (t >= b.t0) active = b;
+        if (!on) return;
+
+        // Elements arrive at their own moments within the beat
+        $$('[data-in]', b.el).forEach((el) => show(el, (lt - +el.dataset.in) / 0.5, el.classList.contains('card') ? 36 : 16));
+        $$('[data-on]', b.el).forEach((el) => el.classList.toggle('on', lt >= +el.dataset.on));
+        $$('[data-type]', b.el).forEach((el) => {
+          const p = clamp((lt - +el.dataset.type) / +el.dataset.dur);
+          const full = el.dataset.full;
+          el.textContent = full.slice(0, Math.round(full.length * p));
+          el.classList.toggle('caret', p < 1 || lt < +el.dataset.type + +el.dataset.dur + 0.8);
+          el.style.setProperty('--blink', Math.floor(lt * 2.2) % 2 ? 0.15 : 1);
+          el.style.opacity = lt >= +el.dataset.type - 0.2 ? 1 : 0;
+        });
+        $$('[data-bar]', b.el).forEach((el) => {
+          const p = ease((lt - +el.dataset.bar) / +el.dataset.dur);
+          const from = +(el.dataset.from || 0);
+          el.style.width = `${from + (+el.dataset.to - from) * p}%`;
+        });
+        $$('[data-pulse]', b.el).forEach((el) => el.style.setProperty('--p', (lt * 1.1) % 1));
+        $$('[data-wave]', b.el).forEach((el) => {
+          const bars = [...el.children];
+          const head = Math.floor(bars.length * 0.42);
+          bars.forEach((bar, k) => {
+            const a = Math.abs(Math.sin(k * 0.71 + 1.3) * 0.55 + Math.sin(k * 0.23 + lt * 5.2) * 0.35 + Math.sin(k * 1.9 + lt * 9) * 0.1);
+            bar.style.height = `${14 + a * 86}%`;
+            bar.className = k <= head ? 'past' : 'next';
+          });
+        });
+        // The slow camera: scale, x, y from → to across the beat
+        $$('[data-cam]', b.el).forEach((el) => {
+          const [s0, x0, y0, s1, x1, y1] = el.dataset.cam.split(' ').map(Number);
+          const p = smooth((t - b.t0) / (b.t1 + 0.45 - b.t0));
+          el.style.transform = `translate(${x0 + (x1 - x0) * p}px, ${y0 + (y1 - y0) * p}px) scale(${s0 + (s1 - s0) * p})`;
+        });
+      });
+
+      // The words: rise in after the beat starts, leave just before it ends
+      setCaption(active);
+      const lt = t - active.t0;
+      const isLast = active === beats[beats.length - 1];
+      const leave = isLast ? 1 : smooth((active.t1 - t) / 0.35);
+      show(capKick, (lt - 0.25) / 0.45, 14);
+      capKick.style.opacity = Math.min(+capKick.style.opacity, leave);
+      $$('.w', capLine).forEach((w, k) => {
+        show(w, (lt - 0.4 - k * 0.07) / 0.5, 18);
+        w.style.opacity = Math.min(+w.style.opacity, leave);
+      });
+
+      if (spin) {
+        const src = `spin/f${String(Math.floor(t * 24) % 240).padStart(4, '0')}.jpg`;
+        if (!spin.src.endsWith(src)) {
+          spin.src = src;
+          await spin.decode().catch(() => {});
+        }
+      }
+    };
+
+    window.renderPoster = async function renderPoster() {
+      await window.renderAt(POSTERS[FILM]);
+      $('#veil').style.opacity = 0;
+    };
+
+    const STILL = params.has('still');
+    document.documentElement.classList.toggle('still', STILL);
+    if (STILL) {
+      const render = window.renderAt;
+      window.renderAt = async (t) => {
+        await render(t);
+        $$('.card').forEach((card) => { card.style.top = `${Math.round((1080 - card.offsetHeight) / 2)}px`; });
+      };
+    }
+
+    const tParam = params.get('t');
+    (async () => {
+      await document.fonts.ready;
+      if (params.has('poster')) await window.renderPoster();
+      else await window.renderAt(tParam ? Number(tParam) : POSTERS[FILM]);
+      window.ready = true;
+    })();
+  </script>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 //
 //   node tools/film/linux-score.mjs <out.wav>     (ffmpeg must be on PATH; loudness is set to -17 LUFS)
 // To check the balance, SCORE_SOLO=piano (or pad, bell, pluck, pulse, fx, ticks) renders one part alone, without
-// loudness normalisation, and prints its level.
+// loudness normalisation, and prints its level. SCORE_MUTE=fx,ticks renders the music without the effects.
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -21,7 +21,9 @@ const N = SR * DURATION;
 // Levels of each part, in one place
 const MIX = { pad: 0.62, piano: 1.25, bell: 1.6, pluck: 1.4, pulse: 1.2, fx: 1, ticks: 4 };
 const SOLO = process.env.SCORE_SOLO || '';
-const level = (bus) => (SOLO && bus !== SOLO ? 0 : MIX[bus]);
+// SCORE_MUTE=fx,ticks leaves parts out (the short films take the music without the Linux film's effects)
+const MUTE = (process.env.SCORE_MUTE || '').split(',');
+const level = (bus) => ((SOLO && bus !== SOLO) || MUTE.includes(bus) ? 0 : MIX[bus]);
 
 const dryL = new Float32Array(N);
 const dryR = new Float32Array(N);

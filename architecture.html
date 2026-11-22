@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>How it’s built · Pruitt Colon</title>
   <meta name="description"
-    content="The engineering behind Vox Amelior, Narrator Studio and Even Suite: how speech, voice and language models fit on a phone and on smart glasses, and how they are tested.">
+    content="The engineering behind Vox Amelior, Vox Podcasts and Even Suite: how speech, voice and language models fit on a phone and on smart glasses, and how they are tested.">
   <link rel="canonical" href="https://whyhirepruitt.dev/architecture.html">
 
   <meta name="theme-color" content="#fcfcfa">
@@ -86,7 +86,7 @@
           <a href="#tour"><span class="mono">00</span>See them run</a>
           <a href="#glasses"><span class="mono">New</span>Vox, the glasses</a>
           <a href="#vox"><span class="mono">01</span>Vox Amelior</a>
-          <a href="#narrator"><span class="mono">02</span>Narrator Studio</a>
+          <a href="#narrator"><span class="mono">02</span>Podcasts</a>
           <a href="#even-suite"><span class="mono">03</span>Even Suite</a>
           <a href="#server"><span class="mono">04</span>Vox Server prototype</a>
           <a href="#code"><span class="mono">05</span>Read the code</a>
@@ -154,7 +154,7 @@
             <h2 class="h2" id="glasses-title">The phone thinks. <em>The glasses draw.</em></h2>
           </div>
           <p class="lead">Vox runs every model on the phone and sends the Even Realities G1 only what to draw. Its
-            arms run ScouterKit, open-source firmware by Marek; Vox is the Android app on top.</p>
+            arms run reverse-engineered firmware that I optimized for this; Vox is the Android app on top.</p>
         </div>
 
         <ol class="pipeline reveal" role="list">
@@ -195,15 +195,15 @@
             <div class="pipeline__body">
               <h3 class="pipeline__title">Draw for the lens</h3>
               <p class="pipeline__text">Terminal cells, screen frames and panels are drawn for a 640 × 480 display per eye and sent to both arms at once over Bluetooth LE.</p>
-              <ul class="pipeline__models" role="list"><li class="chip chip--mono">ScouterKit</li><li class="chip chip--mono">Bluetooth LE</li></ul>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Bluetooth LE</li><li class="chip chip--mono">16-grey video</li></ul>
             </div>
           </li>
           <li class="pipeline__stage">
             <span class="pipeline__num mono">06</span>
             <div class="pipeline__body">
               <h3 class="pipeline__title">On the glasses</h3>
-              <p class="pipeline__text">ScouterKit’s open firmware runs small programs on each arm: the terminal fades in as you look up and out as you look down, and both eyes keep one brightness.</p>
-              <ul class="pipeline__models" role="list"><li class="chip chip--mono">ScouterKit VM</li></ul>
+              <p class="pipeline__text">The firmware, reverse-engineered and optimized for this, runs small programs on each arm: the terminal fades in as you look up and out as you look down, and both eyes keep one brightness.</p>
+              <ul class="pipeline__models" role="list"><li class="chip chip--mono">Firmware VM</li></ul>
             </div>
           </li>
         </ol>
@@ -302,7 +302,7 @@
       <div class="container">
         <div class="section-head section-head--split reveal">
           <div>
-            <p class="eyebrow">02 · Narrator Studio</p>
+            <p class="eyebrow">02 · Podcasts (first built as Narrator Studio)</p>
             <h2 class="h2" id="narrator-title">From script <em>to episode.</em></h2>
           </div>
           <p class="lead">Text goes through a plan, a cast of voices and a mixer, then plays live or exports as a
@@ -469,7 +469,7 @@
           <h2 class="h2" id="cta-title">Engineering is nice. <em>Watch it work.</em></h2>
           <p class="cta-band__text">The product tour shows all three apps with real screens from the builds.</p>
           <div class="cta-band__actions">
-            <a class="btn btn--primary btn--lg" href="index.html#tour">Watch the tour</a>
+            <a class="btn btn--primary btn--lg" href="index.html#built">See what I built</a>
             <a class="btn btn--secondary btn--lg" href="https://github.com/prunewhip/Vox_Amelior" rel="noopener">
               <svg aria-hidden="true"><use href="#i-github" /></svg>
               Browse the repository
