@@ -91,6 +91,7 @@ export function createStage(canvas, { fov = 30, maxDpr = 2, exposure = 1.05, ton
   let height = 1;
   let running = false;
   let onScreen = false;
+  let held = false; // a pop-up covers it: no need to draw
   let raf = 0;
   let last = performance.now();
   let elapsed = 0;
@@ -106,20 +107,23 @@ export function createStage(canvas, { fov = 30, maxDpr = 2, exposure = 1.05, ton
     if (!running) renderOnce();
   };
 
+  // How a frame is drawn: straight to the canvas, unless a scene sets its own (post-processing)
+  let draw = () => renderer.render(scene, camera);
+
   const tick = (now) => {
     // rAF timestamps can predate the performance.now() taken when the loop resumed
     const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
     last = now;
     elapsed += dt;
     frameCallbacks.forEach((cb) => cb(elapsed, dt));
-    renderer.render(scene, camera);
+    draw();
     raf = requestAnimationFrame(tick);
   };
 
   const sync = () => {
     // Stills (manual) never run the loop; everything else runs only while it can be seen
     // A scene can opt to keep a gentle motion going under reduced motion (it slows itself down instead)
-    const shouldRun = !manual && onScreen && !document.hidden && (!honorReducedMotion || !reducedMotion());
+    const shouldRun = !manual && onScreen && !held && !document.hidden && (!honorReducedMotion || !reducedMotion());
     if (shouldRun === running) return;
     running = shouldRun;
     if (running) {
@@ -132,7 +136,7 @@ export function createStage(canvas, { fov = 30, maxDpr = 2, exposure = 1.05, ton
 
   function renderOnce(t = elapsed) {
     frameCallbacks.forEach((cb) => cb(t, 0));
-    renderer.render(scene, camera);
+    draw();
   }
 
   new ResizeObserver(resize).observe(canvas.parentElement);
@@ -157,6 +161,13 @@ export function createStage(canvas, { fov = 30, maxDpr = 2, exposure = 1.05, ton
       cb({ width, height });
     },
     renderOnce,
+    /** Stops drawing while something covers the scene (a pop-up), and starts again after. */
+    hold: (v) => {
+      held = v;
+      sync();
+    },
+    /** Draws each frame with `fn` instead (an EffectComposer's render, say). */
+    setRender: (fn) => { draw = fn; },
     start: () => {
       onScreen = true;
       sync();

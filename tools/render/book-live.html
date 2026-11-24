@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book, live</title>
+<!-- The home page's live book (js/3d/book.js) on its own, for checking it: ?page=N opens straight onto spread N,
+     ?closed keeps it shut on its cover, ?noglow and ?nomirror leave out the bloom and the mirror floor; the buttons turn it. -->
+<style>
+  html, body { margin: 0; height: 100%; background: #030505; color: #cfe; font: 14px system-ui, sans-serif; }
+  #stage { position: absolute; inset: 0 0 48px; }
+  canvas { display: block; width: 100%; height: 100%; }
+  nav { position: absolute; left: 0; right: 0; bottom: 0; height: 48px; display: flex; gap: 8px; align-items: center; justify-content: center; }
+  button { background: #0b1210; color: inherit; border: 1px solid #2a3a34; border-radius: 99px; padding: 6px 12px; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<nav><button data-p="0">Vox</button><button data-p="1">Linux</button><button data-p="2">Podcast</button><button data-p="3">Learn</button><button data-open>Open</button></nav>
+<script type="module">
+  import { createBook } from '../../js/3d/book.js';
+  const q = new URLSearchParams(location.search);
+  const book = await createBook(document.getElementById('c'), { screens: '../../assets/img/book/screen-', film: null, lite: false, mirror: !q.has('nomirror'), glow: !q.has('noglow'), msaa: q.has('msaa') ? Number(q.get('msaa')) : null });
+  window.book = book;
+  book.setVisible(true);
+  if (q.has('page')) book.jumpTo(Number(q.get('page')));
+  else if (!q.has('closed')) book.open();
+  document.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => book.setPage(Number(b.dataset.p))));
+  document.querySelector('[data-open]').addEventListener('click', () => book.open());
+  document.documentElement.dataset.ready = '1';
+</script>
+</body>
+</html>

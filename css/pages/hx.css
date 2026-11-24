@@ -466,97 +466,9 @@
   letter-spacing: -0.045em;
 }
 
-/* ── What I've built: a filmstrip of tabs above one panel at a time (js/hx.js initStrips) ── */
+/* ── What I've built: the words on each page (the book itself is further down) ── */
 .hx-sec + .hx-sec {
   padding-top: 0;
-}
-
-/* The strip: thumbnails in a row, scrolling sideways when they don't fit */
-.hx-strip__tabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(168px, 1fr);
-  gap: 12px;
-  padding: 2px 2px 12px;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-}
-
-.hx-strip__tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.hx-tab {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  padding: 8px 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--ink-2);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  scroll-snap-align: start;
-  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out), color 160ms var(--ease-out), box-shadow 280ms var(--ease-out);
-}
-
-.hx-tab:hover {
-  border-color: var(--line-strong);
-  color: var(--ink);
-}
-
-.hx-tab[aria-selected="true"] {
-  border-color: var(--accent-line);
-  background: var(--accent-soft);
-  color: var(--ink);
-  box-shadow: 0 0 44px -20px rgba(111, 240, 166, 0.7);
-}
-
-.hx-tab__thumb {
-  display: block;
-  aspect-ratio: 16 / 10;
-  border-radius: 11px;
-  overflow: hidden;
-  background: #020303;
-}
-
-.hx-tab__thumb img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.6;
-  transition: opacity 160ms var(--ease-out), transform 420ms var(--ease-out);
-}
-
-.hx-tab__thumb--phone img {
-  object-position: 50% 12%;
-}
-
-.hx-tab:hover .hx-tab__thumb img,
-.hx-tab[aria-selected="true"] .hx-tab__thumb img {
-  opacity: 1;
-}
-
-.hx-tab:hover .hx-tab__thumb img {
-  transform: scale(1.04);
-}
-
-.hx-tab__num {
-  padding-inline: 6px;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-}
-
-.hx-tab__label {
-  padding-inline: 6px;
-  font-weight: 600;
-  font-size: 0.98rem;
-  line-height: 1.25;
 }
 
 /* The stage: picture and words side by side; one panel shows */
@@ -638,7 +550,7 @@
 .hx-panel__text {
   max-width: 34em;
   color: var(--ink-2);
-  font-size: 1.06rem;
+  font-size: 1.14rem;
   line-height: 1.6;
 }
 
@@ -786,18 +698,6 @@
     margin-top: var(--space-8);
   }
 
-  .hx-strip__tabs {
-    grid-auto-columns: 138px;
-    gap: 10px;
-    margin-inline: calc(-1 * var(--gutter, 16px));
-    padding-inline: var(--gutter, 16px);
-    scroll-padding-inline: var(--gutter, 16px);
-  }
-
-  .hx-tab__label {
-    font-size: 0.9rem;
-  }
-
   .hx-strip__stage {
     border-radius: 22px;
   }
@@ -808,78 +708,389 @@
   }
 
   .hx-panel__text {
-    font-size: 1rem;
+    font-size: 1.07rem;
   }
 }
 
-/* ── What I've built: the deck (js/hx.js initDeck). The card leans toward the pointer (--rx, --ry) and catches the
-   light where it points (--mx, --my); its rim is a lit gradient that turns with it (--ang). A new card turns in from
-   the side it came from; a thin bar under each thumbnail counts down to the next ── */
-.hx-deck__room {
-  margin-top: var(--space-4);
-  perspective: 1800px;
+/* ── What I've built: the book (js/hx.js initDeck, js/3d/book.js). A book of glass screens on one polished hinge,
+   live in WebGL, as wide as the page allows: it opens from its cover and turns a page per tool. Behind it, a lit
+   grid that fades into the page; under it, a black mirror floor (drawn in the scene). Below: the names, the
+   controls and the words for the open spread. Without WebGL, the path-traced still of each spread stands in ── */
+.hx-book {
+  --fade: 7%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "stage"
+    "name"
+    "nav"
+    "copy";
+  row-gap: var(--space-4);
+  margin-top: var(--space-5);
 }
 
-.hx-deck .hx-strip__stage {
+/* The cards' own name, under them */
+.hx-book__name {
+  grid-area: name;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin: calc(var(--space-2) * -1) 0 0;
+  font-size: clamp(1.6rem, 1.1rem + 2vw, 2.6rem);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-align: center;
+}
+
+.hx-book__name .mono {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.hx-book__name em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--accent), #9fe7ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+
+.hx-book__stage {
+  grid-area: stage;
   position: relative;
-  margin-top: 0;
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transform-origin: 50% 50%;
+  /* wider than the column, into the margins: its edges fade, so only the book itself needs the room */
+  margin-inline: max(-96px, calc((100% - 100vw) / 2 + 12px));
+  /* scrolling and the browser's pinch-zoom pass through; a sideways drag turns a page */
+  touch-action: pan-y pinch-zoom;
+}
+
+.hx-book__figure {
+  position: relative;
+  aspect-ratio: 16 / 9.8; /* tall cards: a taller stage, so they stay as big */
+  max-height: 88vh;
+  overflow: hidden;
+  isolation: isolate;
   background:
-    radial-gradient(120% 80% at 0% 0%, rgba(111, 240, 166, 0.06), transparent 50%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-  box-shadow: 0 60px 120px -60px #000, 0 40px 90px -60px rgba(111, 240, 166, 0.35);
-  will-change: transform;
+    linear-gradient(180deg, transparent 66%, rgba(3, 5, 4, 0.92) 74%),
+    radial-gradient(34% 52% at 33% 42%, rgba(110, 196, 255, 0.13), transparent 72%),
+    radial-gradient(34% 52% at 67% 42%, rgba(111, 240, 166, 0.12), transparent 72%),
+    linear-gradient(rgba(150, 230, 205, 0.055) 1px, transparent 1px) 50% 0 / 46px 46px,
+    linear-gradient(90deg, rgba(150, 230, 205, 0.055) 1px, transparent 1px) 50% 0 / 46px 46px,
+    #030505;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent),
+    linear-gradient(180deg, transparent, #000 4%, #000 89%, transparent);
+  -webkit-mask-composite: source-in;
+  mask: linear-gradient(90deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent),
+    linear-gradient(180deg, transparent, #000 4%, #000 89%, transparent);
+  mask-composite: intersect;
 }
 
-/* A lit rim: brightest on the side the light comes from */
-.hx-deck .hx-strip__stage::before {
-  content: "";
+.hx-book__still,
+.hx-book__canvas {
   position: absolute;
   inset: 0;
-  z-index: 4;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(var(--ang, 135deg), rgba(111, 240, 166, 0.7), rgba(255, 255, 255, 0.1) 28%,
-      rgba(255, 255, 255, 0.02) 60%, rgba(150, 210, 255, 0.4));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  pointer-events: none;
-}
-
-/* The shine: a soft glare under the pointer, and a faint film of colour that slides as the card tilts */
-.hx-deck__shine {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at var(--mx, 30%) var(--my, 0%), rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04) 24%, transparent 52%),
-    linear-gradient(115deg, transparent 32%, rgba(111, 240, 166, 0.07) 44%, rgba(150, 210, 255, 0.06) 52%, transparent 64%);
-  background-size: 100% 100%, 250% 100%;
-  background-position: 0 0, var(--mx, 30%) 0;
-  mix-blend-mode: screen;
-  opacity: var(--shine, 0.55);
-  transition: opacity 400ms var(--ease-out);
-}
-
-/* A gleam sweeps across each new card */
-.hx-deck__shine::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.16) 50%, transparent 62%);
-  transform: translateX(-120%);
-}
-
-.hx-panel__video {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.hx-book__still {
   object-fit: cover;
-  background: #040706;
+}
+
+.hx-book__canvas {
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+}
+
+.hx-book.is-3d .hx-book__canvas {
+  opacity: 1;
+}
+
+.hx-book.is-3d .hx-book__still {
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out);
+}
+
+/* The Vox film's source: it plays inside the book, never here */
+.hx-book__film {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Each half of the book turns it: the left half back, the right half on */
+.hx-book__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 50%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hx-book__half--back {
+  left: 0;
+}
+
+.hx-book__half--next {
+  right: 0;
+}
+
+.hx-book.is-dragging .hx-book__half {
+  cursor: grabbing;
+}
+
+/* How to work it: a lit pill on the book until it's first used */
+.hx-book__hint {
+  position: absolute;
+  left: 50%;
+  top: 3%; /* the foot of the book is where Learn more rides */
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 16px 9px 13px;
+  border: 1px solid rgba(111, 240, 166, 0.38);
+  border-radius: 999px;
+  background: rgba(5, 10, 8, 0.66);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 34px -8px rgba(111, 240, 166, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font: 500 0.7rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-out);
+}
+
+.hx-book__hint i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.hx-book.is-3d .hx-book__hint {
+  opacity: 1;
+}
+
+.hx-book .hx-book__hint.is-gone {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-book__hint i {
+    animation: hx-hint 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes hx-hint {
+  50% {
+    opacity: 0.45;
+    transform: scale(1.5);
+  }
+}
+
+/* ?debug: whether the live book is running */
+.hx-book__debug {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 4;
+  max-width: calc(100% - 20px);
+  pointer-events: none;
+  margin: 0;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #9fe8c4;
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+/* The pages by name, then arrows, the countdown and the pause */
+.hx-book__nav {
+  grid-area: nav;
+  display: grid;
+  gap: var(--space-3);
+  justify-self: center;
+  width: min(100%, 720px);
+}
+
+.hx-book__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hx-book__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+.hx-book__tab .mono {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+
+.hx-book__tab:hover {
+  border-color: var(--line-hover);
+  color: var(--ink);
+}
+
+.hx-book__tab[aria-current="true"] {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--ink);
+  box-shadow: 0 0 28px -10px rgba(111, 240, 166, 0.7);
+}
+
+.hx-book__tab[aria-current="true"] .mono {
+  color: var(--accent);
+}
+
+.hx-book .hx-strip__nav {
+  margin-top: 0;
+}
+
+/* The words for the open spread: the title on the left, the story on the right */
+.hx-book__copy {
+  grid-area: copy;
+  display: grid;
+  margin-top: var(--space-3);
+}
+
+.hx-book__copy > .hx-page {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-content: start;
+  column-gap: clamp(28px, 5vw, 72px);
+  row-gap: var(--space-4);
+}
+
+.hx-book__copy > .hx-page[hidden],
+.hx-book__copy[hidden] {
+  display: none;
+}
+
+.hx-page > .hx-panel__meta {
+  grid-column: 1 / -1;
+}
+
+.hx-page > .hx-panel__title {
+  grid-column: 1;
+  grid-row: 2 / span 3;
+  font-size: clamp(2rem, 1.2rem + 2.4vw, 3.3rem);
+}
+
+.hx-page > .hx-panel__text,
+.hx-page > .hx-frontier,
+.hx-page > .hx-panel__actions {
+  grid-column: 2;
+  margin-top: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-page.is-in > * {
+    animation: hx-pan-in 460ms var(--ease-out) backwards;
+  }
+
+  .hx-page.is-in > :nth-child(2) { animation-delay: 40ms; }
+  .hx-page.is-in > :nth-child(3) { animation-delay: 80ms; }
+  .hx-page.is-in > :nth-child(4) { animation-delay: 120ms; }
+  .hx-page.is-in > :nth-child(5) { animation-delay: 160ms; }
+}
+
+@media (max-width: 860px) {
+  .hx-book__copy > .hx-page {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Phones: the book runs to the edges of the screen, taller for its narrower frame */
+@media (max-width: 699px) {
+  .hx-book {
+    --fade: 4%;
+    margin-top: var(--space-4);
+  }
+
+  .hx-book__stage {
+    margin-inline: calc(50% - 50vw);
+  }
+
+  .hx-book__figure {
+    aspect-ratio: 1.08;
+  }
+
+  .hx-book__tabs {
+    gap: 6px;
+  }
+
+  .hx-book__tab {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.82rem;
+  }
+}
+
+/* Short names where there's no room for long ones; narrow phones: the short names alone, all five on one line */
+.hx-book__short {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .hx-book__long {
+    display: none;
+  }
+
+  .hx-book__short {
+    display: inline;
+  }
+}
+
+@media (max-width: 430px) {
+  .hx-book__tab .mono {
+    display: none;
+  }
 }
 
 .hx-frontier {
@@ -902,29 +1113,34 @@
   color: var(--accent);
 }
 
-/* The countdown under the chosen thumbnail */
-.hx-deck .hx-tab {
-  position: relative;
-  overflow: hidden;
+/* The countdown: the lit segment of the bar under the book fills, then the page turns */
+.hx-flip .hx-strip__track {
+  height: 3px;
 }
 
-.hx-tab__time {
+.hx-flip .hx-strip__track i {
+  background: rgba(111, 240, 166, 0.22);
+  box-shadow: none;
+}
+
+.hx-flip__fill {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
+  inset: 0;
   background: linear-gradient(90deg, var(--accent), #9fe7ff);
   box-shadow: 0 0 12px rgba(111, 240, 166, 0.8);
-  transform: scaleX(0);
+  transform: scaleX(1);
   transform-origin: left;
 }
 
-.hx-deck.is-auto .hx-tab[aria-selected="true"] .hx-tab__time {
+.hx-deck.is-auto .hx-flip__fill {
+  transform: scaleX(0);
+}
+
+.hx-deck.is-auto .hx-flip__fill.is-running {
   animation: hx-time var(--dwell, 9s) linear forwards;
 }
 
-.hx-deck.is-paused .hx-tab__time {
+.hx-deck.is-paused .hx-flip__fill {
   animation-play-state: paused !important;
 }
 
@@ -951,40 +1167,395 @@
   transform: none !important;
 }
 
+/* ── Learn more: a pill riding on the open page (js places it there each frame); a tap pops the page's whole story
+   out of it in a sheet, by laser (see More, below) ── */
+.hx-book__learn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 12px 15px;
+  border: 1px solid rgba(111, 240, 166, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(14, 30, 23, 0.82), rgba(4, 10, 8, 0.82));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset, 0 0 36px -6px rgba(111, 240, 166, 0.75), 0 14px 30px -14px #000;
+  color: var(--ink);
+  font: 600 0.74rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translate(var(--lx, -999px), var(--ly, -999px)) translate(-50%, -50%) scale(0.86);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms var(--ease-out), transform 280ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+
+.hx-book__learn.is-shown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(var(--lx), var(--ly)) translate(-50%, -50%);
+}
+
+.hx-book__learn.is-shown:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 0 48px -4px rgba(111, 240, 166, 0.95), 0 14px 30px -14px #000;
+}
+
+.hx-book__learn.is-shown:active {
+  transform: translate(var(--lx), var(--ly)) translate(-50%, -50%) scale(0.93);
+}
+
+.hx-book__learn i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.hx-book__learn svg {
+  width: 15px;
+  height: 15px;
+  transform: rotate(90deg);
+}
+
+/* Without the live book, it sits at the foot of the picture */
+.hx-book:not(.is-3d) .hx-book__learn {
+  left: 50%;
+  top: auto;
+  bottom: 10%;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .hx-deck .hx-panel.is-entering {
-    animation: hx-flip-in 820ms cubic-bezier(0.2, 0.75, 0.15, 1) both;
-  }
-
-  .hx-deck.is-sweeping .hx-deck__shine::after {
-    animation: hx-gleam 1100ms cubic-bezier(0.3, 0.6, 0.2, 1) 120ms both;
-  }
-
-  .hx-deck .hx-tab[aria-selected="true"] .hx-tab__thumb img {
-    animation: hx-pan-img 600ms var(--ease-out);
+  .hx-book__learn.is-shown i {
+    animation: hx-hint 1.6s ease-in-out infinite;
   }
 }
 
-@keyframes hx-flip-in {
-  from {
-    opacity: 0;
-    transform: perspective(1600px) rotateY(calc(var(--flip, 1) * 42deg)) translateX(calc(var(--flip, 1) * 4%)) scale(0.96);
-    filter: brightness(1.5);
-  }
+/* Learn more, fired: a ring of light bursts off the pill */
+.hx-book__learn::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid rgba(160, 255, 210, 0.9);
+  opacity: 0;
+  pointer-events: none;
+}
 
-  55% {
+.hx-book__learn.is-firing::after {
+  animation: hx-burst 560ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes hx-burst {
+  from {
     opacity: 1;
-  }
-}
-
-@keyframes hx-gleam {
-  from {
-    transform: translateX(-120%);
+    transform: scale(1);
   }
 
   to {
-    transform: translateX(120%);
+    opacity: 0;
+    transform: scale(1.7, 2.4);
   }
+}
+
+/* The laser itself: drawn over everything, touching nothing */
+.hx-laser {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+/* ── The whole story: its film first (at the end, the way on down), then the story, then the architecture as a lit
+   pipeline with data running down it ── */
+.hx-film {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.hx-film__frame {
+  position: relative;
+  width: min(100%, 560px);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #040706;
+  box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px #000, 0 0 80px -30px rgba(111, 240, 166, 0.35);
+}
+
+.hx-film__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hx-film figcaption {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.hx-film__next {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px 14px;
+  border: 1px solid rgba(111, 240, 166, 0.55);
+  border-radius: 20px;
+  background: rgba(4, 10, 8, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 44px -6px rgba(111, 240, 166, 0.75);
+  color: var(--ink);
+  font: 600 0.78rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.hx-film__next[hidden] {
+  display: none;
+}
+
+.hx-film__next svg {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-film__next {
+    animation: hx-rise 520ms var(--ease-out) both;
+  }
+
+  .hx-film__next svg {
+    animation: hx-bob 1.15s ease-in-out infinite;
+  }
+}
+
+@keyframes hx-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px));
+  }
+}
+
+@keyframes hx-bob {
+  50% {
+    transform: rotate(90deg) translateX(7px);
+  }
+}
+
+.hx-read {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.hx-read__kick {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hx-read__title {
+  font-size: clamp(1.7rem, 1.1rem + 2.2vw, 2.6rem);
+  font-weight: 650;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.hx-read__title em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--accent), #9fe7ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hx-read__body {
+  display: grid;
+  gap: 1em;
+  max-width: 40em;
+  color: var(--ink-2);
+  font-size: 1.12rem;
+  line-height: 1.65;
+}
+
+.hx-read__body p:first-child {
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+.hx-read__lede {
+  max-width: 40em;
+  color: var(--ink-2);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.hx-flow {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* the spine, and a pulse of data running down it */
+.hx-flow::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), rgba(150, 210, 255, 0.6), rgba(111, 240, 166, 0.15));
+  box-shadow: 0 0 12px rgba(111, 240, 166, 0.55);
+}
+
+.hx-flow::after {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 24px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #eafff4;
+  box-shadow: 0 0 10px var(--accent), 0 0 22px var(--accent);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hx-flow::after {
+    animation: hx-data 3.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+}
+
+@keyframes hx-data {
+  0% {
+    top: 24px;
+    opacity: 0;
+  }
+
+  10%,
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    top: calc(100% - 34px);
+    opacity: 0;
+  }
+}
+
+.hx-flow li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: 14px;
+  row-gap: 6px;
+  padding: 16px 18px 16px 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(111, 240, 166, 0.05), rgba(255, 255, 255, 0.015) 40%);
+}
+
+.hx-flow__n {
+  grid-row: 1 / span 3;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  background: #06100c;
+  color: var(--accent);
+  font-size: 0.78rem;
+  box-shadow: 0 0 18px -4px rgba(111, 240, 166, 0.7);
+}
+
+.hx-flow b {
+  grid-column: 2;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 640;
+}
+
+.hx-flow__text {
+  grid-column: 2;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+
+.hx-flow__chips {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.hx-flow__chips span {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink-3);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.hx-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.hx-notes p {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--ink-2);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.hx-notes b {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-weight: 620;
 }
 
 /* ── More: a sheet with the whole story of one card ── */
@@ -1010,7 +1581,27 @@
   backdrop-filter: blur(10px);
 }
 
+/* While the laser pops the sheet out (or puts it back): only its traced edge shows, and its inside appears behind
+   the scan line (the panel carries the sheet's colour, and is clipped) */
+.hx-more.is-firing {
+  overflow: hidden;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hx-more .hx-more__close {
+  transition: opacity 260ms var(--ease-out);
+}
+
+.hx-more.is-firing .hx-more__close {
+  opacity: 0;
+}
+
 .hx-more__panel {
+  background:
+    radial-gradient(80% 50% at 100% 0%, rgba(111, 240, 166, 0.08), transparent 60%),
+    var(--surface);
   position: relative;
   display: grid;
   gap: clamp(22px, 3.2vw, 40px);
@@ -1213,10 +1804,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hx-more[open] {
-    animation: hx-reel-in 360ms var(--ease-out);
-  }
-
   .hx-more[open]::backdrop {
     animation: hx-reel-fade 360ms var(--ease-out);
   }
@@ -1273,13 +1860,49 @@
   outline: none;
 }
 
+.hx-reel__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #000;
+  box-shadow: 0 0 0 1px var(--line-strong), 0 60px 120px -40px #000, 0 0 120px -40px rgba(111, 240, 166, 0.35);
+}
+
 .hx-reel__video {
   display: block;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 22px;
   background: #000;
-  box-shadow: 0 0 0 1px var(--line-strong), 0 60px 120px -40px #000, 0 0 120px -40px rgba(111, 240, 166, 0.35);
+}
+
+/* While the laser pops the film out (or puts it back): the frame is only its traced edge, the film scans in behind
+   the line (a black cover slides away), and the words and the × wait until it's done */
+.hx-reel__cover {
+  position: absolute;
+  inset: 0;
+  display: none;
+  background: #000;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hx-reel.is-firing .hx-reel__cover {
+  display: block;
+}
+
+.hx-reel.is-firing .hx-reel__frame {
+  background: transparent;
+  box-shadow: none;
+}
+
+.hx-reel .hx-reel__title,
+.hx-reel .hx-reel__close {
+  transition: opacity 260ms var(--ease-out);
+}
+
+.hx-reel.is-firing .hx-reel__title,
+.hx-reel.is-firing .hx-reel__close {
+  opacity: 0;
 }
 
 .hx-reel__title {
@@ -1314,10 +1937,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hx-reel[open] {
-    animation: hx-reel-in 320ms var(--ease-out);
-  }
-
   .hx-reel[open]::backdrop {
     animation: hx-reel-fade 320ms var(--ease-out);
   }

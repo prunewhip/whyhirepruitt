@@ -101,6 +101,7 @@
         <div class="hx-shot__drift" data-shot-drift>
           <img src="assets/img/g1-square-1400.webp" srcset="assets/img/g1-square-900.webp 900w, assets/img/g1-square-1400.webp 1400w"
               sizes="(max-width: 899px) 100vw, 56vw" alt="" width="1400" height="1400" fetchpriority="high">
+          <video class="hx-shot__video" muted loop playsinline preload="none" width="864" height="864" data-src="assets/video/g1-turntable.mp4"></video>
         </div>
       </figure>
 
@@ -120,7 +121,7 @@
           wherever you are. Put a podcast on while Claude builds; your glasses tap you only when it counts.</p>
         <div class="hx-actions hx-in" style="--d:4">
           <a class="btn btn--primary btn--lg" href="#built">See what I built <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
-          <button class="btn btn--secondary btn--lg" type="button" data-short="learn"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch a short film <span class="mono">0:24</span></button>
+          <button class="btn btn--secondary btn--lg" type="button" data-short="story"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the story <span class="mono">0:39</span></button>
         </div>
         <dl class="hx-stats hx-in" style="--d:5">
           <div class="hx-stat"><dt>Open-source Android apps</dt><dd data-count="4">4</dd></div>
@@ -132,10 +133,11 @@
       <a class="hx-scroll" href="#built" aria-label="Scroll to what I built"><span></span></a>
     </section>
 
-    <!-- ══════════ What I've built: four cards, one at a time (js/hx.js initDeck). A card leans toward the pointer and
-         catches the light; a new one turns in from the side it came from; the deck pages through on its own until
-         someone takes over. Each card opens a "More" view: a summary, the stack it stands on, and how it works.
-         Pictures are path-traced in Blender (tools/render/g1.py: shots desk, lens, quiz and stack). ══════════ -->
+    <!-- ══════════ What I've built: a book of glass screens on one polished hinge (js/hx.js initDeck), path-traced in
+         Blender (tools/render/book.py; the screens are tools/render/book-screens.html). Each spread is one tool; a page
+         turn plays the rendered frames between two spreads. It turns itself, slowly, until someone takes over, and the
+         words beside it follow. Each page opens a "More" view: a summary, the stack it stands on, and how it works.
+         The other pictures are path-traced too (tools/render/g1.py: shots desk, lens, quiz and stack). ══════════ -->
     <section class="section hx-sec" id="built" aria-labelledby="built-title">
       <div class="container">
         <header class="hx-head reveal">
@@ -145,98 +147,121 @@
             models get smarter, so do they.</p>
         </header>
 
-        <div class="hx-strip hx-deck reveal" data-strip data-deck>
-          <div class="hx-strip__tabs" role="tablist" aria-label="What I’ve built">
-            <button class="hx-tab" type="button" role="tab" id="built-tab-1" aria-controls="built-1" aria-selected="true"><span class="hx-tab__thumb"><img src="assets/img/s-remember-4-thumb.webp" alt="" width="384" height="240" loading="lazy"></span><span class="hx-tab__num mono">01</span><span class="hx-tab__label">Vox Amelior</span><i class="hx-tab__time" aria-hidden="true"></i></button>
-            <button class="hx-tab" type="button" role="tab" id="built-tab-2" aria-controls="built-2" aria-selected="false" tabindex="-1"><span class="hx-tab__thumb"><img src="assets/img/g1-desk-thumb.webp" alt="" width="384" height="240" loading="lazy"></span><span class="hx-tab__num mono">02</span><span class="hx-tab__label">Linux on the glasses</span><i class="hx-tab__time" aria-hidden="true"></i></button>
-            <button class="hx-tab" type="button" role="tab" id="built-tab-3" aria-controls="built-3" aria-selected="false" tabindex="-1"><span class="hx-tab__thumb"><img src="assets/img/g1-podcast-thumb.webp" alt="" width="384" height="240" loading="lazy"></span><span class="hx-tab__num mono">03</span><span class="hx-tab__label">The podcast</span><i class="hx-tab__time" aria-hidden="true"></i></button>
-            <button class="hx-tab" type="button" role="tab" id="built-tab-4" aria-controls="built-4" aria-selected="false" tabindex="-1"><span class="hx-tab__thumb"><img src="assets/img/g1-quiz-thumb.webp" alt="" width="384" height="240" loading="lazy"></span><span class="hx-tab__num mono">04</span><span class="hx-tab__label">Vox Learn</span><i class="hx-tab__time" aria-hidden="true"></i></button>
+        <div class="hx-book hx-deck hx-flip reveal" data-deck role="region" aria-roledescription="carousel" aria-label="What I’ve built">
+          <!-- The book, live in WebGL (js/3d/book.js): it opens from its cover onto Vox Amelior and turns a page per
+               tool. The stills are the same book path-traced (tools/render/book.py), one per spread: the first paint,
+               and the whole show where WebGL can't run. The video is the Vox film's source; it plays on the first
+               left-hand screen, never on its own -->
+          <div class="hx-book__stage" data-book-stage>
+            <div class="hx-book__figure" role="img" data-book data-screens="assets/img/book/screen-"
+              data-stills="assets/img/book/f00.webp assets/img/book/f14.webp assets/img/book/f28.webp assets/img/book/f42.webp"
+              aria-label="A book of glass screens on a polished hinge, open at Vox Amelior: its film plays on the left page; the right page reads Forget nothing, share nothing, with an example question and its answer.">
+              <img class="hx-book__still" src="assets/img/book/f00.webp" width="1280" height="880" alt="" data-book-still>
+              <canvas class="hx-book__canvas" aria-hidden="true" data-book-canvas></canvas>
+              <video class="hx-book__film" muted loop playsinline preload="none" width="1080" height="1080" tabindex="-1" aria-hidden="true"
+                data-src="assets/video/short-remember.mp4" data-book-film></video>
+            </div>
+            <button class="hx-book__half hx-book__half--back" type="button" tabindex="-1" aria-hidden="true" data-book-back></button>
+            <button class="hx-book__half hx-book__half--next" type="button" tabindex="-1" aria-hidden="true" data-book-next></button>
+            <p class="hx-book__hint" aria-hidden="true" data-book-hint><i></i><span>Tap to open</span></p>
+            <button class="hx-book__learn" type="button" data-book-learn><i></i><span>Learn more</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
           </div>
 
-          <div class="hx-deck__room">
-            <div class="hx-strip__stage" data-strip-stage>
-              <span class="hx-deck__shine" aria-hidden="true"></span>
+          <h3 class="hx-book__name"><span class="mono">Four cards · one idea</span><span>The Tech <em>Stack.</em></span></h3>
 
-              <article class="hx-panel" role="tabpanel" id="built-1" aria-labelledby="built-tab-1" data-dwell="24">
-                <div class="hx-panel__media">
-                  <video class="hx-panel__video" muted loop playsinline preload="none" width="1080" height="1080"
-                    poster="assets/video/short-remember-poster.webp" data-src="assets/video/short-remember.mp4"
-                    aria-label="A short film, with words on screen: it listens on your phone, only there; ask about your day; then ask about yourself; and on the tip of your tongue? Now it’s on the tip of your nose. People and conversations are examples."></video>
-                </div>
-                <div class="hx-panel__body">
-                  <p class="hx-panel__meta mono">01 · Vox Amelior · Android</p>
-                  <h3 class="hx-panel__title">Forget nothing. <em>Share nothing.</em></h3>
-                  <p class="hx-panel__text">It writes down what’s said around you, learns who said it and answers when you
-                    ask, all on your phone. Small models do the daily work, fast, free and private, because the cheapest
-                    question is the one that never leaves your pocket.</p>
-                  <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Every model is
-                    a part, not a pillar: when a better open model ships, it swaps straight in.</p>
-                  <div class="hx-panel__actions">
-                    <button class="btn btn--primary btn--sm" type="button" data-more="more-1">More on Vox Amelior <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-                    <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
-                  </div>
-                </div>
-              </article>
-
-              <article class="hx-panel" role="tabpanel" id="built-2" aria-labelledby="built-tab-2" hidden>
-                <div class="hx-panel__media hx-panel__media--render"><img src="assets/img/g1-desk.webp" alt="Square G1 glasses, face on, a small Linux desktop in each lens with Claude Code in a terminal: make a timer, done" width="1200" height="1200" loading="lazy"></div>
-                <div class="hx-panel__body">
-                  <p class="hx-panel__meta mono">02 · Vox · Kotlin + C++ · Android</p>
-                  <h3 class="hx-panel__title">Your computer, <em>one look away.</em></h3>
-                  <p class="hx-panel__text">The terminal at home, the machine at work, or a whole Linux desktop on the
-                    phone alone, in your glasses. Tell Claude Code what to build, then get on with your day; the lenses stay
-                    dark until there’s progress to see. You check in. You don’t sit in.</p>
-                  <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude Code does
-                    the building, so every new Claude model is a better engineer on day one.</p>
-                  <div class="hx-panel__actions">
-                    <button class="btn btn--primary btn--sm" type="button" data-more="more-2">More on Linux on the glasses <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-                    <button class="btn btn--ghost btn--sm" type="button" data-short="build"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
-                  </div>
-                </div>
-              </article>
-
-              <article class="hx-panel" role="tabpanel" id="built-3" aria-labelledby="built-tab-3" hidden>
-                <div class="hx-panel__media hx-panel__media--render"><img src="assets/img/g1-podcast.webp" alt="Square G1 glasses playing an example episode in the lenses: Northwind, explained; episode 3, the refund rules; 12 minutes left" width="1200" height="1200" loading="lazy"></div>
-                <div class="hx-panel__body">
-                  <p class="hx-panel__meta mono">03 · Vox Podcasts · Claude + Kokoro</p>
-                  <h3 class="hx-panel__title">The employee handbook, <em>now with a plot.</em></h3>
-                  <p class="hx-panel__text">Name a subject, say the company you just joined, and Claude writes it as a
-                    two-host show: where it came from, the rules it lives by, precisely how it all works. Put it on while
-                    Claude builds. One AI does the work; the other tells the story.</p>
-                  <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude writes
-                    every script, so as the writer gets better, so does the show.</p>
-                  <div class="hx-panel__actions">
-                    <button class="btn btn--primary btn--sm" type="button" data-more="more-3">More on the podcast <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-                    <a class="btn btn--ghost btn--sm" href="apps.html#narrator"><svg aria-hidden="true"><use href="#i-play" /></svg> Hear a sample</a>
-                  </div>
-                </div>
-              </article>
-
-              <article class="hx-panel" role="tabpanel" id="built-4" aria-labelledby="built-tab-4" hidden>
-                <div class="hx-panel__media hx-panel__media--render"><img src="assets/img/g1-quiz.webp" alt="Square G1 glasses from a low angle, a quiz in the lenses: what’s a chargeback? Question 2 of 5, 40 points. Answer out loud." width="1200" height="1200" loading="lazy"></div>
-                <div class="hx-panel__body">
-                  <p class="hx-panel__meta mono">04 · Vox Learn · Claude + Parakeet</p>
-                  <h3 class="hx-panel__title">Don’t get it? <em>Ask, right then and there.</em></h3>
-                  <p class="hx-panel__text">Pick a subject. The lessons meet you at your level; the quiz meets you on the
-                    drive home, answered out loud. Points and streaks make it a game, and spaced review returns what you
-                    were about to forget. A teacher with endless patience and no office hours.</p>
-                  <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude writes
-                    the lessons: tomorrow’s model teaches tomorrow’s class.</p>
-                  <div class="hx-panel__actions">
-                    <button class="btn btn--primary btn--sm" type="button" data-more="more-4">More on Vox Learn <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-                    <button class="btn btn--ghost btn--sm" type="button" data-short="learn"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
-                  </div>
-                </div>
-              </article>
+          <div class="hx-book__nav">
+            <ol class="hx-book__tabs">
+              <li><button class="hx-book__tab" type="button" data-go="0" aria-current="true"><span class="mono">01</span> <span class="hx-book__long">Vox Amelior</span><span class="hx-book__short" aria-hidden="true">Vox</span></button></li>
+              <li><button class="hx-book__tab" type="button" data-go="1"><span class="mono">02</span> Linux</button></li>
+              <li><button class="hx-book__tab" type="button" data-go="2"><span class="mono">03</span> Podcast</button></li>
+              <li><button class="hx-book__tab" type="button" data-go="3"><span class="mono">04</span> <span class="hx-book__long">Vox Learn</span><span class="hx-book__short" aria-hidden="true">Learn</span></button></li>
+              <li><button class="hx-book__tab" type="button" data-go="4"><span class="mono">05</span> <span class="hx-book__long">More to come</span><span class="hx-book__short" aria-hidden="true">More</span></button></li>
+            </ol>
+            <div class="hx-strip__nav">
+              <button class="hx-arrow hx-arrow--prev" type="button" aria-label="Previous page" data-strip-prev><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+              <p class="hx-strip__count mono" data-strip-count>01 / 05</p>
+              <span class="hx-strip__track" aria-hidden="true"><i data-strip-bar><b class="hx-flip__fill"></b></i></span>
+              <button class="hx-arrow hx-deck__pause" type="button" aria-label="Stop turning the pages" aria-pressed="false" data-deck-pause><svg class="i-pause" aria-hidden="true"><use href="#i-pause" /></svg><svg class="i-play" aria-hidden="true"><use href="#i-play" /></svg></button>
+              <button class="hx-arrow" type="button" aria-label="Next page" data-strip-next><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
             </div>
           </div>
 
-          <div class="hx-strip__nav">
-            <button class="hx-arrow hx-arrow--prev" type="button" aria-label="Previous" data-strip-prev><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
-            <p class="hx-strip__count mono" data-strip-count>01 / 04</p>
-            <span class="hx-strip__track" aria-hidden="true"><i data-strip-bar></i></span>
-            <button class="hx-arrow hx-deck__pause" type="button" aria-label="Pause the cards" aria-pressed="false" data-deck-pause><svg class="i-pause" aria-hidden="true"><use href="#i-pause" /></svg><svg class="i-play" aria-hidden="true"><use href="#i-play" /></svg></button>
-            <button class="hx-arrow" type="button" aria-label="Next" data-strip-next><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          <div class="hx-book__copy" data-strip-stage>
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="1 of 5: Vox Amelior" id="built-1" data-dwell="24"
+              data-alt="A book of glass screens on a polished hinge, open at Vox Amelior: its film plays on the left page; the right page reads Forget nothing, share nothing, with an example question and its answer.">
+              <p class="hx-panel__meta mono">01 · Vox Amelior · Android</p>
+              <h3 class="hx-panel__title">Forget nothing. <em>Share nothing.</em></h3>
+              <p class="hx-panel__text">It writes down what’s said around you, learns who said it and answers when you
+                ask, all on your phone. Small models do the daily work, fast, free and private, because the cheapest
+                question is the one that never leaves your pocket.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Every model is
+                a part, not a pillar: when a better open model ships, it swaps straight in.</p>
+              <div class="hx-panel__actions">
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-1">More on Vox Amelior <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <button class="btn btn--ghost btn--sm" type="button" data-short="remember"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
+                <a class="btn btn--ghost btn--sm" href="https://github.com/prunewhip/Vox_Amelior/releases/tag/vox-android-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
+              </div>
+            </article>
+
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="2 of 5: Linux on the glasses" id="built-2" hidden
+              data-alt="The book, open at Linux on the glasses: the left page shows the glasses with a Linux desktop in each lens; the right page reads Your computer, one look away, over an example terminal where Claude Code edits two files.">
+              <p class="hx-panel__meta mono">02 · Vox · Kotlin + C++ · Android</p>
+              <h3 class="hx-panel__title">Your computer, <em>one look away.</em></h3>
+              <p class="hx-panel__text">The terminal at home, the machine at work, or a whole Linux desktop on the
+                phone alone, in your glasses. Tell Claude Code what to build, then get on with your day; the lenses stay
+                dark until there’s progress to see. You check in. You don’t sit in.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude Code does
+                the building, so every new Claude model is a better engineer on day one.</p>
+              <div class="hx-panel__actions">
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-2">More on Linux on the glasses <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <button class="btn btn--ghost btn--sm" type="button" data-short="build"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
+              </div>
+            </article>
+
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="3 of 5: The podcast" id="built-3" hidden
+              data-alt="The book, open at the podcast: the glasses playing an example episode on the left; on the right, The employee handbook, now with a plot, an example player for Northwind, explained, episode 3, with two hosts.">
+              <p class="hx-panel__meta mono">03 · Vox Podcasts · Claude + Kokoro</p>
+              <h3 class="hx-panel__title">The employee handbook, <em>now with a plot.</em></h3>
+              <p class="hx-panel__text">Name a subject, say the company you just joined, and Claude writes it as a
+                two-host show: where it came from, the rules it lives by, precisely how it all works. Put it on while
+                Claude builds. One AI does the work; the other tells the story.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude writes
+                every script, so as the writer gets better, so does the show.</p>
+              <div class="hx-panel__actions">
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-3">More on the podcast <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <a class="btn btn--ghost btn--sm" href="apps.html#narrator"><svg aria-hidden="true"><use href="#i-play" /></svg> Hear a sample</a>
+              </div>
+            </article>
+
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="4 of 5: Vox Learn" id="built-4" hidden
+              data-alt="The book, open at Vox Learn: the glasses with a quiz in the lenses on the left; on the right, Don’t get it? Ask, right then and there, an example question, what’s a chargeback?, answered out loud for 40 points.">
+              <p class="hx-panel__meta mono">04 · Vox Learn · Claude + Parakeet</p>
+              <h3 class="hx-panel__title">Don’t get it? <em>Ask, right then and there.</em></h3>
+              <p class="hx-panel__text">Pick a subject. The lessons meet you at your level; the quiz meets you on the
+                drive home, answered out loud. Points and streaks make it a game, and spaced review returns what you
+                were about to forget. A teacher with endless patience and no office hours.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude writes
+                the lessons: tomorrow’s model teaches tomorrow’s class.</p>
+              <div class="hx-panel__actions">
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-4">More on Vox Learn <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <button class="btn btn--ghost btn--sm" type="button" data-short="learn"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
+              </div>
+            </article>
+
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="5 of 5: And more to come" id="built-5" hidden
+              data-alt="The book, closed again and turned to show its back cover, like a real book’s: And more to come, a blurb that reads the last page isn’t written yet, and a barcode marked to be continued.">
+              <p class="hx-panel__meta mono">05 · Epilogue · to be continued</p>
+              <h3 class="hx-panel__title">And more <em>to come.</em></h3>
+              <p class="hx-panel__text">Most things you build start ageing the day they ship. These start improving. Every
+                card is wired to the frontier, so today’s best model is tomorrow’s baseline, and each new one arrives as a
+                better memory, a sharper teacher, a quicker builder and a livelier storyteller.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">To be continued</span> By the next model, and
+                the one after that.</p>
+              <div class="hx-panel__actions">
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-5">Learn more <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <a class="btn btn--ghost btn--sm" href="#contact">Write the next chapter with me <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+              </div>
+            </article>
           </div>
         </div>
       </div>
@@ -265,14 +290,17 @@
     <dialog class="hx-reel" aria-labelledby="hx-reel-title" data-reel>
       <div class="hx-reel__panel" tabindex="-1" autofocus>
         <button class="hx-reel__close" type="button" aria-label="Close" data-reel-close><svg aria-hidden="true"><use href="#i-close" /></svg></button>
-        <video class="hx-reel__video" controls playsinline preload="none" width="1080" height="1080" aria-describedby="hx-reel-words"></video>
+        <div class="hx-reel__frame" data-reel-frame>
+          <video class="hx-reel__video" controls playsinline preload="none" width="1080" height="1080" aria-describedby="hx-reel-words"></video>
+          <span class="hx-reel__cover" aria-hidden="true"></span>
+        </div>
         <p class="hx-reel__title" id="hx-reel-title" data-reel-title></p>
         <p class="sr-only" id="hx-reel-words" data-reel-words></p>
       </div>
     </dialog>
 
-    <!-- "More" on each card (js/hx.js initMore): a summary in three lines, the stack it stands on (a path-traced
-         picture, shot "stack", with a numbered key), and how it works -->
+    <!-- The full story of each page: its film, the story, the architecture, the stack, how it works. Learn more on the
+         card (or a "More on" button) pops the sheet out by laser, and its × sends it back (js/hx.js initMore) -->
     <dialog class="hx-more" id="more-1" aria-labelledby="more-1-title">
       <div class="hx-more__panel">
         <button class="hx-more__close" type="button" aria-label="Close" data-more-close><svg aria-hidden="true"><use href="#i-close" /></svg></button>
@@ -280,6 +308,24 @@
           <p class="eyebrow">01 · Vox Amelior</p>
           <h2 class="hx-more__title" id="more-1-title">Forget nothing. <em>Share nothing.</em></h2>
         </header>
+        <figure class="hx-film">
+          <div class="hx-film__frame">
+            <video class="hx-film__video" playsinline controls preload="none" width="1080" height="1080"
+              data-poster="assets/video/short-remember-poster.webp" data-src="assets/video/short-remember.mp4"></video>
+            <button class="hx-film__next" type="button" data-read-more hidden><span>Read the whole story</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+          <figcaption class="mono">Film · 0:24 · people and conversations are examples</figcaption>
+        </figure>
+        <section class="hx-read" data-read>
+          <p class="hx-read__kick mono">The story · home life</p>
+          <h3 class="hx-read__title">A memory that never <em>leaves your pocket.</em></h3>
+          <div class="hx-read__body">
+            <p>Most of what matters is said out loud: who’s coming on Thursday, what the doctor said, the thing a friend asked you to remember. Then it’s gone. Vox Amelior keeps it.</p>
+            <p>It listens on your phone, and only there. It writes down what’s said around you, learns whose voice is whose after you name it once, and files every line by day and by conversation. Later you ask in plain words, “What did Jordan say I shouldn’t forget?”, and it answers from what was actually said, with the time and the place.</p>
+            <p>Then it turns the question around. Ask about yourself: who you thanked this week, how much you talked and how much you listened. The voice you hear most is yours.</p>
+            <p>Nothing is uploaded. No account, no subscription, no server to trust. A memory this personal should be the one thing that never leaves your pocket, and with small models doing the work on the phone, it doesn’t have to.</p>
+          </div>
+        </section>
         <dl class="hx-sum">
           <div><dt class="mono">What</dt><dd>A private memory for your conversations: it listens, writes down who said
               what, and answers questions about your day.</dd></div>
@@ -288,6 +334,25 @@
           <div><dt class="mono">Frontier</dt><dd>Every model is a swappable part. When a better open model ships, it
               drops in, and the whole memory gets sharper.</dd></div>
         </dl>
+        <section class="hx-read hx-arch">
+          <p class="hx-read__kick mono">The architecture</p>
+          <h3 class="hx-read__title">One phone. <em>One work queue.</em></h3>
+          <p class="hx-read__lede">Everything heavy runs in one background service with a single work queue, so speech recognition and the language model never fight over the phone’s memory.</p>
+          <ol class="hx-flow" role="list">
+            <li><span class="hx-flow__n mono">01</span><b>Capture</b><span class="hx-flow__text">An always-on service holds the microphone. A speech detector keeps only voice, with adjustable boost, sensitivity and sentence pause.</span><span class="hx-flow__chips mono"><span>Silero VAD</span></span></li>
+            <li><span class="hx-flow__n mono">02</span><b>Queue on disk</b><span class="hx-flow__text">Speech is written to disk before anything else happens, so it survives a restart. A chunk that fails is retried once, then set aside instead of lost.</span></li>
+            <li><span class="hx-flow__n mono">03</span><b>One job at a time</b><span class="hx-flow__text">A single scheduler decides what runs: a question you’re waiting on first, then transcription, then background reviews in small steps.</span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Transcribe and attribute</b><span class="hx-flow__text">Each sentence is written down with punctuation, split by speaker, matched to a voiceprint and tagged with its tone of voice.</span><span class="hx-flow__chips mono"><span>Parakeet TDT 0.6B</span><span>Sortformer</span><span>TitaNet</span><span>SenseVoice</span></span></li>
+            <li><span class="hx-flow__n mono">05</span><b>Store and index</b><span class="hx-flow__text">Lines land in SQLite with full-text search, grouped into days and conversations. EmbeddingGemma adds compact vectors for search by meaning.</span><span class="hx-flow__chips mono"><span>SQLite FTS5</span><span>EmbeddingGemma</span></span></li>
+            <li><span class="hx-flow__n mono">06</span><b>Answer and act</b><span class="hx-flow__text">Gemma 4 reads the lines search picks and can use tools: search conversations, read a week’s timeline, save notes, set reminders.</span><span class="hx-flow__chips mono"><span>Gemma 4</span><span>LiteRT-LM</span></span></li>
+            <li><span class="hx-flow__n mono">07</span><b>In your glasses</b><span class="hx-flow__text">The answer, or just the name you can’t place, lands in the lenses for the moment you need it.</span><span class="hx-flow__chips mono"><span>Even Realities G1</span></span></li>
+          </ol>
+          <div class="hx-notes">
+            <p><b>Measured, not guessed.</b> “Test this phone” fills Gemma’s context from 2,048 up to 32,768 tokens and checks it can still repeat a code word; prompts and review steps are sized from the result.</p>
+            <p><b>Search tuned on real scores.</b> Related lines scored 0.44 to 0.62 and unrelated ones up to 0.43, so no fixed cut-off could separate them. Search keeps lines close to the best match instead.</p>
+            <p><b>Tested like a product.</b> 400+ automated tests, plus a CI tour that installs the release build, plays synthetic voices into it and drives every screen with the real models.</p>
+          </div>
+        </section>
         <figure class="hx-stack">
           <img src="assets/img/stack-vox.webp" alt="The glasses resting on five floating plates of black glass, one per layer: answer, index, speakers, speech, capture" width="1200" height="1200" loading="lazy">
           <figcaption>
@@ -339,6 +404,24 @@
           <p class="eyebrow">02 · Linux on the glasses</p>
           <h2 class="hx-more__title" id="more-2-title">Your computer, <em>one look away.</em></h2>
         </header>
+        <figure class="hx-film">
+          <div class="hx-film__frame">
+            <video class="hx-film__video" playsinline controls preload="none" width="1080" height="1080"
+              data-poster="assets/video/short-build-poster.webp" data-src="assets/video/short-build.mp4"></video>
+            <button class="hx-film__next" type="button" data-read-more hidden><span>Read the whole story</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+          <figcaption class="mono">Film · 0:24 · sessions are examples</figcaption>
+        </figure>
+        <section class="hx-read" data-read>
+          <p class="hx-read__kick mono">The story · work life</p>
+          <h3 class="hx-read__title">Check in. <em>Don’t sit in.</em></h3>
+          <div class="hx-read__body">
+            <p>Building software used to mean sitting at a desk and watching it happen. Now Claude Code does the typing, and most of the work is waiting. So why sit there?</p>
+            <p>Vox puts a real terminal in the Even Realities G1 glasses: your computer at home, your laptop at work over SSH, or a whole Linux system on the phone itself. Tell Claude what to build, then go and make dinner. The lenses stay dark until you look up.</p>
+            <p>Glance up and the screen fades in: the step Claude is on, a diff, the test results. Look down and it’s gone. When it needs you, a heads-up says so, and nothing else interrupts.</p>
+            <p>Getting there took the glasses apart in software. Out of the box they show a few lines of text; I built on reverse-engineered firmware and optimized it for this: a 16-grey video mode, both arms drawing in step, and a display that fades with the tilt of your head.</p>
+          </div>
+        </section>
         <dl class="hx-sum">
           <div><dt class="mono">What</dt><dd>A second screen for any computer: your terminal or whole desktop, drawn for
               the lenses and sent over Bluetooth.</dd></div>
@@ -347,6 +430,24 @@
           <div><dt class="mono">Frontier</dt><dd>The builder is Claude Code. When Claude gets better, every build
               does, with nothing for me to rewrite.</dd></div>
         </dl>
+        <section class="hx-read hx-arch">
+          <p class="hx-read__kick mono">The architecture</p>
+          <h3 class="hx-read__title">The phone thinks. <em>The glasses draw.</em></h3>
+          <p class="hx-read__lede">Vox runs every model on the phone and sends the glasses only what to draw.</p>
+          <ol class="hx-flow" role="list">
+            <li><span class="hx-flow__n mono">01</span><b>Sources</b><span class="hx-flow__text">A terminal on the phone or a computer over SSH, kept alive by mosh as the phone changes networks; the phone’s screen; a laptop’s screen; the glasses’ own microphone.</span><span class="hx-flow__chips mono"><span>mosh</span><span>JSch</span><span>MediaProjection</span><span>LC3</span></span></li>
+            <li><span class="hx-flow__n mono">02</span><b>One microphone</b><span class="hx-flow__text">One shared microphone feeds every feature. A speech detector keeps only voice, with a second, keener pass for soft voices.</span><span class="hx-flow__chips mono"><span>Silero VAD</span></span></li>
+            <li><span class="hx-flow__n mono">03</span><b>Understand</b><span class="hx-flow__text">Each phrase is written down with word times, matched to a voiceprint, split into turns and tagged with its tone, on the phone.</span><span class="hx-flow__chips mono"><span>Parakeet TDT 0.6B</span><span>WeSpeaker</span><span>pyannote</span><span>SenseVoice</span></span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Think, taking turns</b><span class="hx-flow__text">A small model answers on the phone through llama.cpp; while it thinks, transcription waits and catches up after. Claude Code runs in the phone’s own terminal.</span><span class="hx-flow__chips mono"><span>llama.cpp</span><span>LFM2.5</span><span>Claude Code</span></span></li>
+            <li><span class="hx-flow__n mono">05</span><b>Draw for the lens</b><span class="hx-flow__text">Terminal cells, screen frames and panels are drawn for a 640 × 480 display per eye and sent to both arms at once.</span><span class="hx-flow__chips mono"><span>Bluetooth LE</span><span>16-grey video</span></span></li>
+            <li><span class="hx-flow__n mono">06</span><b>On the glasses</b><span class="hx-flow__text">The firmware runs small programs on each arm: the terminal fades in as you look up and out as you look down, and both eyes keep one brightness.</span><span class="hx-flow__chips mono"><span>Firmware VM</span></span></li>
+          </ol>
+          <div class="hx-notes">
+            <p><b>Both eyes agree.</b> Every frame goes to both arms at once over Bluetooth LE, so the picture never tears between your eyes.</p>
+            <p><b>The network can drop; the session can’t.</b> mosh holds the terminal as the phone moves from Wi-Fi to cellular and back.</p>
+            <p><b>No computer needed.</b> Termux runs a full Linux on the phone, so there’s always a terminal to look up at.</p>
+          </div>
+        </section>
         <figure class="hx-stack">
           <img src="assets/img/stack-linux.webp" alt="The glasses resting on five floating plates of black glass, one per layer: firmware, Bluetooth LE, Vox, SSH and mosh, Claude Code" width="1200" height="1200" loading="lazy">
           <figcaption>
@@ -397,6 +498,24 @@
           <p class="eyebrow">03 · The podcast</p>
           <h2 class="hx-more__title" id="more-3-title">The employee handbook, <em>now with a plot.</em></h2>
         </header>
+        <figure class="hx-film">
+          <div class="hx-film__frame">
+            <video class="hx-film__video" playsinline controls preload="none" width="1080" height="1080"
+              data-poster="assets/video/short-podcast-poster.webp" data-src="assets/video/short-podcast.mp4"></video>
+            <button class="hx-film__next" type="button" data-read-more hidden><span>Read the whole story</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+          <figcaption class="mono">Film · 0:24 · the company is an example</figcaption>
+        </figure>
+        <section class="hx-read" data-read>
+          <p class="hx-read__kick mono">The story · work life, brain life</p>
+          <h3 class="hx-read__title">One AI does the work. <em>The other tells the story.</em></h3>
+          <div class="hx-read__body">
+            <p>The first week of a new job is a fire hose: handbooks, policies, how the place really runs. Reading it at a desk is the slowest way to learn it.</p>
+            <p>Name a subject, the company you just joined, a book, a stretch of history, and Claude writes it as a show for two hosts: where it came from, the rules it lives by, precisely how it all works, pitched at your level.</p>
+            <p>Your phone reads it with natural voices, on the device, so it plays in the car, on a walk, or while Claude builds something in your glasses. Two voices make it a conversation instead of a lecture, and conversations stick.</p>
+            <p>It began as Narrator Studio, an app that turns any text into a chaptered podcast. Now it lives in Vox, one tap from everything else.</p>
+          </div>
+        </section>
         <dl class="hx-sum">
           <div><dt class="mono">What</dt><dd>A podcast about anything you name, written by Claude and voiced on your
               phone by two hosts.</dd></div>
@@ -405,6 +524,24 @@
           <div><dt class="mono">Frontier</dt><dd>Claude writes every script. As the writer improves, so does the show,
               episode after episode.</dd></div>
         </dl>
+        <section class="hx-read hx-arch">
+          <p class="hx-read__kick mono">The architecture</p>
+          <h3 class="hx-read__title">From subject <em>to episode.</em></h3>
+          <p class="hx-read__lede">Text goes through a plan, a cast of voices and a mixer, then plays live or exports with chapters. The voices run in a separate worker, so the app stays responsive while they speak.</p>
+          <ol class="hx-flow" role="list">
+            <li><span class="hx-flow__n mono">01</span><b>Your subject</b><span class="hx-flow__text">A topic, a book, a company: from what you give it or what’s public.</span></li>
+            <li><span class="hx-flow__n mono">02</span><b>Script</b><span class="hx-flow__text">Claude writes the episode at your level; text, Markdown or PDF is cleaned and split into sentences.</span><span class="hx-flow__chips mono"><span>Claude</span></span></li>
+            <li><span class="hx-flow__n mono">03</span><b>Plan</b><span class="hx-flow__text">Style, speakers, pauses, sound and music cues.</span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Voices</b><span class="hx-flow__text">On-device engines in a worker isolate; two hosts in Kokoro’s natural voices.</span><span class="hx-flow__chips mono"><span>Kokoro</span></span></li>
+            <li><span class="hx-flow__n mono">05</span><b>Mix</b><span class="hx-flow__text">Original music ducked under the speech, at 48 kHz.</span></li>
+            <li><span class="hx-flow__n mono">06</span><b>Play or export</b><span class="hx-flow__text">A read-along player, or an M4A with chapters. Vox plays it in the car, on a walk, or while Claude builds.</span><span class="hx-flow__chips mono"><span>M4A</span></span></li>
+          </ol>
+          <div class="hx-notes">
+            <p><b>A model ported by hand.</b> VibeVoice had no phone runtime, so CI converts it to ONNX and I rewrote its inference loop and tokenizer in Dart, checked against the Python reference before it shipped.</p>
+            <p><b>Quality checked on every build.</b> CI renders a sample episode with the real voices and Whisper transcribes it: a 2.6% word error rate.</p>
+            <p><b>Ears over metrics.</b> Automatic scores ranked some robotic voices highest. After listening tests, the characters went back on the more natural voices.</p>
+          </div>
+        </section>
         <figure class="hx-stack">
           <img src="assets/img/stack-podcast.webp" alt="The glasses resting on four floating plates of black glass, one per layer: player, voices, script, your subject" width="1200" height="1200" loading="lazy">
           <figcaption>
@@ -453,6 +590,24 @@
           <p class="eyebrow">04 · Vox Learn</p>
           <h2 class="hx-more__title" id="more-4-title">Don’t get it? <em>Ask, right then and there.</em></h2>
         </header>
+        <figure class="hx-film">
+          <div class="hx-film__frame">
+            <video class="hx-film__video" playsinline controls preload="none" width="1080" height="1080"
+              data-poster="assets/video/short-learn-poster.webp" data-src="assets/video/short-learn.mp4"></video>
+            <button class="hx-film__next" type="button" data-read-more hidden><span>Read the whole story</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+          <figcaption class="mono">Film · 0:24 · an example session</figcaption>
+        </figure>
+        <section class="hx-read" data-read>
+          <p class="hx-read__kick mono">The story · brain life</p>
+          <h3 class="hx-read__title">A teacher with endless patience <em>and no office hours.</em></h3>
+          <div class="hx-read__body">
+            <p>Learning stalls at one moment: you don’t get something, and there’s no one to ask. Vox Learn is built around that moment.</p>
+            <p>Pick a subject. Claude writes the lessons at your level and Kokoro reads them aloud, so a commute becomes a class. Don’t follow? Ask, right then and there, and the answer comes in your ear.</p>
+            <p>On the drive home it quizzes you, and you answer out loud. Parakeet hears you, the phone judges the answer offline, and points, levels and a streak turn it into a game you want to keep playing.</p>
+            <p>Then it does the part most courses skip: the questions you missed come back after 1, 3, 7, 16 and 35 days, just before you’d forget them.</p>
+          </div>
+        </section>
         <dl class="hx-sum">
           <div><dt class="mono">What</dt><dd>Whole subjects as short lessons, then a spoken quiz with points, streaks and
               spaced review.</dd></div>
@@ -461,6 +616,24 @@
           <div><dt class="mono">Frontier</dt><dd>Claude writes the lessons, so a better model means a better teacher,
               overnight.</dd></div>
         </dl>
+        <section class="hx-read hx-arch">
+          <p class="hx-read__kick mono">The architecture</p>
+          <h3 class="hx-read__title">Lessons in. <em>Answers out loud.</em></h3>
+          <p class="hx-read__lede">Claude writes the lessons; everything after that, from the voice to the grading to the schedule, runs on the phone.</p>
+          <ol class="hx-flow" role="list">
+            <li><span class="hx-flow__n mono">01</span><b>Lesson</b><span class="hx-flow__text">Claude writes it at your level; Kokoro reads it aloud.</span><span class="hx-flow__chips mono"><span>Claude</span><span>Kokoro</span></span></li>
+            <li><span class="hx-flow__n mono">02</span><b>Ask</b><span class="hx-flow__text">Stuck? Ask out loud, mid-lesson, and get the answer in your ear.</span></li>
+            <li><span class="hx-flow__n mono">03</span><b>Listen</b><span class="hx-flow__text">NVIDIA Parakeet hears your answer, on the phone.</span><span class="hx-flow__chips mono"><span>Parakeet</span></span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Judge</b><span class="hx-flow__text">Answers are judged on the phone, offline: points, a level, a streak.</span></li>
+            <li><span class="hx-flow__n mono">05</span><b>Review</b><span class="hx-flow__text">Missed questions come back after 1, 3, 7, 16 and 35 days.</span><span class="hx-flow__chips mono"><span>spaced review</span></span></li>
+            <li><span class="hx-flow__n mono">06</span><b>The glasses</b><span class="hx-flow__text">Dark in the car; the questions and the answers come in your ear.</span><span class="hx-flow__chips mono"><span>Even Realities G1</span></span></li>
+          </ol>
+          <div class="hx-notes">
+            <p><b>Hands on the wheel.</b> In the car it’s all voice, and the glasses stay dark.</p>
+            <p><b>Grading without a signal.</b> Answers are judged on the phone, so a tunnel never costs you a streak.</p>
+            <p><b>Memory science, done for you.</b> Spaced review brings each miss back on a widening schedule, so it sticks.</p>
+          </div>
+        </section>
         <figure class="hx-stack">
           <img src="assets/img/stack-learn.webp" alt="The glasses resting on four floating plates of black glass, one per layer: review, judge, listen, lesson" width="1200" height="1200" loading="lazy">
           <figcaption>
@@ -498,6 +671,77 @@
         <div class="hx-more__actions">
           <a class="btn btn--primary btn--sm" href="https://github.com/prunewhip/scouter_kit/releases/tag/scouter-phone-latest" rel="noopener"><svg aria-hidden="true"><use href="#i-download" /></svg> Android build</a>
           <button class="btn btn--ghost btn--sm" type="button" data-short="learn"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="hx-more" id="more-5" aria-labelledby="more-5-title">
+      <div class="hx-more__panel">
+        <button class="hx-more__close" type="button" aria-label="Close" data-more-close><svg aria-hidden="true"><use href="#i-close" /></svg></button>
+        <header class="hx-more__head">
+          <p class="eyebrow">05 · Epilogue</p>
+          <h2 class="hx-more__title" id="more-5-title">And more <em>to come.</em></h2>
+        </header>
+        <figure class="hx-film">
+          <div class="hx-film__frame">
+            <video class="hx-film__video" playsinline controls preload="none" width="1080" height="1080"
+              data-poster="assets/video/short-more-poster.webp" data-src="assets/video/short-more.mp4"></video>
+            <button class="hx-film__next" type="button" data-read-more hidden><span>Read the whole story</span><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+          </div>
+          <figcaption class="mono">Film · 0:18 · to be continued</figcaption>
+        </figure>
+        <section class="hx-read" data-read>
+          <p class="hx-read__kick mono">The story · the next chapter</p>
+          <h3 class="hx-read__title">The book that <em>updates itself.</em></h3>
+          <div class="hx-read__body">
+            <p>Most things you build start ageing the day they ship. These start improving.</p>
+            <p>Each card is a part, not a pillar. Vox runs open models that drop out the day a better one ships; the building, the scripts and the lessons are Claude’s, and every new Claude is a better engineer, writer and teacher on day one.</p>
+            <p>So the work compounds instead of decaying. What took a model a minute last year takes a second now, for a fraction of the cost, and nothing here has to be rewritten to get it.</p>
+            <p>That’s the habit behind all four: borrow the best model you can reach, keep it swappable, and let the frontier do the rest. The frontier never sits still, and neither does anything built on it.</p>
+          </div>
+        </section>
+        <dl class="hx-sum">
+          <div><dt class="mono">What</dt><dd>Four tools with one habit: each borrows the best model it can reach, and
+              trades up the day a better one ships.</dd></div>
+          <div><dt class="mono">Why</dt><dd>So the work compounds instead of ageing. What took a model a minute last year
+              takes a second now, for a fraction of the cost.</dd></div>
+          <div><dt class="mono">Frontier</dt><dd>Open models drop into Vox; Claude writes the code, the scripts and the
+              lessons. Every release upgrades all four.</dd></div>
+        </dl>
+        <section class="hx-read hx-arch">
+          <p class="hx-read__kick mono">The architecture</p>
+          <h3 class="hx-read__title">Wired to <em>the frontier.</em></h3>
+          <p class="hx-read__lede">Where each card plugs into the models, so that every release is an upgrade.</p>
+          <ol class="hx-flow" role="list">
+            <li><span class="hx-flow__n mono">01</span><b>Vox Amelior</b><span class="hx-flow__text">Speech, voices and answers are swappable parts: a better open model drops straight in, and the whole memory gets sharper.</span><span class="hx-flow__chips mono"><span>Parakeet</span><span>Gemma 4</span></span></li>
+            <li><span class="hx-flow__n mono">02</span><b>Linux on the glasses</b><span class="hx-flow__text">Claude Code does the building, so every new Claude is a better engineer on day one.</span><span class="hx-flow__chips mono"><span>Claude Code</span></span></li>
+            <li><span class="hx-flow__n mono">03</span><b>The podcast</b><span class="hx-flow__text">Claude writes every script, so as the writer gets better, so does the show.</span><span class="hx-flow__chips mono"><span>Claude</span><span>Kokoro</span></span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Vox Learn</b><span class="hx-flow__text">Claude writes the lessons: tomorrow’s model teaches tomorrow’s class.</span><span class="hx-flow__chips mono"><span>Claude</span><span>Parakeet</span></span></li>
+          </ol>
+          <div class="hx-notes">
+            <p><b>Small at home, big when it counts.</b> The daily work runs on small models on the phone, free and private; the frontier models do what only they can.</p>
+            <p><b>Nothing to rewrite.</b> Each model sits behind its own seam, so an upgrade is a swap, not a project.</p>
+          </div>
+        </section>
+        <div class="hx-more__cols">
+          <section>
+            <h3 class="hx-more__h">How each card keeps up</h3>
+            <ol class="hx-steps" role="list">
+              <li>Vox Amelior: every model is a part, not a pillar.</li>
+              <li>Linux on the glasses: Claude Code does the building.</li>
+              <li>The podcast: Claude writes every script.</li>
+              <li>Vox Learn: tomorrow’s model teaches tomorrow’s class.</li>
+            </ol>
+          </section>
+          <section>
+            <h3 class="hx-more__h">The next chapter</h3>
+            <p>Most things you build start ageing the day they ship. These start improving. The frontier never sits
+              still, and neither does anything built on it, including the person who built these.</p>
+          </section>
+        </div>
+        <div class="hx-more__actions">
+          <a class="btn btn--primary btn--sm" href="#contact">Write the next chapter with me <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          <a class="btn btn--ghost btn--sm" href="architecture.html">How it’s built <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
         </div>
       </div>
     </dialog>
