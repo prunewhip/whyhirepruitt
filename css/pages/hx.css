@@ -722,6 +722,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
+    "tabs"
     "stage"
     "name"
     "nav"
@@ -929,7 +930,7 @@
   line-height: 1.4;
 }
 
-/* The pages by name, then arrows, the countdown and the pause */
+/* Arrows, the countdown and the pause, under the book (the pages by name are above it) */
 .hx-book__nav {
   grid-area: nav;
   display: grid;
@@ -939,6 +940,9 @@
 }
 
 .hx-book__tabs {
+  grid-area: tabs;
+  justify-self: center;
+  width: min(100%, 720px);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

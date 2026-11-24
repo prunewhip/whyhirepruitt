@@ -29,7 +29,7 @@
   <link rel="preload" href="assets/fonts/geist-latin-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/design-system.css">
   <link rel="stylesheet" href="css/pages/home.css">
-  <link rel="stylesheet" href="css/pages/hx.css?v=43">
+  <link rel="stylesheet" href="css/pages/hx.css?v=44">
 
   <script>
     document.documentElement.classList.add('js');
@@ -138,6 +138,14 @@
         </header>
 
         <div class="hx-book hx-deck hx-flip reveal" data-deck role="region" aria-roledescription="carousel" aria-label="What I’ve built">
+          <!-- The pages by name, above the book, so they stay in sight while it turns -->
+          <ol class="hx-book__tabs">
+            <li><button class="hx-book__tab" type="button" data-go="0" aria-current="true"><span class="mono">01</span> <span class="hx-book__long">Vox Amelior</span><span class="hx-book__short" aria-hidden="true">Vox</span></button></li>
+            <li><button class="hx-book__tab" type="button" data-go="1"><span class="mono">02</span> Even G1</button></li>
+            <li><button class="hx-book__tab" type="button" data-go="2"><span class="mono">03</span> Podcast</button></li>
+            <li><button class="hx-book__tab" type="button" data-go="3"><span class="mono">04</span> <span class="hx-book__long">Vox Learn</span><span class="hx-book__short" aria-hidden="true">Learn</span></button></li>
+            <li><button class="hx-book__tab" type="button" data-go="4"><span class="mono">05</span> <span class="hx-book__long">More to come</span><span class="hx-book__short" aria-hidden="true">More</span></button></li>
+          </ol>
           <!-- The book, live in WebGL (js/3d/book.js): it opens from its cover onto Vox Amelior and turns a page per
                tool. The stills are the same book path-traced (tools/render/book.py), one per spread: the first paint,
                and the whole show where WebGL can't run. The video is the Vox film's source; it plays on the first
@@ -160,13 +168,6 @@
           <h3 class="hx-book__name"><span class="mono">Four cards · one idea</span><span>The Tech <em>Stack.</em></span></h3>
 
           <div class="hx-book__nav">
-            <ol class="hx-book__tabs">
-              <li><button class="hx-book__tab" type="button" data-go="0" aria-current="true"><span class="mono">01</span> <span class="hx-book__long">Vox Amelior</span><span class="hx-book__short" aria-hidden="true">Vox</span></button></li>
-              <li><button class="hx-book__tab" type="button" data-go="1"><span class="mono">02</span> Even G1</button></li>
-              <li><button class="hx-book__tab" type="button" data-go="2"><span class="mono">03</span> Podcast</button></li>
-              <li><button class="hx-book__tab" type="button" data-go="3"><span class="mono">04</span> <span class="hx-book__long">Vox Learn</span><span class="hx-book__short" aria-hidden="true">Learn</span></button></li>
-              <li><button class="hx-book__tab" type="button" data-go="4"><span class="mono">05</span> <span class="hx-book__long">More to come</span><span class="hx-book__short" aria-hidden="true">More</span></button></li>
-            </ol>
             <div class="hx-strip__nav">
               <button class="hx-arrow hx-arrow--prev" type="button" aria-label="Previous page" data-strip-prev><svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
               <p class="hx-strip__count mono" data-strip-count>01 / 05</p>
