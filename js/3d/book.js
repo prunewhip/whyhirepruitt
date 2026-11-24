@@ -515,7 +515,8 @@ function createSparks(time) {
   };
 }
 
-export async function createBook(canvas, { screens, film = null, calm = false, mirror = true, glow = true, msaa = null }) {
+export async function createBook(canvas, { screens, version = '', film = null, calm = false, mirror = true, glow = true, msaa = null }) {
+  const v = version ? `?v=${version}` : '';
   // Always running while on screen: even with reduced motion, a page someone turns should turn
   const stage = createStage(canvas, { fov: 30, exposure: 1.0, honorReducedMotion: false });
   const { scene, camera, renderer } = stage;
@@ -523,8 +524,8 @@ export async function createBook(canvas, { screens, film = null, calm = false, m
   const names = ['cover', 'ui-0', 'ui-1', 'ui-2', 'ui-3', 'media-0', 'media-1', 'media-2', 'media-3', 'back'];
   const tex = {};
   const [spec] = await Promise.all([
-    fetch(`${screens}live.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
-    ...names.map(async (name) => { tex[name] = await loadTexture(`${screens}${name}.webp`, renderer); })
+    fetch(`${screens}live.json${v}`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+    ...names.map(async (name) => { tex[name] = await loadTexture(`${screens}${name}.webp${v}`, renderer); })
   ]);
   const time = { value: 0 }; // for the trail and sparks
   const screenTime = { value: 2 }; // for the screens' moving parts (held still when calm)

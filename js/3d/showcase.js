@@ -2,11 +2,11 @@
  * Showcases: the real devices, rendered like product shots, each showing what its AI actually does.
  *
  *   hero      the phone and the G1 glasses turning together. Each turn brings a question, the next turn its answer:
- *             the phone answers from your own conversations (Vox Amelior), the glasses answer with Claude
+ *             the phone answers from your own conversations (Vox Amelior), the glasses answer with frontier AI
  *             (Even Suite). The questions shuffle.
  *   vox       the phone, which comes apart as you scroll into the five layers of AI that run inside it, each
  *             labelled with its model, while its screen moves from a question to its answer
- *   glasses   the G1 glasses turning on their own, a question to Claude on one turn and its answer on the next,
+ *   glasses   the G1 glasses turning on their own, a question to frontier AI on one turn and its answer on the next,
  *             with the phone running Even Suite behind them
  *   narrator  the phone reading aloud: every turn shows a new episode, its words flowing in and sound rippling out
  *   interface the G1 glasses as a second screen, with Vox on the phone behind them: each turn brings another source
@@ -32,12 +32,12 @@ const VOX_QA = [
   { question: 'What needs to be bought?', answer: ['Eggs', 'The good bread', 'You still have milk'], source: 'From Jordan · Tuesday, 8:10 AM' }
 ];
 
-// Asked out loud through Even Suite: answered by Claude, five lines a page on the glasses
+// Asked out loud through Even Suite: answered by frontier AI, five lines a page on the glasses
 const CLAUDE_QA = [
-  { question: ['You:', 'Why is the sky blue?'], answer: ['Claude:', 'Air scatters blue light', 'more than red, so blue', 'reaches you from', 'every direction.'] },
-  { question: ['You:', 'How do I say thank', 'you in Japanese?'], answer: ['Claude:', 'Arigatō gozaimasu.', 'Arigatō on its own', 'is more casual.'] },
-  { question: ['You:', 'What’s an 18% tip', 'on $64?'], answer: ['Claude:', '$11.52, so $75.52', 'in total.'] },
-  { question: ['You:', 'Spanish for', '“Where’s the station?”'], answer: ['Claude:', '¿Dónde está', 'la estación?'] }
+  { question: ['You:', 'Why is the sky blue?'], answer: ['AI:', 'Air scatters blue light', 'more than red, so blue', 'reaches you from', 'every direction.'] },
+  { question: ['You:', 'How do I say thank', 'you in Japanese?'], answer: ['AI:', 'Arigatō gozaimasu.', 'Arigatō on its own', 'is more casual.'] },
+  { question: ['You:', 'What’s an 18% tip', 'on $64?'], answer: ['AI:', '$11.52, so $75.52', 'in total.'] },
+  { question: ['You:', 'Spanish for', '“Where’s the station?”'], answer: ['AI:', '¿Dónde está', 'la estación?'] }
 ];
 
 // What Vox puts on the glasses, one source per pair of turns (a moment, then the next one); `lit` is the source the

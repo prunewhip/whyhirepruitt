@@ -489,8 +489,10 @@ function initDeck() {
     loading = true;
     report('loading');
     try {
-      const { createBook } = await import('./3d/book.js');
-      book = await createBook(canvas, { screens: figure.dataset.screens, film: saveData() ? null : film, calm });
+      // ?v: the release, so a cached copy from an older one is never used
+      const v = figure.dataset.v ? `?v=${figure.dataset.v}` : '';
+      const { createBook } = await import(`./3d/book.js${v}`);
+      book = await createBook(canvas, { screens: figure.dataset.screens, version: figure.dataset.v, film: saveData() ? null : film, calm });
       onDialog.push((open) => book.hold(open));
       book.onAnchor((a) => {
         if (a.show) {
@@ -719,7 +721,7 @@ const SHORTS = {
   },
   podcast: {
     title: 'The podcast · 0:24 · the company is an example',
-    words: 'Name a subject: your new job? Make it a show. Claude writes it: a script at your level. Your phone reads it: two natural voices, on the phone. Put it on while Claude builds: one AI does the work, the other tells the story.'
+    words: 'Name a subject: your new job? Make it a show. AI writes it: a script at your level. Your phone reads it: two natural voices, on the phone. Put it on while AI builds: one AI does the work, the other tells the story.'
   },
   more: {
     title: 'And more to come · 0:18',
@@ -785,6 +787,8 @@ function initShorts() {
     opener = button;
     video.poster = `assets/video/short-${name}-poster.webp`;
     video.src = `assets/video/short-${name}.mp4`;
+    // It starts muted (the music is a tap away, on the film's own controls)
+    video.muted = true;
     title.textContent = film.title;
     words.textContent = `Words on screen, with music: ${film.words}`;
     dialog.showModal();
@@ -839,10 +843,9 @@ function initMore() {
       if (!video) return;
       if (!video.getAttribute('src')) video.src = video.dataset.src;
       if (!autoplay || saveData()) return;
-      video.play().catch(() => {
-        video.muted = true;
-        video.play().catch(() => {});
-      });
+      // It starts muted (the music is a tap away, on the film's own controls)
+      video.muted = true;
+      video.play().catch(() => {});
     };
 
     async function open(from) {
@@ -903,6 +906,28 @@ function initScrollCue() {
   onScroll();
 }
 
+/* "See what I built": lands with the section's title just under the bar, the book whole below it. Measured from the
+   layout (offsetTop), not the screen, so the title's entrance (it rises 16px as it appears) can't throw it off */
+function initJumps() {
+  const target = document.getElementById('built-title');
+  if (!target) return;
+  const bar = document.querySelector('.site-nav');
+  const go = (smooth) => {
+    let y = 0;
+    for (let el = target; el; el = el.offsetParent) y += el.offsetTop;
+    const top = Math.max(0, y - (bar ? bar.offsetHeight : 64) - 16);
+    scrollTo({ top, behavior: smooth && !reduced.matches ? 'smooth' : 'instant' });
+  };
+  document.querySelectorAll('a[href="#built-title"]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    history.pushState(null, '', '#built-title');
+    go(true);
+  }));
+  // Arriving from another page (index.html#built-title): the same place, once everything has its size
+  if (location.hash === '#built-title') addEventListener('load', () => go(false), { once: true });
+}
+
+initJumps();
 initHero();
 initCounters();
 initDeck();
