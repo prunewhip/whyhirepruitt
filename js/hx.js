@@ -154,10 +154,13 @@ const LASER = (() => {
   return { stroke, stamp, run };
 })();
 
-/* The laser pop: a pop-up comes out of the button that asked for it. A beam fires from the button to the top of the
-   box; two points race round its edge and meet at the bottom, leaving it outlined; a scan line sweeps down and the
-   inside appears behind it (reveal(px) shows the top px of it; null shows it all); then the light fades. The way
-   back runs it in reverse: the inside scans away upward, the outline folds to a point, the beam goes home. */
+/* The laser pop: a pop-up is projected out of the button that asked for it, like a hologram. A beam fires from the
+   button to the top of the box; two points race round its edge and meet at the bottom, leaving it outlined; a scan
+   line sweeps down with a cone of light from the button behind it, and the inside phases in as a green, scan-lined,
+   flickering projection (reveal(px) shows the top px of it; null shows it all); then it locks solid with a flash and
+   the light fades. The way back runs it in reverse: it destabilises into a hologram again, scans away upward, the
+   outline folds to a point and the beam goes home. skin, the element that flickers; the scan lines and the green
+   are drawn over it on the laser's canvas (only ever screen-sized, so it stays light on a phone) */
 const POP = (() => {
   const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
   const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -199,24 +202,84 @@ const POP = (() => {
   const buzz = (ms) => {
     try { if (navigator.vibrate && !reduced.matches) navigator.vibrate(ms); } catch (error) { /* no vibration: fine */ }
   };
+  // The hologram on the skin: holo 1 is a shimmering projection (see-through, scan-lined, now and then dropping
+  // out or slipping sideways), 0 is solid. wild scales the dropouts and slips
+  const holoSkin = (skin, holo, t, wild = holo) => {
+    if (!skin) return;
+    if (holo <= 0.001) {
+      skin.style.opacity = '';
+      skin.style.transform = '';
+      return;
+    }
+    const shimmer = 0.1 * Math.sin(t * 0.047) + 0.06 * Math.sin(t * 0.131 + 1.7);
+    const drop = Math.random() < 0.06 * wild ? 0.3 * wild : 0;
+    skin.style.opacity = clamp01(1 - holo * (0.26 + shimmer) - drop).toFixed(3);
+    skin.style.transform = Math.random() < 0.1 * wild ? `translate3d(${((Math.random() - 0.5) * 12 * wild).toFixed(1)}px, 0, 0)` : '';
+  };
+  // The projection's light over the part shown so far: a green wash and fine scan lines (a 4px tile, repeated)
+  const tile = document.createElement('canvas');
+  tile.width = 1;
+  tile.height = 4;
+  const tg = tile.getContext('2d');
+  tg.fillStyle = 'rgba(170, 255, 215, 0.55)';
+  tg.fillRect(0, 0, 1, 1);
+  const projection = (g, r, shown, a) => {
+    if (a <= 0 || shown <= 0) return;
+    g.save();
+    g.beginPath();
+    if (g.roundRect) g.roundRect(r.left, r.top, r.width, Math.min(shown, r.height), 24);
+    else g.rect(r.left, r.top, r.width, Math.min(shown, r.height));
+    g.clip();
+    g.fillStyle = `rgba(111, 240, 166, ${(0.11 * a).toFixed(3)})`;
+    g.fillRect(r.left, r.top, r.width, shown);
+    g.globalAlpha = 0.6 * a;
+    g.fillStyle = g.createPattern(tile, 'repeat');
+    g.fillRect(r.left, r.top, r.width, shown);
+    g.restore();
+  };
+  // Faint lines of interference across the projection, and the cone of light from the button to the scan line
+  const interference = (g, r, shown, a) => {
+    for (let i = 0; i < 2; i++) {
+      const ly = r.top + Math.random() * shown;
+      stroke(g, r.left + 4, ly, r.right - 4, ly, 0.14 * a);
+    }
+  };
+  const cone = (g, o, r, y, a) => {
+    g.fillStyle = `rgba(111, 240, 166, ${(0.07 * a).toFixed(3)})`;
+    g.beginPath();
+    g.moveTo(o.x, o.y);
+    g.lineTo(r.left + 6, r.top + y);
+    g.lineTo(r.right - 6, r.top + y);
+    g.closePath();
+    g.fill();
+  };
+  const flash = (g, r, a) => {
+    g.fillStyle = `rgba(150, 250, 200, ${(0.16 * a).toFixed(3)})`;
+    g.beginPath();
+    if (g.roundRect) g.roundRect(r.left, r.top, r.width, r.height, 24);
+    else g.rect(r.left, r.top, r.width, r.height);
+    g.fill();
+  };
 
-  // in({ host, box, from, reveal, onScan }): host, the dialog the light draws in; box(), the rect to pop out;
-  // from, the element it comes from; onScan, once, as the inside starts to appear
-  function popIn({ host, box, from, reveal, onScan = () => {} }) {
+  // in({ host, box, from, reveal, skin, onScan }): host, the dialog the light draws in; box(), the rect to pop out;
+  // from, the element it comes from; skin, the element that phases in; onScan, once, as the inside starts to appear
+  async function popIn({ host, box, from, reveal, skin, onScan = () => {} }) {
     const sparks = [];
     let scanning = false;
-    const FIRE = 170;
-    const TRACE = 420;
-    const SCAN = 460;
-    const FADE = 320;
+    let locked = false;
+    const FIRE = 120;
+    const TRACE = 295;
+    const SCAN = 390;
+    const LOCK = 335;
     buzz(12);
     reveal(0);
-    return run((g, t) => {
+    await run((g, t) => {
       const r = box();
       const o = centre(from);
       const L = perimeter(r);
       const top = { x: r.left + r.width / 2, y: r.top };
-      stamp(g, o.x, o.y, 64, t < FIRE + TRACE + SCAN ? 1 : 1 - (t - FIRE - TRACE - SCAN) / FADE);
+      const life = t < FIRE + TRACE + SCAN ? 1 : Math.max(0, 1 - (t - FIRE - TRACE - SCAN) / LOCK);
+      stamp(g, o.x, o.y, 64, life);
       if (t < FIRE) {
         const k = ease(t / FIRE);
         const tx = o.x + (top.x - o.x) * k;
@@ -239,17 +302,35 @@ const POP = (() => {
           onScan();
         }
         const p = clamp01((t - FIRE - TRACE) / SCAN);
-        const life = t < FIRE + TRACE + SCAN ? 1 : Math.max(0, 1 - (t - FIRE - TRACE - SCAN) / FADE);
         const y = ease(p) * r.height;
-        reveal(p >= 1 ? null : y);
-        outline(g, r, L / 2, life);
         if (p < 1) {
-          stroke(g, r.left + 6, r.top + y, r.right - 6, r.top + y, life);
-          stroke(g, o.x, o.y, r.left + 6, r.top + y, 0.35 * life);
-          stroke(g, o.x, o.y, r.right - 6, r.top + y, 0.35 * life);
+          // phasing in behind the scan line: a full-strength hologram
+          reveal(y);
+          holoSkin(skin, 1, t);
+          projection(g, r, y, 1);
+          cone(g, o, r, y, 1);
+          interference(g, r, y, 1);
+          outline(g, r, L / 2, 1);
+          stroke(g, r.left + 6, r.top + y, r.right - 6, r.top + y, 1);
+          stroke(g, o.x, o.y, r.left + 6, r.top + y, 0.35);
+          stroke(g, o.x, o.y, r.right - 6, r.top + y, 0.35);
           for (let i = 0; i < 3; i++) sparks.push({ x: r.left + Math.random() * r.width, y: r.top + y, vx: (Math.random() - 0.5) * 1.4, vy: -(0.4 + Math.random() * 1.6), life: 1 });
+        } else {
+          // locking solid: a flash, the shimmer settles, the light fades
+          if (!locked) {
+            locked = true;
+            reveal(null);
+            buzz(6);
+          }
+          const q = 1 - life;
+          holoSkin(skin, 1 - ease(q), t, Math.max(0, 1 - q * 1.8));
+          projection(g, r, r.height, 1 - ease(q));
+          flash(g, r, (1 - q) * (1 - q));
+          cone(g, o, r, r.height, life * 0.6);
+          interference(g, r, r.height, life);
+          outline(g, r, L / 2, life);
+          if (life <= 0) return false;
         }
-        if (life <= 0) return false;
       }
       for (const k of sparks) {
         k.x += k.vx;
@@ -261,24 +342,40 @@ const POP = (() => {
       while (sparks.length && sparks[0].life <= 0) sparks.shift();
       return true;
     }, host);
+    reveal(null);
+    holoSkin(skin, 0, 0);
   }
 
-  function popOut({ host, box, from, reveal }) {
-    const SCAN = 300;
-    const FOLD = 300;
+  async function popOut({ host, box, from, reveal, skin }) {
+    const SHAKE = 140;
+    const SCAN = 225;
+    const FOLD = 210;
     buzz(8);
-    return run((g, t) => {
+    await run((g, t) => {
       const r = box();
       const o = centre(from);
-      if (t < SCAN) {
-        const y = (1 - ease(t / SCAN)) * r.height;
+      if (t < SHAKE) {
+        // it loses its hold: back to a flickering hologram
+        const k = ease(t / SHAKE);
+        holoSkin(skin, k, t, 0.6 + 0.4 * k);
+        projection(g, r, r.height, k);
+        outline(g, r, perimeter(r) / 2, k);
+        interference(g, r, r.height, k);
+        return true;
+      }
+      if (t < SHAKE + SCAN) {
+        const y = (1 - ease((t - SHAKE) / SCAN)) * r.height;
         reveal(y);
+        holoSkin(skin, 1, t);
+        projection(g, r, y, 1);
+        cone(g, o, r, y, 1);
+        interference(g, r, y, 1);
         outline(g, r, perimeter(r) / 2, 1);
         stroke(g, r.left + 6, r.top + y, r.right - 6, r.top + y, 1);
         return true;
       }
       reveal(0);
-      const p = ease(clamp01((t - SCAN) / FOLD));
+      const p = ease(clamp01((t - SHAKE - SCAN) / FOLD));
       const cx = r.left + r.width / 2;
       const cy = r.top + r.height / 2;
       const w = r.width * (1 - p) * 0.5;
@@ -289,8 +386,9 @@ const POP = (() => {
       const hy = cy + (o.y - cy) * p;
       stroke(g, hx, hy, cx, cy, 1 - p);
       stamp(g, hx, hy, 50, 1);
-      return t < SCAN + FOLD;
+      return t < SHAKE + SCAN + FOLD;
     }, host);
+    holoSkin(skin, 0, 0);
   }
   return { in: popIn, out: popOut };
 })();
@@ -299,7 +397,7 @@ const POP = (() => {
 const sheets = {};
 
 /* 4. What I've built: a book of glass screens on one hinge, live in WebGL (js/3d/book.js). It waits closed on its
-   cover until it comes into view, opens onto Vox Amelior, then turns one page per tool: Linux on the glasses, the
+   cover until it comes into view, opens onto Vox Amelior, then turns one page per tool: Even G1, the
    podcast, Vox Learn. Arrows, the names, either half of the book, swipes and the chips under The Tech Stack all turn
    it, and it turns itself, slowly (the bar counts down), resting while someone points at it or the stack below,
    reads a "More" sheet or watches a film, and never at all with reduced motion. The pause button stops it for
@@ -660,13 +758,12 @@ function initShorts() {
   const cover = dialog.querySelector('.hx-reel__cover');
   let opener = null;
   let busy = false;
-  const calm = () => reduced.matches;
   const reveal = (px) => { cover.style.transform = px === null ? 'translate3d(0, 101%, 0)' : `translate3d(0, ${px}px, 0)`; };
   const box = () => frame.getBoundingClientRect();
   // In: out of the button that asked, the film already playing as it scans in; the words and the × follow
   async function popIn() {
     dialog.classList.add('is-firing');
-    await POP.in({ host: dialog, box, from: opener, reveal, onScan: () => video.play().catch(() => {}) });
+    await POP.in({ host: dialog, box, from: opener, reveal, skin: frame, onScan: () => video.play().catch(() => {}) });
     dialog.classList.remove('is-firing');
   }
   // Out: back the way it came, then closed
@@ -674,10 +771,8 @@ function initShorts() {
     if (busy) return;
     busy = true;
     video.pause();
-    if (!calm()) {
-      dialog.classList.add('is-firing');
-      await POP.out({ host: dialog, box, from: opener, reveal });
-    }
+    dialog.classList.add('is-firing');
+    await POP.out({ host: dialog, box, from: opener, reveal, skin: frame });
     dialog.close();
     dialog.classList.remove('is-firing');
     busy = false;
@@ -694,8 +789,7 @@ function initShorts() {
     words.textContent = `Words on screen, with music: ${film.words}`;
     dialog.showModal();
     syncLock();
-    if (calm()) video.play().catch(() => {});
-    else popIn();
+    popIn();
   }));
 
   dialog.addEventListener('close', () => {
@@ -759,26 +853,21 @@ function initMore() {
       dialog.showModal();
       dialog.scrollTop = 0;
       syncLock();
-      if (!reduced.matches) {
-        busy = true;
-        dialog.classList.add('is-firing');
-        // it opens at the top: hold it there while it scans in
-        await POP.in({ host: dialog, box, from: opener, reveal: (px) => { if (dialog.scrollTop) dialog.scrollTop = 0; reveal(px); } });
-        reveal(null);
-        dialog.classList.remove('is-firing');
-        busy = false;
-      }
-      startFilm(!reduced.matches);
+      busy = true;
+      dialog.classList.add('is-firing');
+      // it opens at the top: hold it there while it phases in
+      await POP.in({ host: dialog, box, from: opener, skin: panel, reveal: (px) => { if (dialog.scrollTop) dialog.scrollTop = 0; reveal(px); } });
+      dialog.classList.remove('is-firing');
+      busy = false;
+      startFilm(true);
       if (title) title.focus({ preventScroll: true });
     }
     async function close() {
       if (!dialog.open || busy) return;
       busy = true;
       if (video) video.pause();
-      if (!reduced.matches) {
-        dialog.classList.add('is-firing');
-        await POP.out({ host: dialog, box, from: opener, reveal });
-      }
+      dialog.classList.add('is-firing');
+      await POP.out({ host: dialog, box, from: opener, reveal, skin: panel });
       dialog.close();
       dialog.classList.remove('is-firing');
       reveal(null);

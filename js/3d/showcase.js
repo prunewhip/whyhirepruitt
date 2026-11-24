@@ -10,7 +10,7 @@
  *             with the phone running Even Suite behind them
  *   narrator  the phone reading aloud: every turn shows a new episode, its words flowing in and sound rippling out
  *   interface the G1 glasses as a second screen, with Vox on the phone behind them: each turn brings another source
- *             to the lens (Claude Code in a terminal, the look-up glance, live captions, your voice into the prompt),
+ *             to the lens (frontier AI in a terminal, the look-up glance, live captions, your voice into the prompt),
  *             and the phone lights the source that's on the glasses
  *
  * Content changes while a device's back is to you, so you never see it switch; the text then types in as it turns
@@ -43,14 +43,14 @@ const CLAUDE_QA = [
 // What Vox puts on the glasses, one source per pair of turns (a moment, then the next one); `lit` is the source the
 // phone shows as on. Examples of what each source looks like; the lens fits about 22 characters a line.
 const INTERFACE = [
-  { lit: 'terminal', question: ['Claude Code · phone', '> why does the', '  login test fail?'],
-    answer: ['Claude Code · phone', 'The token expires', 'before the retry.', 'Fixed: 12 tests pass.'] },
+  { lit: 'terminal', question: ['Frontier AI · phone', '> why does the', '  login test fail?'],
+    answer: ['Frontier AI · phone', 'The token expires', 'before the retry.', 'Fixed: 12 tests pass.'] },
   { lit: 'look', question: ['Look up · 9:41', '72° and sunny', 'Next: 1:1 with Sam', 'Mom: call me back'],
     answer: ['Look up · 9:44', '72° and sunny', 'In 15 min: 1:1, Sam', 'Battery 84% · 81%'] },
   { lit: 'listen', question: ['Live · kitchen', 'Dana: hold reset', 'until it blinks', 'amber.'],
     answer: ['Ask · from Monday', 'Dana’s reset steps:', 'Breaker off, wait 30 s,', 'hold reset till amber.'] },
   { lit: 'voice', question: ['You, out loud:', '“Add a test for', 'the expired token.”'],
-    answer: ['Claude Code · phone', '> add a test for', '  the expired token', 'Added. 13 tests pass.'] }
+    answer: ['Frontier AI · phone', '> add a test for', '  the expired token', 'Added. 13 tests pass.'] }
 ];
 
 // Made in Narrator Studio from text you choose (the first is the app's own sample episode)

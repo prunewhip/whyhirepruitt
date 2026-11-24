@@ -93,32 +93,22 @@
   </header>
 
   <main id="main">
-    <!-- ══════════ Hero: the pitch, and the glasses turning on a black floor ══════════ -->
+    <!-- ══════════ Hero: the pitch, title first (home life, work life, brain life) ══════════ -->
     <section class="hx-hero" aria-labelledby="hero-title">
-      <!-- The glasses, path-traced in Blender Cycles (tools/render/g1.py). A 360° turntable (shot "spin")
-           can play over this still (js/hx.js initHero). Wide screens: the right side, beside the words. Phones: above the words. -->
-      <figure class="hx-shot" aria-hidden="true" data-shot>
-        <div class="hx-shot__drift" data-shot-drift>
-          <img src="assets/img/g1-square-1400.webp" srcset="assets/img/g1-square-900.webp 900w, assets/img/g1-square-1400.webp 1400w"
-              sizes="(max-width: 899px) 100vw, 56vw" alt="" width="1400" height="1400" fetchpriority="high">
-          <video class="hx-shot__video" muted loop playsinline preload="none" width="864" height="864" data-src="assets/video/g1-turntable.mp4"></video>
-        </div>
-      </figure>
-
       <div class="container hx-hero__inner">
+        <h1 class="hx-title" id="hero-title">
+          <span class="hx-line"><span style="--l:0">Remember less.</span></span>
+          <span class="hx-line"><span style="--l:1">Wait less.</span></span>
+          <span class="hx-line"><span style="--l:2"><em>Know more.</em></span></span>
+        </h1>
         <p class="hx-status hx-in" style="--d:0">
           <img src="assets/img/avatar-96.webp" alt="" width="28" height="28">
           <b>Pruitt Colon</b> <span class="hx-role">AI engineer</span>
           <span class="hx-sep" aria-hidden="true"></span>
           <span class="status-dot" aria-hidden="true"></span> Open to full-time roles
         </p>
-        <h1 class="hx-title" id="hero-title">
-          <span class="hx-line"><span style="--l:0">Forget nothing.</span></span>
-          <span class="hx-line"><span style="--l:1">Learn anything.</span></span>
-          <span class="hx-line"><span style="--l:2"><em>Build anywhere.</em></span></span>
-        </h1>
-        <p class="hx-lead hx-in" style="--d:3">I built AI tools for getting better at your own pace and staying productive
-          wherever you are. Put a podcast on while Claude builds; your glasses tap you only when it counts.</p>
+        <p class="hx-lead hx-in" style="--d:3">AI that does the remembering at home, the waiting at work and the teaching on
+          the drive: a lighter home life, work life and brain life. I build it on a phone, with Claude.</p>
         <div class="hx-actions hx-in" style="--d:4">
           <a class="btn btn--primary btn--lg" href="#built">See what I built <svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
           <button class="btn btn--secondary btn--lg" type="button" data-short="story"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch the story <span class="mono">0:39</span></button>
@@ -159,7 +149,7 @@
               <img class="hx-book__still" src="assets/img/book/f00.webp" width="1280" height="880" alt="" data-book-still>
               <canvas class="hx-book__canvas" aria-hidden="true" data-book-canvas></canvas>
               <video class="hx-book__film" muted loop playsinline preload="none" width="1080" height="1080" tabindex="-1" aria-hidden="true"
-                data-src="assets/video/short-remember.mp4" data-book-film></video>
+                data-src="assets/video/short-remember.mp4" data-loop-end="17.6" data-book-film></video>
             </div>
             <button class="hx-book__half hx-book__half--back" type="button" tabindex="-1" aria-hidden="true" data-book-back></button>
             <button class="hx-book__half hx-book__half--next" type="button" tabindex="-1" aria-hidden="true" data-book-next></button>
@@ -172,7 +162,7 @@
           <div class="hx-book__nav">
             <ol class="hx-book__tabs">
               <li><button class="hx-book__tab" type="button" data-go="0" aria-current="true"><span class="mono">01</span> <span class="hx-book__long">Vox Amelior</span><span class="hx-book__short" aria-hidden="true">Vox</span></button></li>
-              <li><button class="hx-book__tab" type="button" data-go="1"><span class="mono">02</span> Linux</button></li>
+              <li><button class="hx-book__tab" type="button" data-go="1"><span class="mono">02</span> Even G1</button></li>
               <li><button class="hx-book__tab" type="button" data-go="2"><span class="mono">03</span> Podcast</button></li>
               <li><button class="hx-book__tab" type="button" data-go="3"><span class="mono">04</span> <span class="hx-book__long">Vox Learn</span><span class="hx-book__short" aria-hidden="true">Learn</span></button></li>
               <li><button class="hx-book__tab" type="button" data-go="4"><span class="mono">05</span> <span class="hx-book__long">More to come</span><span class="hx-book__short" aria-hidden="true">More</span></button></li>
@@ -188,7 +178,7 @@
 
           <div class="hx-book__copy" data-strip-stage>
             <article class="hx-page" role="group" aria-roledescription="slide" aria-label="1 of 5: Vox Amelior" id="built-1" data-dwell="24"
-              data-alt="A book of glass screens on a polished hinge, open at Vox Amelior: its film plays on the left page; the right page reads Forget nothing, share nothing, with an example question and its answer.">
+              data-alt="A book of glass cards, open at Vox Amelior: on the left, Forget nothing, share nothing, with an example question and its answer; on the right, its film, opening on an example question about your day and its answer.">
               <p class="hx-panel__meta mono">01 · Vox Amelior · Android</p>
               <h3 class="hx-panel__title">Forget nothing. <em>Share nothing.</em></h3>
               <p class="hx-panel__text">It writes down what’s said around you, learns who said it and answers when you
@@ -203,23 +193,23 @@
               </div>
             </article>
 
-            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="2 of 5: Linux on the glasses" id="built-2" hidden
-              data-alt="The book, open at Linux on the glasses: the left page shows the glasses with a Linux desktop in each lens; the right page reads Your computer, one look away, over an example terminal where Claude Code edits two files.">
+            <article class="hx-page" role="group" aria-roledescription="slide" aria-label="2 of 5: Even G1" id="built-2" hidden
+              data-alt="The book, open at Even G1: on the left, Your computer, one look away, over an example terminal where frontier AI edits two files; on the right, the Even G1 glasses with a Linux desktop in each lens.">
               <p class="hx-panel__meta mono">02 · Vox · Kotlin + C++ · Android</p>
               <h3 class="hx-panel__title">Your computer, <em>one look away.</em></h3>
               <p class="hx-panel__text">The terminal at home, the machine at work, or a whole Linux desktop on the
-                phone alone, in your glasses. Tell Claude Code what to build, then get on with your day; the lenses stay
+                phone alone, in your glasses. Tell frontier AI what to build, then get on with your day; the lenses stay
                 dark until there’s progress to see. You check in. You don’t sit in.</p>
-              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Claude Code does
-                the building, so every new Claude model is a better engineer on day one.</p>
+              <p class="hx-frontier"><span class="hx-frontier__tag mono">Wired to the frontier</span> Frontier AI does
+                the building, so every new model is a better engineer on day one.</p>
               <div class="hx-panel__actions">
-                <button class="btn btn--primary btn--sm" type="button" data-more="more-2">More on Linux on the glasses <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
+                <button class="btn btn--primary btn--sm" type="button" data-more="more-2">More on Even G1 <svg aria-hidden="true"><use href="#i-arrow" /></svg></button>
                 <button class="btn btn--ghost btn--sm" type="button" data-short="build"><svg aria-hidden="true"><use href="#i-play" /></svg> Watch <span class="mono">0:24</span></button>
               </div>
             </article>
 
             <article class="hx-page" role="group" aria-roledescription="slide" aria-label="3 of 5: The podcast" id="built-3" hidden
-              data-alt="The book, open at the podcast: the glasses playing an example episode on the left; on the right, The employee handbook, now with a plot, an example player for Northwind, explained, episode 3, with two hosts.">
+              data-alt="The book, open at the podcast: on the left, The employee handbook, now with a plot, an example player for Northwind, explained, episode 3, with two hosts; on the right, Two natural voices, on the phone, over the example episode playing.">
               <p class="hx-panel__meta mono">03 · Vox Podcasts · Claude + Kokoro</p>
               <h3 class="hx-panel__title">The employee handbook, <em>now with a plot.</em></h3>
               <p class="hx-panel__text">Name a subject, say the company you just joined, and Claude writes it as a
@@ -234,7 +224,7 @@
             </article>
 
             <article class="hx-page" role="group" aria-roledescription="slide" aria-label="4 of 5: Vox Learn" id="built-4" hidden
-              data-alt="The book, open at Vox Learn: the glasses with a quiz in the lenses on the left; on the right, Don’t get it? Ask, right then and there, an example question, what’s a chargeback?, answered out loud for 40 points.">
+              data-alt="The book, open at Vox Learn: on the left, Don’t get it? Ask, right then and there, an example question, what’s a chargeback?, answered out loud for 40 points; on the right, Any subject, your voice, your level, over example subjects to learn.">
               <p class="hx-panel__meta mono">04 · Vox Learn · Claude + Parakeet</p>
               <h3 class="hx-panel__title">Don’t get it? <em>Ask, right then and there.</em></h3>
               <p class="hx-panel__text">Pick a subject. The lessons meet you at your level; the quiz meets you on the
@@ -273,12 +263,12 @@
       <div class="hx-marquee__window">
         <div class="hx-marquee__track">
           <ul role="list">
-            <li>Claude Code</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+            <li>Frontier AI</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
             <li>pyannote</li><li>llama.cpp</li><li>Gemma 4</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
             <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>Tailscale</li><li>LC3</li><li>Blender</li>
           </ul>
           <ul role="list" aria-hidden="true">
-            <li>Claude Code</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
+            <li>Frontier AI</li><li>sherpa-onnx</li><li>NVIDIA Parakeet</li><li>Silero VAD</li><li>WeSpeaker</li>
             <li>pyannote</li><li>llama.cpp</li><li>Gemma 4</li><li>Liquid LFM2.5</li><li>EmbeddingGemma</li>
             <li>Kokoro</li><li>Whisper</li><li>mosh</li><li>Tailscale</li><li>LC3</li><li>Blender</li>
           </ul>
@@ -401,7 +391,7 @@
       <div class="hx-more__panel">
         <button class="hx-more__close" type="button" aria-label="Close" data-more-close><svg aria-hidden="true"><use href="#i-close" /></svg></button>
         <header class="hx-more__head">
-          <p class="eyebrow">02 · Linux on the glasses</p>
+          <p class="eyebrow">02 · Even G1</p>
           <h2 class="hx-more__title" id="more-2-title">Your computer, <em>one look away.</em></h2>
         </header>
         <figure class="hx-film">
@@ -416,7 +406,7 @@
           <p class="hx-read__kick mono">The story · work life</p>
           <h3 class="hx-read__title">Check in. <em>Don’t sit in.</em></h3>
           <div class="hx-read__body">
-            <p>Building software used to mean sitting at a desk and watching it happen. Now Claude Code does the typing, and most of the work is waiting. So why sit there?</p>
+            <p>Building software used to mean sitting at a desk and watching it happen. Now frontier AI does the typing, and most of the work is waiting. So why sit there?</p>
             <p>Vox puts a real terminal in the Even Realities G1 glasses: your computer at home, your laptop at work over SSH, or a whole Linux system on the phone itself. Tell Claude what to build, then go and make dinner. The lenses stay dark until you look up.</p>
             <p>Glance up and the screen fades in: the step Claude is on, a diff, the test results. Look down and it’s gone. When it needs you, a heads-up says so, and nothing else interrupts.</p>
             <p>Getting there took the glasses apart in software. Out of the box they show a few lines of text; I built on reverse-engineered firmware and optimized it for this: a 16-grey video mode, both arms drawing in step, and a display that fades with the tilt of your head.</p>
@@ -425,9 +415,9 @@
         <dl class="hx-sum">
           <div><dt class="mono">What</dt><dd>A second screen for any computer: your terminal or whole desktop, drawn for
               the lenses and sent over Bluetooth.</dd></div>
-          <div><dt class="mono">Why</dt><dd>Hand the work to Claude Code and walk away. You look up for progress, and
+          <div><dt class="mono">Why</dt><dd>Hand the work to frontier AI and walk away. You look up for progress, and
               for the questions only you can answer.</dd></div>
-          <div><dt class="mono">Frontier</dt><dd>The builder is Claude Code. When Claude gets better, every build
+          <div><dt class="mono">Frontier</dt><dd>The builder is frontier AI. When the models get better, every build
               does, with nothing for me to rewrite.</dd></div>
         </dl>
         <section class="hx-read hx-arch">
@@ -438,7 +428,7 @@
             <li><span class="hx-flow__n mono">01</span><b>Sources</b><span class="hx-flow__text">A terminal on the phone or a computer over SSH, kept alive by mosh as the phone changes networks; the phone’s screen; a laptop’s screen; the glasses’ own microphone.</span><span class="hx-flow__chips mono"><span>mosh</span><span>JSch</span><span>MediaProjection</span><span>LC3</span></span></li>
             <li><span class="hx-flow__n mono">02</span><b>One microphone</b><span class="hx-flow__text">One shared microphone feeds every feature. A speech detector keeps only voice, with a second, keener pass for soft voices.</span><span class="hx-flow__chips mono"><span>Silero VAD</span></span></li>
             <li><span class="hx-flow__n mono">03</span><b>Understand</b><span class="hx-flow__text">Each phrase is written down with word times, matched to a voiceprint, split into turns and tagged with its tone, on the phone.</span><span class="hx-flow__chips mono"><span>Parakeet TDT 0.6B</span><span>WeSpeaker</span><span>pyannote</span><span>SenseVoice</span></span></li>
-            <li><span class="hx-flow__n mono">04</span><b>Think, taking turns</b><span class="hx-flow__text">A small model answers on the phone through llama.cpp; while it thinks, transcription waits and catches up after. Claude Code runs in the phone’s own terminal.</span><span class="hx-flow__chips mono"><span>llama.cpp</span><span>LFM2.5</span><span>Claude Code</span></span></li>
+            <li><span class="hx-flow__n mono">04</span><b>Think, taking turns</b><span class="hx-flow__text">A small model answers on the phone through llama.cpp; while it thinks, transcription waits and catches up after. Frontier AI works in the phone’s own terminal.</span><span class="hx-flow__chips mono"><span>llama.cpp</span><span>LFM2.5</span><span>Frontier AI</span></span></li>
             <li><span class="hx-flow__n mono">05</span><b>Draw for the lens</b><span class="hx-flow__text">Terminal cells, screen frames and panels are drawn for a 640 × 480 display per eye and sent to both arms at once.</span><span class="hx-flow__chips mono"><span>Bluetooth LE</span><span>16-grey video</span></span></li>
             <li><span class="hx-flow__n mono">06</span><b>On the glasses</b><span class="hx-flow__text">The firmware runs small programs on each arm: the terminal fades in as you look up and out as you look down, and both eyes keep one brightness.</span><span class="hx-flow__chips mono"><span>Firmware VM</span></span></li>
           </ol>
@@ -449,7 +439,7 @@
           </div>
         </section>
         <figure class="hx-stack">
-          <img src="assets/img/stack-linux.webp" alt="The glasses resting on five floating plates of black glass, one per layer: firmware, Bluetooth LE, Vox, SSH and mosh, Claude Code" width="1200" height="1200" loading="lazy">
+          <img src="assets/img/stack-linux.webp" alt="The glasses resting on five floating plates of black glass, one per layer: firmware, Bluetooth LE, Vox, SSH and mosh, frontier AI" width="1200" height="1200" loading="lazy">
           <figcaption>
             <p class="hx-stack__title mono">The stack, top to bottom</p>
             <ol class="hx-layers" role="list">
@@ -458,7 +448,7 @@
               <li><span class="mono">02</span><b>Bluetooth LE</b> Every frame goes to both arms at once, so both eyes agree.</li>
               <li><span class="mono">03</span><b>Vox</b> The Android app draws terminal cells and screens for the lens.</li>
               <li><span class="mono">04</span><b>SSH + mosh</b> Reaches home or work and holds on as the phone changes networks. No computer? Termux runs one on the phone.</li>
-              <li><span class="mono">05</span><b>Claude Code</b> Does the building while you do anything else.</li>
+              <li><span class="mono">05</span><b>Frontier AI</b> Does the building while you do anything else.</li>
             </ol>
           </figcaption>
         </figure>
@@ -714,7 +704,7 @@
           <p class="hx-read__lede">Where each card plugs into the models, so that every release is an upgrade.</p>
           <ol class="hx-flow" role="list">
             <li><span class="hx-flow__n mono">01</span><b>Vox Amelior</b><span class="hx-flow__text">Speech, voices and answers are swappable parts: a better open model drops straight in, and the whole memory gets sharper.</span><span class="hx-flow__chips mono"><span>Parakeet</span><span>Gemma 4</span></span></li>
-            <li><span class="hx-flow__n mono">02</span><b>Linux on the glasses</b><span class="hx-flow__text">Claude Code does the building, so every new Claude is a better engineer on day one.</span><span class="hx-flow__chips mono"><span>Claude Code</span></span></li>
+            <li><span class="hx-flow__n mono">02</span><b>Even G1</b><span class="hx-flow__text">Frontier AI does the building, so every new model is a better engineer on day one.</span><span class="hx-flow__chips mono"><span>Frontier AI</span></span></li>
             <li><span class="hx-flow__n mono">03</span><b>The podcast</b><span class="hx-flow__text">Claude writes every script, so as the writer gets better, so does the show.</span><span class="hx-flow__chips mono"><span>Claude</span><span>Kokoro</span></span></li>
             <li><span class="hx-flow__n mono">04</span><b>Vox Learn</b><span class="hx-flow__text">Claude writes the lessons: tomorrow’s model teaches tomorrow’s class.</span><span class="hx-flow__chips mono"><span>Claude</span><span>Parakeet</span></span></li>
           </ol>
@@ -728,7 +718,7 @@
             <h3 class="hx-more__h">How each card keeps up</h3>
             <ol class="hx-steps" role="list">
               <li>Vox Amelior: every model is a part, not a pillar.</li>
-              <li>Linux on the glasses: Claude Code does the building.</li>
+              <li>Even G1: frontier AI does the building.</li>
               <li>The podcast: Claude writes every script.</li>
               <li>Vox Learn: tomorrow’s model teaches tomorrow’s class.</li>
             </ol>
@@ -801,7 +791,7 @@
       </div>
       <div class="site-footer__bottom">
         <p>© <span data-year>2026</span> Pruitt Colon</p>
-        <p>Built with Claude Code: HTML, CSS, JavaScript and Blender. No trackers.</p>
+        <p>Built with frontier AI: HTML, CSS, JavaScript and Blender. No trackers.</p>
       </div>
     </div>
   </footer>

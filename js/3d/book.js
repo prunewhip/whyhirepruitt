@@ -898,6 +898,8 @@ export async function createBook(canvas, { screens, film = null, calm = false, m
           film.play().catch(() => {});
         } else film.pause();
       }
+      const end = Number(film.dataset.loopEnd) || 0;
+      if (end && film.currentTime > end) film.currentTime = 0;
       const on = !film.paused && film.currentTime > 0 && film.readyState >= 2;
       filmMesh.material.opacity = damp(filmMesh.material.opacity, on ? 1 : 0, 6, dt || 1);
     }
