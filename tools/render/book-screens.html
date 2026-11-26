@@ -127,7 +127,14 @@ h1 em { font-style: normal; background: linear-gradient(90deg, var(--a), var(--b
 .media .frame { position: absolute; left: 60px; top: 200px; width: 880px; height: 880px; border-radius: 40px; overflow: hidden;
   box-shadow: 0 0 0 2px rgba(255,255,255,.1), 0 40px 80px -30px #000, 0 0 120px -40px color-mix(in srgb, var(--a) 60%, transparent); }
 .media .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.media .cap { position: absolute; left: 68px; right: 68px; top: 1130px; margin: 0; font-size: 72px; line-height: 1.06; font-weight: 650; letter-spacing: -.03em; }
+.media .cap { position: absolute; left: 68px; right: 68px; top: 1120px; margin: 0; font-size: 72px; line-height: 1.06; font-weight: 650; letter-spacing: -.03em; }
+.media .points { position: absolute; left: 60px; right: 60px; top: 1300px; display: flex; flex-wrap: wrap; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.media .points li { display: flex; align-items: center; gap: 14px; padding: 14px 26px 14px 20px; border-radius: 99px; border: 2px solid color-mix(in srgb, var(--a) 40%, transparent);
+  background: color-mix(in srgb, var(--a) 9%, transparent); font-size: 38px; font-weight: 560; letter-spacing: -.01em; color: #eef6f1; }
+.media .points li::before { content: "✓"; font-weight: 700; color: var(--a); text-shadow: 0 0 14px var(--a); }
+.pitch { margin: 0; font-size: 46px; line-height: 1.3; color: #cddcd5; letter-spacing: -.01em; }
+.pitch b { color: #fff; font-weight: 600; }
+.title { display: grid; gap: 30px; }
 .media .foot { position: absolute; left: 68px; right: 68px; bottom: 70px; display: flex; justify-content: space-between; align-items: center; font: 500 32px/1 "Geist Mono", monospace; letter-spacing: .12em; color: #9cb0a7; }
 .foot-line { display: flex; align-items: center; gap: 26px; font-size: 28px; letter-spacing: .14em; color: #9cb0a7; }
 .foot-line i { flex: 1; height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--a), transparent); box-shadow: 0 0 18px var(--a); }
@@ -167,24 +174,27 @@ h1 em { font-style: normal; background: linear-gradient(90deg, var(--a), var(--b
 <section class="screen media" id="media-0" style="--a:#6ff0a6;--b:#7fd6ff">
   <div class="bar"><span>01 · Vox Amelior</span><span class="live"><i></i>Film · 0:24</span></div>
   <div class="frame"><img src="book-stills/vox.webp" alt=""></div>
-  <p class="cap">Remembers what you hear. Keeps it on your phone.</p>
+  <p class="cap">Forget nothing. Share nothing.</p>
+  <ul class="points"><li>Live transcription</li><li>Who said what</li><li>100% on your phone</li></ul>
   <div class="foot"><span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span><span>01 / 05</span></div>
 </section>
 
 <section class="screen ui" id="ui-0" style="--a:#6ff0a6;--b:#7fd6ff">
-  <div class="bar"><span>Vox Amelior</span><span class="live"><i></i>On your phone</span></div>
-  <h1>Forget nothing.<br><em>Share nothing.</em></h1>
+  <div class="bar"><span>01 · Vox Amelior</span><span class="live"><i></i>On your phone</span></div>
+  <div class="title">
+    <h1 style="font-size:112px">Transcription &amp;<br><em>memory suite.</em></h1>
+    <p class="pitch">Writes down what’s said around you, knows <b>who said it</b>, and <b>answers when you ask</b>. Nothing leaves your phone.</p>
+  </div>
   <div class="panel ask">
     <div class="row"><span class="mono dim">YOU ASKED · 18:02</span><span class="tag">Example</span></div>
     <p class="q">“Where did I park this morning?”</p>
     <p class="a"><b>Level 3, row F</b>, by the lift. You said it at 9:41.</p>
     <div class="src mono">0 bytes sent</div>
   </div>
-  <div class="wave" data-wave="30"></div>
   <ol class="stack">
-    <li><b>01</b>Answer<span>Gemma 4</span></li>
-    <li><b>02</b>Find<span>EmbeddingGemma</span></li>
-    <li><b>03</b>Hear<span>Parakeet</span></li>
+    <li><b>01</b>Transcribe<span>Parakeet</span></li>
+    <li><b>02</b>Who said it<span>WeSpeaker</span></li>
+    <li><b>03</b>Answer<span>Gemma 4</span></li>
   </ol>
 </section>
 
@@ -192,36 +202,43 @@ h1 em { font-style: normal; background: linear-gradient(90deg, var(--a), var(--b
 <section class="screen media" id="media-1" style="--a:#7fd6ff;--b:#6ff0a6">
   <div class="bar"><span>02 · Even G1</span><span class="live"><i></i>On the glasses</span></div>
   <div class="frame"><img src="../../assets/img/g1-desk.webp" alt=""></div>
-  <p class="cap">A whole computer in the lens. AI at the keys.</p>
+  <p class="cap">Your computer, one look away.</p>
+  <ul class="points"><li>Custom firmware</li><li>Linux desktop</li><li>AI at the keys</li></ul>
   <div class="foot"><span class="dots"><i></i><i class="on"></i><i></i><i></i><i></i></span><span>02 / 05</span></div>
 </section>
 
 <section class="screen ui" id="ui-1" style="--a:#7fd6ff;--b:#6ff0a6">
-  <div class="bar"><span>Even G1</span><span class="live"><i></i>Connected</span></div>
-  <h1>Your computer,<br><em>one look away.</em></h1>
+  <div class="bar"><span>02 · Even G1</span><span class="live"><i></i>Connected</span></div>
+  <div class="title">
+    <h1 style="font-size:112px">A computer in<br><em>smart glasses.</em></h1>
+    <p class="pitch">Custom <b>Even G1 firmware</b> puts your terminal and a <b>Linux desktop</b> in the lens. AI builds; you check in.</p>
+  </div>
   <div class="panel term">
     <div class="term__top"><i></i><i></i><i></i><span class="mono">ssh home</span><span class="tag">Example</span></div>
 <pre><span class="ln"><span class="p">~/site $</span> ai</span><span class="ln u">&gt; make the cards flip</span><span class="ln d">● Reading hx.js</span><span class="ln d">● Editing 2 files</span><span class="ln ok">✓ Done. Have a look.</span><span class="ln"><span class="p">~/site $</span> <b class="cur"></b></span></pre>
   </div>
-  <div class="greys" data-greys></div>
-  <div class="mono dim greys-note">16-GREY VIDEO, ON WHEN YOU LOOK UP</div>
   <ol class="stack">
     <li><b>01</b>Firmware<span>reverse-engineered</span></li>
-    <li><b>02</b>Reach<span>SSH + mosh</span></li>
+    <li><b>02</b>Video<span>16 greys, on look-up</span></li>
+    <li><b>03</b>Reach<span>SSH + mosh</span></li>
   </ol>
 </section>
 
 <!-- ── Spread 3: The podcast ── -->
 <section class="screen media" id="media-2" style="--a:#b9a4ff;--b:#7fd6ff">
-  <div class="bar"><span>03 · The podcast</span><span class="live"><i></i>In your ear</span></div>
+  <div class="bar"><span>03 · Vox Podcasts</span><span class="live"><i></i>In your ear</span></div>
   <div class="frame"><img src="book-stills/podcast.webp" alt=""></div>
-  <p class="cap">Any subject. Two voices. Your level.</p>
+  <p class="cap">The employee handbook, now with a plot.</p>
+  <ul class="points"><li>Any subject</li><li>Two natural voices</li><li>Your level</li></ul>
   <div class="foot"><span class="dots"><i></i><i></i><i class="on"></i><i></i><i></i></span><span>03 / 05</span></div>
 </section>
 
 <section class="screen ui" id="ui-2" style="--a:#b9a4ff;--b:#7fd6ff">
-  <div class="bar"><span>The podcast</span><span class="live"><i></i>Now playing</span></div>
-  <h1 style="font-size:110px">The employee handbook, <em>now with a plot.</em></h1>
+  <div class="bar"><span>03 · Vox Podcasts</span><span class="live"><i></i>Now playing</span></div>
+  <div class="title">
+    <h1 style="font-size:112px">Make your own<br><em>podcast.</em></h1>
+    <p class="pitch">Name <b>any subject</b>. AI writes a <b>two-host show</b> at your level, and natural voices read it on your phone.</p>
+  </div>
   <div class="panel art">
     <div class="row"><span class="art__show">Northwind, explained</span><span class="tag">Example</span></div>
     <div class="wave" data-wave="26"></div>
@@ -238,13 +255,17 @@ h1 em { font-style: normal; background: linear-gradient(90deg, var(--a), var(--b
 <section class="screen media" id="media-3" style="--a:#ffc977;--b:#6ff0a6">
   <div class="bar"><span>04 · Vox Learn</span><span class="live"><i></i>In the car</span></div>
   <div class="frame"><img src="book-stills/learn.webp" alt=""></div>
-  <p class="cap">A lesson in your ear. A quiz you answer out loud.</p>
+  <p class="cap">Don’t get it? Ask, right then and there.</p>
+  <ul class="points"><li>Lessons at your level</li><li>Answer out loud</li><li>Points + streaks</li></ul>
   <div class="foot"><span class="dots"><i></i><i></i><i></i><i class="on"></i><i></i></span><span>04 / 05</span></div>
 </section>
 
 <section class="screen ui" id="ui-3" style="--a:#ffc977;--b:#6ff0a6">
-  <div class="bar"><span>Vox Learn</span><span class="live"><i></i>Quiz · 2 of 5</span></div>
-  <h1 style="font-size:112px">Don’t get it? <em>Ask, right then and there.</em></h1>
+  <div class="bar"><span>04 · Vox Learn</span><span class="live"><i></i>Quiz · 2 of 5</span></div>
+  <div class="title">
+    <h1 style="font-size:112px">Learn anything,<br><em>out loud.</em></h1>
+    <p class="pitch">An <b>AI tutor for the drive</b>: lessons in your ear, a <b>quiz you answer by voice</b>, review for what you missed.</p>
+  </div>
   <div class="panel quiz">
     <div class="row"><span class="mono dim">QUESTION 2</span><span class="tag">Example</span></div>
     <p class="q">What’s a chargeback?</p>
