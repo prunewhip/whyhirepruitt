@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book, live</title>
 <!-- The home page's live book (js/3d/book.js) on its own, for checking it: ?page=N opens straight onto spread N,
-     ?closed keeps it shut on its cover, ?noglow and ?nomirror leave out the bloom and the mirror floor; the buttons turn it. -->
+     ?closed keeps it shut on its cover, ?calm holds it still (as with reduced motion), ?noglow and ?nomirror leave out the bloom and the mirror floor; the buttons turn it. -->
 <style>
   html, body { margin: 0; height: 100%; background: #030505; color: #cfe; font: 14px system-ui, sans-serif; }
   #stage { position: absolute; inset: 0 0 48px; }
@@ -20,7 +20,7 @@
 <script type="module">
   import { createBook } from '../../js/3d/book.js';
   const q = new URLSearchParams(location.search);
-  const book = await createBook(document.getElementById('c'), { screens: '../../assets/img/book/screen-', film: null, lite: false, mirror: !q.has('nomirror'), glow: !q.has('noglow'), msaa: q.has('msaa') ? Number(q.get('msaa')) : null });
+  const book = await createBook(document.getElementById('c'), { screens: '../../assets/img/book/screen-', film: null, lite: false, calm: q.has('calm'), mirror: !q.has('nomirror'), glow: !q.has('noglow'), msaa: q.has('msaa') ? Number(q.get('msaa')) : null });
   window.book = book;
   book.setVisible(true);
   if (q.has('page')) book.jumpTo(Number(q.get('page')));

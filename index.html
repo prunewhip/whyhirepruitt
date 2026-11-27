@@ -37,7 +37,7 @@
     setTimeout(() => document.documentElement.classList.add('is-ready'), 1800);
   </script>
   <script src="js/main.js" defer></script>
-  <script src="js/hx.js?v=43" type="module"></script>
+  <script src="js/hx.js?v=44" type="module"></script>
 
   <script type="application/ld+json">
   {
@@ -151,10 +151,13 @@
                and the whole show where WebGL can't run. The video is the Vox film's source; it plays on the first
                left-hand screen, never on its own -->
           <div class="hx-book__stage" data-book-stage>
-            <div class="hx-book__figure" role="img" data-book data-screens="assets/img/book/screen-" data-v="44"
+            <div class="hx-book__figure" role="img" data-book data-screens="assets/img/book/screen-" data-v="45"
               data-stills="assets/img/book/f00.webp assets/img/book/f14.webp assets/img/book/f28.webp assets/img/book/f42.webp"
               aria-label="A book of glass screens on a polished hinge, open at Vox Amelior: its film plays on the left page; the right page reads Transcription and memory suite, with an example question and its answer.">
-              <img class="hx-book__still" src="assets/img/book/f00.webp" width="1280" height="880" alt="" data-book-still>
+              <picture>
+                <source media="(max-width: 699px)" srcset="assets/img/book/closed-phone.webp" width="864" height="800">
+                <img class="hx-book__still" src="assets/img/book/closed-wide.webp" width="1280" height="784" alt="" data-book-still>
+              </picture>
               <canvas class="hx-book__canvas" aria-hidden="true" data-book-canvas></canvas>
               <video class="hx-book__film" muted loop playsinline preload="none" width="1080" height="1080" tabindex="-1" aria-hidden="true"
                 data-src="assets/video/short-remember.mp4" data-loop-end="17.6" data-book-film></video>

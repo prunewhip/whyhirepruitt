@@ -482,8 +482,22 @@ function initDeck() {
     else closeBook();
   };
 
-  // The live book: loaded once the section is near; it waits closed on its cover, and opens as it comes into view
-  // (with reduced motion, when someone taps it)
+  // Until the live book is up, a still of it closed on its cover; without WebGL, the stills of the open spreads
+  const showStill = (k) => {
+    still.parentElement.querySelectorAll('source').forEach((source) => source.remove());
+    still.src = stills[Math.min(k, stills.length - 1)];
+  };
+  // It opens once most of it is on screen and has stayed there a moment, so a quick scroll never opens it out of
+  // sight: you always arrive to it closed (with reduced motion, it waits for a tap)
+  let full = false;
+  let openTimer = 0;
+  const openSoon = () => {
+    clearTimeout(openTimer);
+    if (!book || !full || calm || closedByHand || book.isOpen()) return;
+    openTimer = setTimeout(() => { if (full) openBook(); }, 700);
+  };
+
+  // The live book: loaded once the section is near; it waits closed on its cover until it's in full view
   async function load3D() {
     if (loading) return;
     loading = true;
@@ -507,10 +521,12 @@ function initDeck() {
       book.setVisible(inView);
       root.classList.add('is-3d');
       syncHint();
-      if (inView && !calm && !closedByHand) setTimeout(openBook, 400);
+      openSoon();
       report(`on · ${book.info}`);
     } catch (error) {
       book = null; // no WebGL: the stills carry on
+      showStill(current);
+      syncHint();
       report(`off · ${error && error.message ? error.message : error}`);
     }
   }
@@ -557,7 +573,7 @@ function initDeck() {
     count.textContent = `${pad(next + 1)} / ${pad(n)}`;
     bar.style.transform = `translateX(${next * 100}%)`;
     if (book) book.setPage(next);
-    else still.src = stills[Math.min(next, stills.length - 1)];
+    else showStill(next);
     restartClock();
     syncTech();
   }
@@ -672,13 +688,13 @@ function initDeck() {
   // Near the screen, the book loads; on it, it opens, and the film and the countdown run
   new IntersectionObserver(([entry]) => { if (entry.isIntersecting) load3D(); }, { rootMargin: '900px 0px' }).observe(figure);
   new IntersectionObserver(([entry]) => {
-    inView = entry.isIntersecting;
+    inView = entry.isIntersecting && entry.intersectionRatio >= 0.35;
+    full = entry.isIntersecting && entry.intersectionRatio >= 0.7;
     setPause('view', !inView);
-    if (book) {
-      book.setVisible(inView);
-      if (inView && !calm && !closedByHand) setTimeout(openBook, 400);
-    }
-  }, { threshold: 0.35 }).observe(figure);
+    if (book) book.setVisible(inView);
+    if (full) openSoon();
+    else clearTimeout(openTimer);
+  }, { threshold: [0, 0.35, 0.7] }).observe(figure);
 
   if (auto) {
     root.classList.add('is-auto');
